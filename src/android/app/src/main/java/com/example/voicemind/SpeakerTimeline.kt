@@ -95,4 +95,31 @@ class SpeakerTimeline(regions: List<Region>) {
         }
         return Decision(speaker, ranked, coverage, margin)
     }
+
+    /** Repair isolated short word edges only, using unchanged acoustic decisions
+     * on adjacent words. Never bridge a change of speaker or an overlap. */
+    fun decideWords(intervals: List<Pair<Long, Long>>): IntArray {
+        val decisions = intervals.map { (a, b) -> decide(a, b) }
+        val original = decisions.map { it.speaker }
+        return IntArray(intervals.size) { i ->
+            val (a, b) = intervals[i]
+            val d = decisions[i]
+            if (d.speaker != UNKNOWN || b <= a || b - a > 400) d.speaker
+            else {
+                val before = original.getOrNull(i - 1)
+                val after = original.getOrNull(i + 1)
+                when {
+                    before != null && before >= 0 && before == after &&
+                        a - intervals[i - 1].second in 0..100 &&
+                        intervals[i + 1].first - b in 0..100 &&
+                        d.candidates == listOf(before) -> before
+                    // VAD can miss the unvoiced onset of the very first word.
+                    i == 0 && after != null && after >= 0 &&
+                        intervals[1].first - b in 0..100 && d.candidates.isEmpty() &&
+                        runs.firstOrNull()?.let { it.speaker == after && it.startMs - b in 0..80 } == true -> after
+                    else -> UNKNOWN
+                }
+            }
+        }
+    }
 }

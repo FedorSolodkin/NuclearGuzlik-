@@ -5,6 +5,28 @@ import org.junit.Test
 
 class SpeakerTimelineTest {
     private fun r(a: Long, b: Long, k: Int) = SpeakerTimeline.Region(a, b, k)
+    @Test fun shortInitialUnvoicedWordUsesTheImmediatelyFollowingVoice() {
+        val timeline = SpeakerTimeline(listOf(r(543, 6358, 0)))
+        assertArrayEquals(intArrayOf(0, 0), timeline.decideWords(listOf(280L to 520L, 520L to 950L)))
+    }
+    @Test fun shortLowCoverageWordWithinOneVoiceDoesNotCreateASeparateUnknownTurn() {
+        val timeline = SpeakerTimeline(listOf(r(25398, 31460, 1), r(31816, 46528, 1)))
+        assertArrayEquals(intArrayOf(1, 1, 1), timeline.decideWords(
+            listOf(30300L to 31540L, 31540L to 31850L, 31880L to 32350L)))
+    }
+    @Test fun aRealSpeakerChangeOrSilenceDoesNotAcquireAnInventedIdentity() {
+        val timeline = SpeakerTimeline(listOf(r(0, 1000, 0), r(1300, 2000, 1)))
+        assertArrayEquals(intArrayOf(0, -1, 1), timeline.decideWords(
+            listOf(700L to 1000L, 1000L to 1300L, 1300L to 1600L)))
+        assertEquals(-1, timeline.decideWords(listOf(100L to 300L, 500L to 700L,
+            2000L to 2300L, 2400L to 2600L))[2])
+    }
+    @Test fun simultaneousSpeechAndLongUnknownWordsRemainUnresolved() {
+        val timeline = SpeakerTimeline(listOf(r(0, 1000, 0), r(300, 700, 1)))
+        assertEquals(-2, timeline.decideWords(listOf(0L to 200L, 300L to 700L, 800L to 1000L))[1])
+        val missing = SpeakerTimeline(listOf(r(1100, 2000, 0)))
+        assertEquals(-1, missing.decideWords(listOf(0L to 1000L, 1100L to 1500L))[0])
+    }
     @Test fun duplicateAnalysisWindowsDoNotMultiplyVotes() {
         val timeline = SpeakerTimeline(List(10) { r(0, 400, 0) } + r(400, 1000, 1))
         assertEquals(1, timeline.assign(0, 1000))
