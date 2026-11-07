@@ -29,7 +29,7 @@ class SpeedProfileDeviceTest {
     /** Вопрос к Gemma по готовому тексту (eval/text.json) при загруженном Whisper: пик памяти и скорость. */
     private fun gemmaOnly() {
         val pss = { android.os.Debug.getPss() / 1024 }
-        val text = File(ctx.filesDir, "eval/text.json").readText().take(8000)
+        val text = File(ctx.filesDir, "eval/text.json").readText().take(20000)
         val whisper = WhisperHelper(ctx); val ready = CountDownLatch(1)
         whisper.init({ ready.countDown() }, { ready.countDown() }); ready.await(5, TimeUnit.MINUTES)
         Log.i(tag, "PSS with Whisper: ${pss()} MB")
@@ -119,8 +119,15 @@ class SpeedProfileDeviceTest {
             }
             val e0 = now()
             val res = result
-            val json = if (res != null) JsonTranscriptExporter.export(res.text, segments, res.displayNames)
+            val json = try {
+                if (res != null) JsonTranscriptExporter.export(res.text, segments, res.displayNames)
                 else JsonTranscriptExporter.export(segments.joinToString(" ") { it.text }, segments, listOf("1"))
+            } catch (e: Exception) {
+                Log.e(tag, "$name EXPORT FAILED: ${e.message}")
+                t.put("export_error", e.message)
+                "{\"transcript\":[{\"speaker_id\":\"x\",\"start_ms\":0,\"end_ms\":1,\"text\":" +
+                    org.json.JSONObject.quote(res?.text ?: segments.joinToString(" ") { it.text }) + "}]}"
+            }
             File(outDir, "$name.json").writeText(json)
             t.put("diar_ms", diarMs).put("refine_ms", refineMs).put("export_ms", now() - e0)
                 .put("speakers", res?.centroids?.size ?: 0).put("total_ms", now() - tStart)
