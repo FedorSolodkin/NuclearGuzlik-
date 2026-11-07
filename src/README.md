@@ -38,7 +38,7 @@ echo "sdk.dir=/путь/к/Android/sdk" > local.properties
   -PguzlikvoiceLlmModels=gemma2-2b-v90k -PguzlikvoiceBundle=$HOME/bundles/heavy
 ```
 
-APK: `app/build/outputs/apk/store/hackathon/`. Пакет `ru.guzlikvoice.app.hackathon`, подпись debug.
+APK: `app/build/outputs/apk/store/hackathon/`. Пакет `ru.guzlik.voice.hackathon`, подпись debug.
 При первом запуске модели копируются из APK в папку приложения (нужно свободного места примерно вдвое
 больше размера APK), интернет не нужен.
 

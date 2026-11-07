@@ -1,19 +1,19 @@
 {
   "file": "GuzlikVoice-4.0.8-contest-offline.apk",
-  "download_url": "https://github.com/FedorSolodkin/NuclearGuzlik-/releases/download/contest-offline-v4.0.8/GuzlikVoice-4.0.8-contest-offline.apk",
-  "package": "ru.guzlikvoice.app.hackathon",
+  "download_url": "https://github.com/FedorSolodkin/NuclearGuzlik-/releases/download/guzlikvoice-contest-v4.0.8/GuzlikVoice-4.0.8-contest-offline.apk",
+  "package": "ru.guzlik.voice.hackathon",
   "version": "4.0.8-contest-hackathon",
   "version_code": 48,
   "min_sdk": 26,
   "abi": [
     "arm64-v8a"
   ],
-  "bytes": 1921776385,
-  "sha256": "ba9151b0dc0205961e7f24fb6f4da874a40f300acf058f0e72bd04c713457adb",
+  "bytes": 1931088466,
+  "sha256": "81fdd4dcafcae60091d9b57f24a6198b6eac924d721b2ae315c6b206c2b9622e",
   "signature": "APK Signature Scheme v2; same local debug key as previous hackathon versions",
   "models_included": true,
   "asr": "Whisper podlodka turbo q4_0 only",
   "llm": "Gemma 2B ru90k only",
   "model_manifest": "config/contest-models.json",
-  "source_branch": "codex/android-boundary-word-timing"
+  "source_branch": "main"
 }

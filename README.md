@@ -12,7 +12,7 @@ Android-приложение для локальной расшифровки р
 
 ## Запуск для экспертов
 
-1. Установите **[единственную конкурсную APK 4.0.8 со встроенными моделями](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/contest-offline-v4.0.8)**. Android 8+, ARM64.
+1. Установите **[единственную конкурсную APK 4.0.8 со встроенными моделями](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8)**. Android 8+, ARM64.
 2. При первом запуске дождитесь извлечения встроенных моделей. Интернет и отдельные
    файлы моделей не нужны. В этой APK закреплены точный Whisper podlodka и Gemma 2B ru90k;
    быстрых и альтернативных моделей в выборе нет. [Подробности](docs/CONTEST_APK.md).
