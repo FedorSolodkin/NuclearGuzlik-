@@ -8,8 +8,8 @@
   "abi": [
     "arm64-v8a"
   ],
-  "bytes": 1931088466,
-  "sha256": "81fdd4dcafcae60091d9b57f24a6198b6eac924d721b2ae315c6b206c2b9622e",
+  "bytes": 1931088546,
+  "sha256": "6ae6d6bbb09dcba8433f0cef9d4a589c9ad9bbcc6e90d3d45314a3858fe76b19",
   "signature": "APK Signature Scheme v2; same local debug key as previous hackathon versions",
   "models_included": true,
   "asr": "Whisper podlodka turbo q4_0 only",
