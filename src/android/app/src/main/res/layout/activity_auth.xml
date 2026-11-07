@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <!-- ── Загрузка (проверка токена) ─────────────────────────────── -->
+    <LinearLayout
+        android:id="@+id/loadingContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="visible">
+
+        <ProgressBar
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
+    </LinearLayout>
+
+    <!-- ── Форма логина/регистрации ───────────────────────────────── -->
+    <ScrollView
+        android:id="@+id/formContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:gravity="center_horizontal"
+            android:padding="24dp"
+            android:paddingTop="80dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="VoiceMind"
+                android:textSize="26sp"
+                android:textStyle="bold"
+                android:textColor="@color/textPrimary"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tvAuthSubtitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Создайте аккаунт — 30 дней бесплатно"
+                android:textSize="13sp"
+                android:textColor="@color/textMuted"
+                android:layout_marginBottom="32dp"/>
+
+            <EditText
+                android:id="@+id/etAuthEmail"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="Email"
+                android:inputType="textEmailAddress"
+                android:autofillHints="emailAddress"
+                android:textColor="@color/textPrimary"
+                android:textColorHint="@color/textMuted"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="12dp"/>
+
+            <EditText
+                android:id="@+id/etAuthPassword"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:hint="Пароль"
+                android:inputType="textPassword"
+                android:autofillHints="password"
+                android:textColor="@color/textPrimary"
+                android:textColorHint="@color/textMuted"
+                android:background="@drawable/bg_input"
+                android:paddingHorizontal="16dp"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tvAuthError"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@color/statusErr"
+                android:textSize="13sp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAuthSubmit"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:text="Зарегистрироваться"
+                android:backgroundTint="@color/primary"
+                app:cornerRadius="12dp"
+                android:layout_marginTop="12dp"/>
+
+            <TextView
+                android:id="@+id/tvAuthSwitchMode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Уже есть аккаунт? Войти"
+                android:textColor="@color/accent"
+                android:textSize="13sp"
+                android:padding="16dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- ── Пробный период закончился ──────────────────────────────── -->
+    <LinearLayout
+        android:id="@+id/expiredContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:padding="32dp"
+        android:visibility="gone">
+
+        <TextView
+            android:id="@+id/tvBlockedIcon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⏳"
+            android:textSize="48sp"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:id="@+id/tvBlockedTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Пробный период закончился"
+            android:textSize="19sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"
+            android:gravity="center"
+            android:layout_marginBottom="8dp"/>
+
+        <TextView
+            android:id="@+id/tvBlockedMessage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Оплата подписки скоро будет доступна прямо в приложении"
+            android:textSize="14sp"
+            android:textColor="@color/textMuted"
+            android:gravity="center"
+            android:layout_marginBottom="32dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBlockedRetry"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Проверить снова"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tvExpiredLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Выйти из аккаунта"
+            android:textColor="@color/accent"
+            android:textSize="13sp"
+            android:padding="16dp"/>
+
+    </LinearLayout>
+
+</FrameLayout>

@@ -1,0 +1,196 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Основная тема: Material3, warm-dark + gold. DynamicColors на Android 12+
+         может подменить палитру из обоев (см. VoiceMindApp), но fallback тут статичный. -->
+    <style name="Theme.VoiceMind" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Primary / on-primary -->
+        <item name="colorPrimary">@color/m3_primary</item>
+        <item name="colorOnPrimary">@color/m3_on_primary</item>
+        <item name="colorPrimaryContainer">@color/m3_primary_container</item>
+        <item name="colorOnPrimaryContainer">@color/m3_on_primary_container</item>
+
+        <item name="colorSecondary">@color/m3_secondary</item>
+        <item name="colorOnSecondary">@color/m3_on_secondary</item>
+        <item name="colorSecondaryContainer">@color/m3_secondary_container</item>
+        <item name="colorOnSecondaryContainer">@color/m3_on_secondary_container</item>
+
+        <item name="colorTertiary">@color/m3_tertiary</item>
+        <item name="colorOnTertiary">@color/m3_on_tertiary</item>
+        <item name="colorTertiaryContainer">@color/m3_tertiary_container</item>
+        <item name="colorOnTertiaryContainer">@color/m3_on_tertiary_container</item>
+
+        <!-- Surface tonal ladder — M3 фичи (cards, chips) выбирают уровень сами -->
+        <item name="colorSurface">@color/m3_surface</item>
+        <item name="colorOnSurface">@color/m3_on_surface</item>
+        <item name="colorOnSurfaceVariant">@color/m3_on_surface_variant</item>
+        <item name="colorSurfaceContainerLowest">@color/m3_surface_container_lowest</item>
+        <item name="colorSurfaceContainerLow">@color/m3_surface_container_low</item>
+        <item name="colorSurfaceContainer">@color/m3_surface_container</item>
+        <item name="colorSurfaceContainerHigh">@color/m3_surface_container_high</item>
+        <item name="colorSurfaceContainerHighest">@color/m3_surface_container_highest</item>
+
+        <item name="android:colorBackground">@color/m3_background</item>
+        <item name="colorOnBackground">@color/m3_on_background</item>
+
+        <item name="colorOutline">@color/m3_outline</item>
+        <item name="colorOutlineVariant">@color/m3_outline_variant</item>
+
+        <item name="colorError">@color/m3_error</item>
+        <item name="colorOnError">@color/m3_on_error</item>
+        <item name="colorErrorContainer">@color/m3_error_container</item>
+        <item name="colorOnErrorContainer">@color/m3_on_error_container</item>
+
+        <!-- System bars — full-bleed warm-dark, без light-status-icons (у нас тёмный фон) -->
+        <item name="android:windowBackground">@color/m3_background</item>
+        <item name="android:statusBarColor">@color/m3_background</item>
+        <item name="android:navigationBarColor">@color/m3_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+
+        <!-- Дефолтный шрифт: Inter — универсальный body, лёгкая гарнитура для маленьких
+             размеров, отличная читаемость на дарке. Устанавливаем как android:fontFamily
+             и fontFamily (для Material-компонентов). Все места где нужен акцент —
+             через TextAppearance.VoiceMind.Display (Space Grotesk). -->
+        <item name="android:fontFamily">@font/inter</item>
+        <item name="fontFamily">@font/inter</item>
+
+        <!-- Переопределяем M3 typography scale — display/headline получают Space Grotesk,
+             остальные (body/label/title) наследуют Inter из fontFamily темы. -->
+        <item name="textAppearanceDisplayLarge">@style/TextAppearance.VoiceMind.Display.Large</item>
+        <item name="textAppearanceDisplayMedium">@style/TextAppearance.VoiceMind.Display.Medium</item>
+        <item name="textAppearanceDisplaySmall">@style/TextAppearance.VoiceMind.Display.Small</item>
+        <item name="textAppearanceHeadlineLarge">@style/TextAppearance.VoiceMind.Headline.Large</item>
+        <item name="textAppearanceHeadlineMedium">@style/TextAppearance.VoiceMind.Headline.Medium</item>
+        <item name="textAppearanceHeadlineSmall">@style/TextAppearance.VoiceMind.Headline.Small</item>
+
+        <!-- BottomSheet использует эти roundness/shape overlays в M3 -->
+        <item name="bottomSheetDialogTheme">@style/ThemeOverlay.VoiceMind.BottomSheet</item>
+
+        <!-- Плавные переходы между Activity (slide + fade), 240–260 мс.
+             Дефолтный "instant swap" системы выглядит грубо после Material3 палитры. -->
+        <item name="android:windowAnimationStyle">@style/WindowAnimation.VoiceMind</item>
+    </style>
+
+    <!-- Общая анимация окон: заезд справа при открытии, уезд влево;
+         при возврате — зеркальная. -->
+    <style name="WindowAnimation.VoiceMind" parent="@android:style/Animation.Activity">
+        <item name="android:activityOpenEnterAnimation">@anim/slide_in_right</item>
+        <item name="android:activityOpenExitAnimation">@anim/slide_out_left</item>
+        <item name="android:activityCloseEnterAnimation">@anim/slide_in_left</item>
+        <item name="android:activityCloseExitAnimation">@anim/slide_out_right</item>
+    </style>
+
+    <!-- ── Кастомная типографика ──────────────────────────────────────────────
+         Display/Headline: Instrument Serif — высококонтрастный дисплейный сериф
+         (Google Fonts). Даёт "редакционный" premium-look, лучше подходит для
+         продуктового позиционирования "профессионалам", чем grotesk.
+         letterSpacing слегка отрицательный: серифы уже плотные, тянуть их
+         сильнее нельзя — сольются кернинги. -->
+    <style name="TextAppearance.VoiceMind.Display.Large" parent="TextAppearance.Material3.DisplayLarge">
+        <item name="android:fontFamily">@font/instrument_serif</item>
+        <item name="fontFamily">@font/instrument_serif</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Display.Medium" parent="TextAppearance.Material3.DisplayMedium">
+        <item name="android:fontFamily">@font/instrument_serif</item>
+        <item name="fontFamily">@font/instrument_serif</item>
+        <item name="android:letterSpacing">-0.01</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Display.Small" parent="TextAppearance.Material3.DisplaySmall">
+        <item name="android:fontFamily">@font/instrument_serif</item>
+        <item name="fontFamily">@font/instrument_serif</item>
+        <item name="android:letterSpacing">-0.005</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Headline.Large" parent="TextAppearance.Material3.HeadlineLarge">
+        <item name="android:fontFamily">@font/instrument_serif</item>
+        <item name="fontFamily">@font/instrument_serif</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Headline.Medium" parent="TextAppearance.Material3.HeadlineMedium">
+        <item name="android:fontFamily">@font/instrument_serif</item>
+        <item name="fontFamily">@font/instrument_serif</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Headline.Small" parent="TextAppearance.Material3.HeadlineSmall">
+        <item name="android:fontFamily">@font/instrument_serif</item>
+        <item name="fontFamily">@font/instrument_serif</item>
+        <item name="android:letterSpacing">0</item>
+    </style>
+
+    <!-- ── Body / Title / Label — семантические стили под повторяющиеся паттерны ──
+         В лайаутах ловим себя на «textSize=14sp + textColor=textPrimary» в десятках
+         мест. Заменяем на style=... — единая точка правки размера/цвета/интерлиньяжа.
+         Все стили наследуют соответствующий M3 TextAppearance (уже привязан к теме через
+         Inter), потом переопределяют textColor. Не переопределяем шрифт — Inter приходит
+         из fontFamily темы. -->
+
+    <!-- Body: основной читаемый текст (описания, объяснения, метки полей) -->
+    <style name="TextAppearance.VoiceMind.Body.Large" parent="TextAppearance.Material3.BodyLarge">
+        <item name="android:textSize">14sp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Body.Medium" parent="TextAppearance.Material3.BodyMedium">
+        <item name="android:textSize">13sp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Body.Small" parent="TextAppearance.Material3.BodySmall">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/textMuted</item>
+    </style>
+
+    <!-- Title: подзаголовки внутри карточек, названия строк -->
+    <style name="TextAppearance.VoiceMind.Title.Medium" parent="TextAppearance.Material3.TitleMedium">
+        <item name="android:textSize">17sp</item>
+        <item name="android:textColor">@color/textPrimary</item>
+    </style>
+    <style name="TextAppearance.VoiceMind.Title.Large" parent="TextAppearance.Material3.TitleLarge">
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">@color/primary</item>
+    </style>
+
+    <!-- Label: короткие акценты, tag-like, метаинформация -->
+    <style name="TextAppearance.VoiceMind.Label.Medium" parent="TextAppearance.Material3.LabelMedium">
+        <item name="android:textSize">12sp</item>
+        <item name="android:textColor">@color/textSecondary</item>
+    </style>
+
+    <!-- BottomSheet со скруглёнными верхними углами -->
+    <style name="ThemeOverlay.VoiceMind.BottomSheet" parent="ThemeOverlay.Material3.BottomSheetDialog">
+        <item name="bottomSheetStyle">@style/Widget.VoiceMind.BottomSheet</item>
+    </style>
+    <style name="Widget.VoiceMind.BottomSheet" parent="Widget.Material3.BottomSheet">
+        <item name="shapeAppearance">@style/ShapeAppearance.VoiceMind.BottomSheet</item>
+        <item name="backgroundTint">@color/m3_surface_container</item>
+    </style>
+    <style name="ShapeAppearance.VoiceMind.BottomSheet" parent="">
+        <item name="cornerFamily">rounded</item>
+        <item name="cornerSizeTopLeft">24dp</item>
+        <item name="cornerSizeTopRight">24dp</item>
+        <item name="cornerSizeBottomLeft">0dp</item>
+        <item name="cornerSizeBottomRight">0dp</item>
+    </style>
+
+    <!-- Прозрачная тема для OAuthRedirectActivity (без UI) -->
+    <style name="Theme.VoiceMind.Transparent" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowBackground">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="TabTextAppearance" parent="TextAppearance.Material3.LabelLarge">
+        <item name="android:textSize">13sp</item>
+        <item name="android:letterSpacing">0.06</item>
+        <item name="textAllCaps">false</item>
+    </style>
+
+    <!-- Тонкий волосяной разделитель между строчками фич в Paywall.
+         Отдельный стиль, чтобы не дублировать 4 строчки в 8 местах и легко
+         менять цвет/толщину для всех сразу. -->
+    <style name="PaywallDivider">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">1dp</item>
+        <item name="android:background">@color/m3_outline_variant</item>
+        <item name="android:alpha">0.35</item>
+    </style>
+</resources>

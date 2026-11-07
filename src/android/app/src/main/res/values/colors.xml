@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- ── Legacy имена (используются везде в старых лайоутах — не удалять) ── -->
+    <color name="background">#100F0C</color>
+    <color name="surface">#1C1A15</color>
+    <color name="surfaceElevated">#282520</color>
+    <color name="surfaceMuted">#141210</color>
+
+    <color name="primary">#F0C040</color>
+    <color name="primaryDark">#C9A035</color>
+    <color name="primarySoft">#2C2510</color>
+    <color name="accent">#F0C040</color>
+    <color name="accentRed">#E05555</color>
+
+    <color name="textPrimary">#F5F1E6</color>
+    <color name="textSecondary">#A8A090</color>
+    <color name="textMuted">#635E52</color>
+    <color name="divider">#252320</color>
+
+    <color name="statusOk">#5CB87A</color>
+    <color name="statusWarn">#F0C040</color>
+    <color name="statusErr">#E05555</color>
+
+    <!-- ── Material3 tonal palette (warm gold + warm dark) ─────────────────── -->
+    <!-- Primary (gold) -->
+    <color name="m3_primary">#F0C040</color>
+    <color name="m3_on_primary">#2A1F08</color>
+    <color name="m3_primary_container">#4A3808</color>
+    <color name="m3_on_primary_container">#FBE7A8</color>
+
+    <!-- Secondary (muted gold — для акцентов рядом с primary) -->
+    <color name="m3_secondary">#D6BF8A</color>
+    <color name="m3_on_secondary">#382C10</color>
+    <color name="m3_secondary_container">#54432A</color>
+    <color name="m3_on_secondary_container">#F1DFAE</color>
+
+    <!-- Tertiary (тёплый rose — для decisions/todos-чипов, разбавляет монохром) -->
+    <color name="m3_tertiary">#E6A886</color>
+    <color name="m3_on_tertiary">#3C1C08</color>
+    <color name="m3_tertiary_container">#5A3418</color>
+    <color name="m3_on_tertiary_container">#FFD4B8</color>
+
+    <!-- Surface tonal ladder — warm dark, слегка теплее чем чистый чёрный -->
+    <color name="m3_surface">#1C1A15</color>
+    <color name="m3_on_surface">#F5F1E6</color>
+    <color name="m3_on_surface_variant">#A8A090</color>
+    <color name="m3_surface_container_lowest">#100F0C</color>
+    <color name="m3_surface_container_low">#1A1813</color>
+    <color name="m3_surface_container">#221F19</color>
+    <color name="m3_surface_container_high">#2A2620</color>
+    <color name="m3_surface_container_highest">#332F28</color>
+
+    <color name="m3_background">#100F0C</color>
+    <color name="m3_on_background">#F5F1E6</color>
+
+    <color name="m3_outline">#635E52</color>
+    <color name="m3_outline_variant">#3A3630</color>
+    <color name="m3_scrim">#000000</color>
+
+    <color name="m3_error">#E05555</color>
+    <color name="m3_on_error">#3D0D0D</color>
+    <color name="m3_error_container">#5A1717</color>
+    <color name="m3_on_error_container">#FFDAD6</color>
+</resources>

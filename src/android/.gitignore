@@ -1,0 +1,43 @@
+*.iml
+.gradle
+/local.properties
+/.idea/caches
+/.idea/libraries
+/.idea/modules.xml
+/.idea/workspace.xml
+/.idea/navEditor.xml
+/.idea/assetWizardSettings.xml
+.DS_Store
+/build
+app/build
+/captures
+.externalNativeBuild
+.cxx
+app/.cxx
+local.properties
+
+# Vulkan/SPIR-V headers — регенерируются через scripts/fetch-vulkan-headers.sh
+app/src/main/cpp/third_party/
+
+# IDE
+.idea/
+# Подписи и секреты сборки
+keystore.properties
+*.jks
+*.keystore
+*.p12
+# Python (server/)
+__pycache__/
+
+# Kotlin incremental compiler state
+.kotlin/
+
+# Generated acoustic fixtures, downloaded model weights and device reports
+/tools/device_test/assets/
+/tools/device_test/out/
+
+# Wearable firmware build outputs / local SDK configuration
+/firmware/voicemind/.pio/
+/firmware/voicemind/sdkconfig.esp32dev
+/firmware/voicemind/sdkconfig.esp32dev.old
+/firmware/voicemind/build/

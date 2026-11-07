@@ -1,0 +1,15 @@
+{
+  "variant": "storeDebug",
+  "source": "Gradle JUnit XML",
+  "totals": {
+    "tests": 228,
+    "failures": 0,
+    "errors": 0,
+    "skipped": 3
+  },
+  "suites": 51,
+  "python_evaluator_tests": 4,
+  "device_connected": false,
+  "device_tests_run": false,
+  "apk_signature_verified": true
+}

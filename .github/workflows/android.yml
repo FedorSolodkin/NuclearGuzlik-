@@ -1,0 +1,48 @@
+name: Android submission
+on: [push, pull_request, workflow_dispatch]
+permissions:
+  contents: read
+concurrency:
+  group: android-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    defaults:
+      run:
+        working-directory: src/android
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - uses: android-actions/setup-android@v3
+        with:
+          packages: platform-tools
+          log-accepted-android-sdk-licenses: false
+      - uses: gradle/actions/setup-gradle@v4
+      - name: SDK and host tools
+        run: |
+          sdkmanager 'ndk;25.1.8937393' 'cmake;3.22.1' 'platforms;android-36'
+          echo "$ANDROID_HOME/cmake/3.22.1/bin" >> "$GITHUB_PATH"
+      - run: ./scripts/fetch-vulkan-headers.sh
+      - name: Android unit tests
+        run: ./gradlew --no-daemon testStoreDebugUnitTest
+      - name: Build hackathon APK
+        run: ./gradlew --no-daemon assembleStoreHackathon
+      - name: Evaluation tool tests
+        working-directory: .
+        run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+      - uses: actions/upload-artifact@v4
+        with:
+          name: VoiceMind-hackathon-APK
+          path: src/android/app/build/outputs/apk/store/hackathon/*.apk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: unit-test-reports
+          path: src/android/app/build/reports/tests/
