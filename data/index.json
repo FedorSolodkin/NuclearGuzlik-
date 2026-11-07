@@ -4,27 +4,35 @@
   "ext": "wav",
   "mime": "audio/wav",
   "draft": true,
-  "plain": true
+  "plain": true,
+  "review_draft": "review/r001.candidate.json",
+  "audio_sha256": "1786e0bcd7e6a1ae45e2b5844c374fb0ece9f7b2eefdff7e1664ecf45afc5256"
  },
  {
   "id": "r002",
   "ext": "wav",
   "mime": "audio/wav",
   "draft": true,
-  "plain": true
+  "plain": true,
+  "review_draft": "review/r002.candidate.json",
+  "audio_sha256": "e9fd9f1356527b894457390ec92fefed4a3d6e209614d7b039a144a49388b00e"
  },
  {
   "id": "r003",
   "ext": "wav",
   "mime": "audio/wav",
   "draft": true,
-  "plain": true
+  "plain": true,
+  "review_draft": "review/r003.candidate.json",
+  "audio_sha256": "69f9f771e13d4251a77526500c89e3f81d3d4535f11b97b5388fc6c80ff5f34a"
  },
  {
   "id": "r004",
   "ext": "wav",
   "mime": "audio/wav",
   "draft": true,
-  "plain": true
+  "plain": true,
+  "review_draft": "review/r004.candidate.json",
+  "audio_sha256": "002d535208ce0e851514158e82bd4933f6589b411f4c0d34529b826bb101dbe8"
  }
 ]

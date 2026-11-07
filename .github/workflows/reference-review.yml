@@ -1,0 +1,31 @@
+name: Reference review tools
+on:
+  push:
+    paths:
+      - data/**
+      - index.html
+      - labeler-core.js
+      - tests/**
+      - scripts/**
+      - .github/workflows/reference-review.yml
+  pull_request:
+    paths:
+      - data/**
+      - index.html
+      - labeler-core.js
+      - tests/**
+      - scripts/**
+      - .github/workflows/reference-review.yml
+permissions:
+  contents: read
+jobs:
+  review-tools:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test tests/*.test.cjs
+      - run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
+      - run: python3 scripts/verify_review_corpus.py

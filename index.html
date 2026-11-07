@@ -11,6 +11,8 @@ body{margin:0;font:14px/1.4 -apple-system,Segoe UI,Roboto,sans-serif;background:
 button,select,input,textarea{font:inherit}
 button{border:1px solid var(--line);background:#fff;border-radius:6px;padding:4px 9px;cursor:pointer}
 button:hover{border-color:var(--acc)}
+button:disabled{opacity:.5;cursor:not-allowed}
+#machineReview details[open]{max-height:300px;overflow:auto}
 button.primary{background:var(--acc);color:#fff;border-color:var(--acc)}
 .top{position:sticky;top:0;z-index:5;background:var(--card);border-bottom:1px solid var(--line);padding:10px 14px}
 .bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
@@ -48,13 +50,15 @@ kbd{background:#eef0f4;border:1px solid var(--line);border-radius:4px;padding:0 
     <label class="file">1. Открыть аудио<input type="file" id="audioFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.flac"></label>
     <label class="file">2. Открыть черновик .json (необязательно)<input type="file" id="jsonFile" accept=".json,application/json"></label>
     <span class="sp"></span>
-    <button class="primary" id="btnExport">Скачать эталон .json</button>
+    <button id="btnExportDraft">Скачать черновик .json</button>
+    <button class="primary" id="btnExport" disabled>Скачать проверенную разметку .json</button>
   </div>
   <div class="bar" id="lib" style="display:none">
     <b>Записи:</b>
     <select id="rec"></select>
     <input type="password" id="pw" placeholder="пароль" style="width:140px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
     <button class="primary" id="btnOpenRec">Открыть запись</button>
+    <button id="btnCandidate" style="display:none">Загрузить новый модельный черновик</button>
     <span class="small">разметка автосохраняется в браузере, по готовности скачай .json и пришли</span>
   </div>
   <div class="bar">
@@ -78,17 +82,19 @@ kbd{background:#eef0f4;border:1px solid var(--line);border-radius:4px;padding:0 
       <ol>
         <li>Открой аудио (оно остаётся на твоём компьютере и никуда не загружается). Если есть черновик от модели, открой и его, иначе добавляй реплики кнопкой «+ реплика здесь».</li>
         <li>Слушай, исправляй текст, спикера и границы. Числа пиши <b>словами</b>, без скобок и ремарок. Знаки препинания можно оставить.</li>
-        <li>Разметка сохраняется в браузере автоматически. Закончил: «Скачать эталон .json» и отправь файл владельцу вместе с названием аудио.</li>
+        <li>Разметка сохраняется в браузере автоматически. После прослушивания отметь проверку каждой реплики. Закончил: «Скачать проверенную разметку .json» и отправь файл владельцу вместе с названием аудио.</li>
       </ol>
       <p class="small">Клавиши: <kbd>Alt</kbd>+<kbd>Space</kbd> пауза/пуск (работает и при вводе текста), <kbd>Ctrl</kbd>+<kbd>Enter</kbd> проиграть текущую реплику, <kbd>Alt</kbd>+<kbd>←</kbd>/<kbd>→</kbd> назад/вперёд на 2 с, <kbd>Space</kbd> вне текстовых полей тоже пауза/пуск. Кнопка ⏱ ставит границу на текущее время плеера. «Разрезать» делит реплику по курсору в тексте.</p>
     </details>
   </div>
   <div class="panel" id="info"></div>
+  <div id="machineReview" class="panel" style="display:none"></div>
   <div id="warns" class="panel" style="display:none"></div>
   <div id="list"></div>
 </main>
 <div id="toast"></div>
 
+<script src="labeler-core.js"></script>
 <script>
 const $=s=>document.querySelector(s);
 const COLORS=['#4f8cff','#ff7a59','#2fbf71','#b36bff','#f2b705','#18b8c9','#ee5fa7','#8a8f98'];
@@ -107,36 +113,51 @@ const words=t=>t.trim().split(/\s+/).filter(Boolean).length;
 function toast(m){const t=$('#toast');t.textContent=m;t.classList.add('on');clearTimeout(toast.h);toast.h=setTimeout(()=>t.classList.remove('on'),2200);}
 
 let saveT=null;
-function save(){if(!S.key)return;clearTimeout(saveT);saveT=setTimeout(()=>{
-  try{localStorage.setItem(S.key,JSON.stringify({segs:S.segs.map(({speaker,start,end,text})=>({speaker,start,end,text})),cond:S.cond}));}catch(e){}},300);}
+function persist(){
+  if(!S.key)return;
+  try{localStorage.setItem(S.key,JSON.stringify({segs:S.segs.map(({speaker,start,end,text,reviewed})=>({speaker,start,end,text,reviewed})),cond:S.cond}));}
+  catch(e){toast('Не удалось сохранить разметку в браузере. Скачай черновик, чтобы сохранить правки');}
+}
+function save(){clearTimeout(saveT);saveT=setTimeout(persist,300);}
+addEventListener('beforeunload',persist);
+document.addEventListener('visibilitychange',()=>{if(document.hidden)persist();});
 
 function mkSegs(arr){return arr.map(g=>({id:S.uid++,speaker:g.speaker_id||g.speaker||'speaker_1',
-  start:Math.round(g.start_ms??g.start??0),end:Math.round(g.end_ms??g.end??0),text:String(g.text||'')}));}
+  start:g.start_ms??g.start??0,end:g.end_ms??g.end??0,text:String(g.text||''),reviewed:g.reviewed===true}));}
 
 /* ---------- загрузка ---------- */
+let audioGeneration=0;
 async function loadAudio(f){
-  S.name=f.name.replace(/\.[^.]+$/,'');S.key='vm-label:'+f.name+':'+f.size;
-  audio.src=URL.createObjectURL(f);
+  clearTimeout(saveT);persist();
+  const generation=++audioGeneration;
   try{
+    const bytes=await f.arrayBuffer();
+    const hash=Array.from(new Uint8Array(await crypto.subtle.digest('SHA-256',bytes)),b=>b.toString(16).padStart(2,'0')).join('');
     const ctx=new (window.AudioContext||window.webkitAudioContext)();
-    const ab=await ctx.decodeAudioData(await f.arrayBuffer());ctx.close();
+    let ab;try{ab=await ctx.decodeAudioData(bytes.slice(0));}finally{await ctx.close();}
+    if(generation!==audioGeneration)return false;
+    const oldUrl=audio.src;
+    audio.pause();S.stopAt=null;S.sel=-1;
+    S.name=f.name.replace(/\.[^.]+$/,'');S.key='vm-label:sha256:'+hash;S.audioSha=hash;
+    audio.src=URL.createObjectURL(f);
+    if(oldUrl.startsWith('blob:'))URL.revokeObjectURL(oldUrl);
     S.dur=ab.duration*1000;
     const ch=ab.getChannelData(0),N=3000,bl=Math.max(1,Math.floor(ch.length/N));
     S.peaks=new Float32Array(N);
     for(let i=0;i<N;i++){let m=0;for(let j=i*bl;j<Math.min(ch.length,(i+1)*bl);j++){const v=Math.abs(ch[j]);if(v>m)m=v;}S.peaks[i]=m;}
-  }catch(err){toast('Не удалось прочитать аудио: '+err.message);return;}
-  const saved=localStorage.getItem(S.key);
-  if(saved){const o=JSON.parse(saved);S.segs=mkSegs(o.segs.map(g=>({speaker:g.speaker,start:g.start,end:g.end,text:g.text})));S.cond=o.cond||'clean';toast('Восстановлено автосохранение');}
-  else S.segs=[];
-  render();
-  return true;
+    const current=localStorage.getItem(S.key);
+    const saved=current||localStorage.getItem('vm-label:'+f.name+':'+f.size);
+    if(saved){const o=JSON.parse(saved);S.segs=mkSegs(o.segs.map(g=>({...g,reviewed:current?g.reviewed:false})));S.cond=o.cond||'clean';toast('Восстановлено автосохранение');}
+    else{S.segs=[];S.cond='clean';}
+    render();return true;
+  }catch(err){if(generation===audioGeneration)toast('Не удалось прочитать аудио: '+err.message);return false;}
 }
 $('#audioFile').onchange=e=>{const f=e.target.files[0];if(f)loadAudio(f);};
 function applyDraft(o,ask){
   const arr=Array.isArray(o)?o:o.transcript;
   if(!Array.isArray(arr))throw new Error('нет поля transcript');
   if(ask&&S.segs.length&&!confirm('Заменить текущую разметку содержимым файла?'))return;
-  S.segs=mkSegs(arr);S.segs.sort((a,b)=>a.start-b.start);render();save();toast('Загружено реплик: '+S.segs.length);
+  S.segs=mkSegs(arr).map(g=>({...g,reviewed:false}));S.segs.sort((a,b)=>a.start-b.start);render();save();toast('Загружено реплик: '+S.segs.length);
 }
 $('#jsonFile').onchange=async e=>{
   const f=e.target.files[0];if(!f)return;
@@ -151,7 +172,7 @@ async function decryptBuf(buf,pw){
   const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
   return crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
 }
-let LIB=[];
+let LIB=[],REVIEW=[],libraryGeneration=0;
 async function initLib(){
   try{
     const r=await fetch('data/index.json',{cache:'no-cache'});if(!r.ok)return;
@@ -161,17 +182,21 @@ async function initLib(){
   $('#rec').innerHTML=LIB.map((x,i)=>`<option value="${i}">${esc(x.id)}</option>`).join('');
   $('#pw').value=sessionStorage.getItem('vm-pw')||'';
   if(LIB.every(x=>x.plain))$('#pw').style.display='none';
+  if(LIB.some(x=>x.review_draft))$('#btnCandidate').style.display='';
+  try{const report=await fetch('data/review/review-status.json');if(report.ok)REVIEW=(await report.json()).records;stats();}catch(e){}
 }
 $('#btnOpenRec').onclick=async()=>{
-  const x=LIB[+$('#rec').value],pw=$('#pw').value;
+  const x=LIB[+$('#rec').value],pw=$('#pw').value,ticket=++libraryGeneration,priorAudio=audioGeneration;
   if(!x)return;
   if(x.plain){
     try{
       toast('Загружаю…');
       const ab=await fetch('data/'+x.id+'.'+x.ext).then(r=>{if(!r.ok)throw new Error('нет файла');return r.arrayBuffer();});
+      if(ticket!==libraryGeneration||priorAudio!==audioGeneration)return;
       const ok=await loadAudio(new File([ab],x.id+'.'+x.ext,{type:x.mime||'audio/wav'}));
       if(ok&&!S.segs.length&&x.draft){
-        applyDraft(await fetch('data/'+x.id+'.draft.json').then(r=>r.json()),false);
+        const draft=await fetch('data/'+(x.review_draft||x.id+'.draft.json')).then(r=>{if(!r.ok)throw new Error('нет черновика');return r.json();});
+        if(ticket===libraryGeneration&&S.name===x.id)applyDraft(draft,false);
       }
     }catch(err){toast('Ошибка: '+err.message);}
     return;
@@ -180,13 +205,25 @@ $('#btnOpenRec').onclick=async()=>{
   try{
     toast('Загружаю и расшифровываю…');
     const ab=await decryptBuf(await fetch('data/'+x.id+'.audio.enc').then(r=>{if(!r.ok)throw new Error('нет файла');return r.arrayBuffer();}),pw);
+    if(ticket!==libraryGeneration||priorAudio!==audioGeneration)return;
     sessionStorage.setItem('vm-pw',pw);
     const ok=await loadAudio(new File([ab],x.id+'.'+(x.ext||'wav'),{type:x.mime||'audio/wav'}));
     if(ok&&!S.segs.length&&x.draft){
       const d=await decryptBuf(await fetch('data/'+x.id+'.draft.enc').then(r=>r.arrayBuffer()),pw);
-      applyDraft(JSON.parse(new TextDecoder().decode(d)),false);
+      if(ticket===libraryGeneration&&S.name===x.id)applyDraft(JSON.parse(new TextDecoder().decode(d)),false);
     }
   }catch(err){toast(err.name==='OperationError'?'Неверный пароль':'Ошибка: '+err.message);}
+};
+$('#btnCandidate').onclick=async()=>{
+  const x=LIB[+$('#rec').value];
+  if(!x||!x.review_draft)return toast('Для этой записи нового черновика нет');
+  if(S.name!==x.id||S.audioSha!==x.audio_sha256)return toast('Сначала открой соответствующее аудио');
+  const key=S.key;
+  try{
+    const response=await fetch('data/'+x.review_draft);if(!response.ok)throw new Error('нет файла');
+    const draft=await response.json();if(S.key!==key)return toast('Аудио изменилось, открой черновик снова');
+    applyDraft(draft,true);
+  }catch(err){toast('Ошибка загрузки черновика: '+err.message);}
 };
 initLib();
 
@@ -226,13 +263,14 @@ function render(){
       <button data-a="play">▶ реплика</button><button data-a="split">Разрезать</button><button data-a="merge">Склеить со следующей</button><button data-a="del">Удалить</button>
     </div>
     <textarea data-f="text" rows="2">${esc(g.text)}</textarea>
+    <label class="small"><input type="checkbox" data-f="reviewed" ${g.reviewed?'checked':''}> Прослушано: текст, говорящий и границы проверены</label>
   </div>`).join('')||'<div class="small">Реплик пока нет. Открой черновик или поставь плеер на нужное место и нажми «+ реплика здесь».</div>';
   refresh();
 }
 function refresh(){drawWave();validate();stats();save();}
 
 function validate(){
-  const w=[];let prevStart=-1;
+  const w=LabelerCore.issues(S.segs,S.dur).map(x=>[x.i,`#${x.i+1}: ${x.message}`,1]);let prevStart=-1;
   S.segs.forEach((g,i)=>{
     const n=i+1;
     if(g.start>=g.end)w.push([i,`#${n}: начало не раньше конца`,1]);
@@ -248,12 +286,31 @@ function validate(){
   el.innerHTML=`<b>Замечания (${w.length})</b>`+w.slice(0,40).map(([i,m,b])=>`<div class="warn ${b?'bad':''}" data-go="${i}">${esc(m)}</div>`).join('')+(w.length>40?'<div class="small">… и ещё '+(w.length-40)+'</div>':'');
 }
 function sortedSegs(){return S.segs.slice().sort((a,b)=>a.start-b.start||a.end-b.end);}
-function hasOverlap(){let m=-1;for(const g of sortedSegs()){if(g.start<m)return 1;m=Math.max(m,g.end);}return 0;}
+function hasOverlap(){if(S.segs.some(g=>g.speaker==='overlap'))return 1;let m=-1;for(const g of sortedSegs()){if(g.start<m)return 1;m=Math.max(m,g.end);}return 0;}
+function reviewQueue(){
+  const record=REVIEW.find(x=>x.audio_sha256===S.audioSha),panel=$('#machineReview');
+  if(!record){panel.style.display='none';return;}
+  const opened=panel.querySelector('details')?.open;
+  const names={asr_disagreement_not_a_proven_error:'Модели услышали разное',uncertain_speaker:'Проверь говорящего или наложение',write_numbers_as_spoken_words:'Запиши число словами'};
+  panel.style.display='';
+  panel.innerHTML=`<details ${opened?'open':''}><summary>Места для повторного прослушивания (${record.review_queue.length})</summary>
+    <p class="small">Это подсказки моделей. Для эталона нужно прослушать всю запись.</p>
+    ${record.speakers_in_original_draft!==record.acoustic_clusters?'<p class="warn">Оценки числа голосов расходятся: исходный черновик '+record.speakers_in_original_draft+', новая диаризация '+record.acoustic_clusters+'. Проверь всех участников.</p>':''}
+    ${record.review_queue.map(x=>`<p><button data-review-ms="${x.start_ms}">${fmt(x.start_ms)} с</button> ${esc(names[x.reason]||x.reason)}
+    ${x.large_v3||x.podlodka?`<span class="small">large-v3: «${esc(x.large_v3||'∅')}» · podlodka: «${esc(x.podlodka||'∅')}»</span>`:''}</p>`).join('')}
+    </details>`;
+}
+$('#machineReview').addEventListener('click',e=>{const button=e.target.closest('[data-review-ms]');if(button){S.stopAt=null;audio.currentTime=Math.max(0,(Number(button.dataset.reviewMs)-1000)/1000);}});
 function stats(){
-  const nsp=new Set(S.segs.map(g=>g.speaker)).size,nw=S.segs.reduce((a,g)=>a+words(g.text),0);
+  reviewQueue();
+  const nsp=new Set(S.segs.map(g=>g.speaker).filter(x=>/^speaker_[1-9]\d*$/.test(x))).size,nw=S.segs.reduce((a,g)=>a+words(g.text),0);
   const id=S.name||'r001';
   const row=[id,nsp,S.cond,(S.dur/1000).toFixed(1),nw,'real',hasOverlap(),'real'].join(',');
+  const reviewed=S.segs.filter(g=>g.reviewed).length;
+  $('#btnExport').disabled=!LabelerCore.ready(S.segs,S.dur);
   $('#info').innerHTML=`<div class="grid">
+    <span>Проверено по аудио: <b>${reviewed} / ${S.segs.length}</b></span>
+    <span>Реплик с неясным голосом или наложением: <b>${S.segs.filter(g=>['unknown','overlap'].includes(g.speaker)).length}</b></span>
     <span>Реплик: <b>${S.segs.length}</b></span><span>Говорящих: <b>${nsp}</b></span><span>Слов: <b>${nw}</b></span>
     <span>Длина: <b>${(S.dur/1000).toFixed(1)} с</b></span><span>Перебивания: <b>${hasOverlap()?'есть':'нет'}</b></span>
     <label>условие записи <select id="cond">${COND.map(c=>`<option ${c===S.cond?'selected':''}>${c}</option>`).join('')}</select></label>
@@ -266,15 +323,17 @@ function stats(){
 }
 
 /* ---------- события списка ---------- */
+function revokeReview(g,row){g.reviewed=false;const check=row&&row.querySelector('[data-f=reviewed]');if(check)check.checked=false;}
 const list=$('#list');
 list.addEventListener('input',e=>{
   const row=e.target.closest('.row');if(!row)return;const g=S.segs[+row.dataset.i],f=e.target.dataset.f;
-  if(f==='text'){g.text=e.target.value;validate();stats();save();}
-  else if(f==='start'||f==='end'){const v=parseTime(e.target.value);if(!isNaN(v)){g[f]=v;refresh();}}
+  if(f==='text'){revokeReview(g,row);g.text=e.target.value;validate();stats();save();}
+  else if(f==='start'||f==='end'){revokeReview(g,row);const v=parseTime(e.target.value);if(Number.isFinite(v)){g[f]=v;refresh();}else{stats();save();}}
 });
 list.addEventListener('change',e=>{
   const row=e.target.closest('.row');if(!row)return;const g=S.segs[+row.dataset.i];
-  if(e.target.dataset.f==='speaker'){g.speaker=e.target.value;render();}
+  if(e.target.dataset.f==='reviewed'){g.reviewed=e.target.checked;stats();save();}
+  if(e.target.dataset.f==='speaker'){revokeReview(g,row);g.speaker=e.target.value;render();}
   if(e.target.dataset.f==='start'||e.target.dataset.f==='end'){e.target.value=fmt(g[e.target.dataset.f]);}
 });
 list.addEventListener('focusin',e=>{
@@ -285,6 +344,7 @@ list.addEventListener('click',e=>{
   const b=e.target.closest('button');if(!b)return;
   const row=b.closest('.row'),i=+row.dataset.i,g=S.segs[i],a=b.dataset.a,now=Math.round(audio.currentTime*1000);
   S.sel=i;
+  if(a!=='play'){revokeReview(g,row);stats();save();}
   if(a==='play')playSeg(g);
   else if(a==='ns-'||a==='ns+'){g.start=Math.max(0,g.start+(a==='ns+'?100:-100));render();}
   else if(a==='ne-'||a==='ne+'){g.end=Math.max(0,g.end+(a==='ne+'?100:-100));render();}
@@ -292,9 +352,11 @@ list.addEventListener('click',e=>{
   else if(a==='te'){g.end=now;render();}
   else if(a==='del'){S.segs.splice(i,1);S.sel=-1;render();}
   else if(a==='merge'){const n=S.segs[i+1];if(!n)return toast('Это последняя реплика');
+    if(n.speaker!==g.speaker)return toast('Склеивать можно только реплики одного говорящего');
     g.end=Math.max(g.end,n.end);g.text=(g.text.trim()+' '+n.text.trim()).trim();S.segs.splice(i+1,1);render();}
   else if(a==='split'){
-    const ta=row.querySelector('textarea'),caret=ta===document.activeElement?ta.selectionStart:g.text.length>>1;
+    const ta=row.querySelector('textarea'),caret=ta.selectionStart;
+    if(caret<=0||caret>=g.text.length)return toast('Поставь курсор внутри текста перед разрезанием');
     const a1=g.text.slice(0,caret).trim(),b1=g.text.slice(caret).trim();
     let at=(now>g.start+50&&now<g.end-50)?now:Math.round(g.start+(g.end-g.start)*caret/Math.max(1,g.text.length));
     S.segs.splice(i,1,{...g,end:at,text:a1},{...g,id:S.uid++,start:at,text:b1});render();}
@@ -348,18 +410,17 @@ document.addEventListener('keydown',e=>{
 });
 
 /* ---------- экспорт ---------- */
-$('#btnExport').onclick=()=>{
-  if(!S.segs.length)return toast('Нет реплик');
-  const bad=S.segs.some(g=>g.start>=g.end||!g.text.trim());
-  if(bad&&!confirm('Есть реплики с пустым текстом или неверным временем. Всё равно скачать?'))return;
-  const segs=sortedSegs(),map={};let n=0;
-  for(const g of segs){if(!(g.speaker in map))map[g.speaker]='speaker_'+(++n);}
-  const out={transcript:segs.map(g=>({speaker_id:map[g.speaker],start_ms:g.start,end_ms:g.end,text:g.text.trim().replace(/\s+/g,' ')}))};
+function exportJson(verified){
+  let out;
+  try{out=LabelerCore.transcript(S.segs,S.dur,verified);}catch(err){return toast(err.message);}
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([JSON.stringify(out,null,1)],{type:'application/json'}));
-  a.download=(S.name||'ref')+'.json';a.click();
-  toast('Скачано: '+a.download+' (спикеры перенумерованы по порядку появления)');
-};
+  const url=URL.createObjectURL(new Blob([JSON.stringify(out,null,1)],{type:'application/json'}));
+  a.href=url;a.download=(S.name||'ref')+(verified?'.reference.json':'.draft.json');a.click();
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+  toast('Скачано: '+a.download);
+}
+$('#btnExport').onclick=()=>exportJson(true);
+$('#btnExportDraft').onclick=()=>exportJson(false);
 stats();render();
 </script>
 </body>

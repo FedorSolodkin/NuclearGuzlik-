@@ -1,0 +1,1704 @@
+{
+  "records": [
+    {
+      "id": "r001",
+      "status": "machine_candidate_requires_full_human_listening",
+      "audio_sha256": "1786e0bcd7e6a1ae45e2b5844c374fb0ece9f7b2eefdff7e1664ecf45afc5256",
+      "audio_ms": 210233,
+      "candidate_sha256": "3e2f36281f3f0972f85fb5e1da326adc9602387a53a661d9e5b1c437e88cd090",
+      "manually_verified": false,
+      "reviewed_by": [],
+      "reviewed_ms": 0,
+      "speakers_in_original_draft": 2,
+      "acoustic_clusters": 3,
+      "primary_model": "Whisper large-v3 q5_0",
+      "primary_model_sha256": "d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1",
+      "secondary_model": "Whisper podlodka turbo q4_0",
+      "asr_disagreements": 27,
+      "review_items": 54,
+      "time_adjustments": [
+        {
+          "word": 161,
+          "original": [
+            52490,
+            52490
+          ],
+          "candidate": [
+            52490,
+            52491
+          ]
+        },
+        {
+          "word": 273,
+          "original": [
+            91000,
+            91000
+          ],
+          "candidate": [
+            91000,
+            91001
+          ]
+        },
+        {
+          "word": 494,
+          "original": [
+            172140,
+            172140
+          ],
+          "candidate": [
+            172140,
+            172141
+          ]
+        },
+        {
+          "word": 495,
+          "original": [
+            172140,
+            172140
+          ],
+          "candidate": [
+            172140,
+            172141
+          ]
+        }
+      ],
+      "review_queue": [
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 680,
+          "end_ms": 850,
+          "large_v3": "вот",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 4220,
+          "end_ms": 4860,
+          "large_v3": "",
+          "podlodka": "ой так"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 15150,
+          "end_ms": 16580,
+          "large_v3": "неплохие",
+          "podlodka": "на плохие лет"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 2,
+          "start_ms": 15170,
+          "end_ms": 16910
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 24760,
+          "end_ms": 25150,
+          "large_v3": "",
+          "podlodka": "ну вот"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 6,
+          "start_ms": 25120,
+          "end_ms": 26050
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 26650,
+          "end_ms": 28330,
+          "large_v3": "",
+          "podlodka": "да из за того что они работали как бы вот"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 8,
+          "start_ms": 34500,
+          "end_ms": 34980
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 10,
+          "start_ms": 36300,
+          "end_ms": 36450
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 39260,
+          "end_ms": 40160,
+          "large_v3": "клетчатка",
+          "podlodka": "клетчатые"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 40970,
+          "end_ms": 42490,
+          "large_v3": "такие рабочие вайбы",
+          "podlodka": "такая рабочая вайба"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 42560,
+          "end_ms": 42690,
+          "large_v3": "но",
+          "podlodka": "ну"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 47640,
+          "end_ms": 48020,
+          "large_v3": "ну да",
+          "podlodka": ""
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 13,
+          "start_ms": 57000,
+          "end_ms": 57780
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 65620,
+          "end_ms": 66100,
+          "large_v3": "когда",
+          "podlodka": ""
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 15,
+          "start_ms": 65620,
+          "end_ms": 66720
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 16,
+          "start_ms": 66720,
+          "end_ms": 80590
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 78130,
+          "end_ms": 78200,
+          "large_v3": "и",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 79530,
+          "end_ms": 80280,
+          "large_v3": "100",
+          "podlodka": "сто процентов"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 93390,
+          "end_ms": 93680,
+          "large_v3": "",
+          "podlodka": "у"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 18,
+          "start_ms": 96450,
+          "end_ms": 97430
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 99540,
+          "end_ms": 100040,
+          "large_v3": "жиган",
+          "podlodka": "жига"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 105810,
+          "end_ms": 106520,
+          "large_v3": "",
+          "podlodka": "я не помню"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 113800,
+          "end_ms": 114800,
+          "large_v3": "что бы",
+          "podlodka": "чтобы"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 20,
+          "start_ms": 118940,
+          "end_ms": 119000
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 22,
+          "start_ms": 121000,
+          "end_ms": 121290
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 23,
+          "start_ms": 121290,
+          "end_ms": 127840
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 24,
+          "start_ms": 127840,
+          "end_ms": 129020
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 26,
+          "start_ms": 133980,
+          "end_ms": 134380
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 28,
+          "start_ms": 138320,
+          "end_ms": 140220
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 30,
+          "start_ms": 142220,
+          "end_ms": 142890
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 31,
+          "start_ms": 142890,
+          "end_ms": 143920
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 33,
+          "start_ms": 144970,
+          "end_ms": 145690
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 35,
+          "start_ms": 147640,
+          "end_ms": 148030
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 37,
+          "start_ms": 151120,
+          "end_ms": 151690
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 153980,
+          "end_ms": 154140,
+          "large_v3": "",
+          "podlodka": "да"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 154230,
+          "end_ms": 154610,
+          "large_v3": "мне",
+          "podlodka": "у меня"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 39,
+          "start_ms": 156620,
+          "end_ms": 156760
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 158520,
+          "end_ms": 159400,
+          "large_v3": "так",
+          "podlodka": ""
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 41,
+          "start_ms": 161390,
+          "end_ms": 162600
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 161910,
+          "end_ms": 162600,
+          "large_v3": "вал",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 166060,
+          "end_ms": 167300,
+          "large_v3": "связано улица",
+          "podlodka": "связан на улице"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 172140,
+          "end_ms": 173240,
+          "large_v3": "да сучевский вал",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 178260,
+          "end_ms": 179280,
+          "large_v3": "пугает",
+          "podlodka": "пугающе звучит"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 43,
+          "start_ms": 178260,
+          "end_ms": 179100
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 45,
+          "start_ms": 179530,
+          "end_ms": 179830
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 46,
+          "start_ms": 179830,
+          "end_ms": 186040
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 181050,
+          "end_ms": 182380,
+          "large_v3": "извиняюсь",
+          "podlodka": "единственное"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 181420,
+          "end_ms": 185200,
+          "large_v3": "трешка сучевский вал 2009 год",
+          "podlodka": "да"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 47,
+          "start_ms": 186040,
+          "end_ms": 186370
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 193130,
+          "end_ms": 193610,
+          "large_v3": "ты",
+          "podlodka": "то"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 49,
+          "start_ms": 196380,
+          "end_ms": 196600
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 51,
+          "start_ms": 201180,
+          "end_ms": 201420
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 208740,
+          "end_ms": 210200,
+          "large_v3": "так тогда ответь мне",
+          "podlodka": ""
+        }
+      ]
+    },
+    {
+      "id": "r002",
+      "status": "machine_candidate_requires_full_human_listening",
+      "audio_sha256": "e9fd9f1356527b894457390ec92fefed4a3d6e209614d7b039a144a49388b00e",
+      "audio_ms": 139180,
+      "candidate_sha256": "75843d8d63cce7e4c24f644e29e4f5721ee9787276a7b4f5b3355b51c2d3d1a6",
+      "manually_verified": false,
+      "reviewed_by": [],
+      "reviewed_ms": 0,
+      "speakers_in_original_draft": 3,
+      "acoustic_clusters": 1,
+      "primary_model": "Whisper large-v3 q5_0",
+      "primary_model_sha256": "d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1",
+      "secondary_model": "Whisper podlodka turbo q4_0",
+      "asr_disagreements": 38,
+      "review_items": 51,
+      "time_adjustments": [],
+      "review_queue": [
+        {
+          "reason": "uncertain_speaker",
+          "turn": 2,
+          "start_ms": 2250,
+          "end_ms": 6650
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 7780,
+          "end_ms": 7940,
+          "large_v3": "",
+          "podlodka": "что"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 12260,
+          "end_ms": 14040,
+          "large_v3": "дошнул мастер набор",
+          "podlodka": "даже ну мостонабор"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 15400,
+          "end_ms": 15590,
+          "large_v3": "вот",
+          "podlodka": "мы"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 15830,
+          "end_ms": 16500,
+          "large_v3": "было ты же",
+          "podlodka": "блядь тоже ж"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 17340,
+          "end_ms": 17670,
+          "large_v3": "",
+          "podlodka": "как бы"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 25450,
+          "end_ms": 25950,
+          "large_v3": "оттут",
+          "podlodka": "вот тут"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 25950,
+          "end_ms": 26260,
+          "large_v3": "все",
+          "podlodka": "ся"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 27400,
+          "end_ms": 27600,
+          "large_v3": "",
+          "podlodka": "вам"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 29880,
+          "end_ms": 29990,
+          "large_v3": "не",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 31140,
+          "end_ms": 31800,
+          "large_v3": "",
+          "podlodka": "вам не буду"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 31250,
+          "end_ms": 31940,
+          "large_v3": "буду",
+          "podlodka": "вам"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 33260,
+          "end_ms": 35770,
+          "large_v3": "",
+          "podlodka": "да потому там я по нахуй эти бабки"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 4,
+          "start_ms": 33840,
+          "end_ms": 35150
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 5,
+          "start_ms": 35150,
+          "end_ms": 55880
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 39110,
+          "end_ms": 39530,
+          "large_v3": "",
+          "podlodka": "блядь"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 41840,
+          "end_ms": 42310,
+          "large_v3": "божай",
+          "podlodka": "божаю"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 49450,
+          "end_ms": 49620,
+          "large_v3": "",
+          "podlodka": "и"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 52200,
+          "end_ms": 52760,
+          "large_v3": "12",
+          "podlodka": "двенадцать"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 57860,
+          "end_ms": 60700,
+          "large_v3": "шо",
+          "podlodka": "что"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 6,
+          "start_ms": 59460,
+          "end_ms": 78110
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 61140,
+          "end_ms": 62940,
+          "large_v3": "себе",
+          "podlodka": "тебе"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 62580,
+          "end_ms": 64820,
+          "large_v3": "о все",
+          "podlodka": "что"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 67870,
+          "end_ms": 68060,
+          "large_v3": "вот",
+          "podlodka": "и он"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 69440,
+          "end_ms": 69970,
+          "large_v3": "и",
+          "podlodka": "не п ь"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 70610,
+          "end_ms": 71640,
+          "large_v3": "последние файлы",
+          "podlodka": "последовая файта"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 72370,
+          "end_ms": 72690,
+          "large_v3": "вот",
+          "podlodka": "и он"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 73270,
+          "end_ms": 77720,
+          "large_v3": "у нас файлы подготовился ну шо",
+          "podlodka": "он нахуй где он на сформу бабка в доме подотовился но что"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 78130,
+          "end_ms": 80240,
+          "large_v3": "зукорадники ну шо вы",
+          "podlodka": "зубаратные кино шоу"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 80160,
+          "end_ms": 81540,
+          "large_v3": "подготовился",
+          "podlodka": "подотовился"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 82940,
+          "end_ms": 84280,
+          "large_v3": "нахуй",
+          "podlodka": "ха ха ха ха"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 8,
+          "start_ms": 83440,
+          "end_ms": 85040
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 84540,
+          "end_ms": 85850,
+          "large_v3": "жлобу",
+          "podlodka": "слову"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 10,
+          "start_ms": 85240,
+          "end_ms": 88360
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 88200,
+          "end_ms": 89290,
+          "large_v3": "шо",
+          "podlodka": "что"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 89180,
+          "end_ms": 90550,
+          "large_v3": "злой",
+          "podlodka": "свой"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 12,
+          "start_ms": 89180,
+          "end_ms": 89810
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 14,
+          "start_ms": 92510,
+          "end_ms": 96420
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 93540,
+          "end_ms": 93710,
+          "large_v3": "",
+          "podlodka": "т"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 94690,
+          "end_ms": 94850,
+          "large_v3": "",
+          "podlodka": "не"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 16,
+          "start_ms": 101580,
+          "end_ms": 101940
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 101940,
+          "end_ms": 102880,
+          "large_v3": "раз раз раз бы",
+          "podlodka": "ассас быструю"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 103770,
+          "end_ms": 104280,
+          "large_v3": "не",
+          "podlodka": "нет"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 18,
+          "start_ms": 105670,
+          "end_ms": 106420
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 20,
+          "start_ms": 107960,
+          "end_ms": 109810
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 114310,
+          "end_ms": 115200,
+          "large_v3": "массонабор",
+          "podlodka": "москанабор"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 117420,
+          "end_ms": 119000,
+          "large_v3": "сделал а",
+          "podlodka": "отждел я насрано"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 22,
+          "start_ms": 125060,
+          "end_ms": 133060
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 126390,
+          "end_ms": 127620,
+          "large_v3": "погоди",
+          "podlodka": "пацаны"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 134960,
+          "end_ms": 136720,
+          "large_v3": "сгибал",
+          "podlodka": "заебал"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 24,
+          "start_ms": 136080,
+          "end_ms": 138960
+        }
+      ]
+    },
+    {
+      "id": "r003",
+      "status": "machine_candidate_requires_full_human_listening",
+      "audio_sha256": "69f9f771e13d4251a77526500c89e3f81d3d4535f11b97b5388fc6c80ff5f34a",
+      "audio_ms": 252421,
+      "candidate_sha256": "c0ffbf157790e3e01433d60b8d8b791e159ada65ad2606be56f48888ecfdb40c",
+      "manually_verified": false,
+      "reviewed_by": [],
+      "reviewed_ms": 0,
+      "speakers_in_original_draft": 2,
+      "acoustic_clusters": 2,
+      "primary_model": "Whisper large-v3 q5_0",
+      "primary_model_sha256": "d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1",
+      "secondary_model": "Whisper podlodka turbo q4_0",
+      "asr_disagreements": 28,
+      "review_items": 57,
+      "time_adjustments": [
+        {
+          "word": 190,
+          "original": [
+            74450,
+            74450
+          ],
+          "candidate": [
+            74450,
+            74451
+          ]
+        },
+        {
+          "word": 300,
+          "original": [
+            120120,
+            120120
+          ],
+          "candidate": [
+            120120,
+            120121
+          ]
+        },
+        {
+          "word": 313,
+          "original": [
+            124100,
+            124100
+          ],
+          "candidate": [
+            124100,
+            124101
+          ]
+        }
+      ],
+      "review_queue": [
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 6400,
+          "end_ms": 10400,
+          "large_v3": "мы вам планом никаких не ставим",
+          "podlodka": "ну мне нужно"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 2,
+          "start_ms": 6480,
+          "end_ms": 8040
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 3,
+          "start_ms": 8040,
+          "end_ms": 9020
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 11120,
+          "end_ms": 12810,
+          "large_v3": "объезд я вам",
+          "podlodka": "объяснить ну как бы"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 6,
+          "start_ms": 11180,
+          "end_ms": 12130
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 13610,
+          "end_ms": 15000,
+          "large_v3": "зарабатывают",
+          "podlodka": "зарабатывать"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 8,
+          "start_ms": 16060,
+          "end_ms": 16360
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 9,
+          "start_ms": 16360,
+          "end_ms": 28060
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 20160,
+          "end_ms": 21240,
+          "large_v3": "от продаж",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 23300,
+          "end_ms": 25280,
+          "large_v3": "произвести",
+          "podlodka": "провести"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 30020,
+          "end_ms": 30330,
+          "large_v3": "ну",
+          "podlodka": ""
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 11,
+          "start_ms": 33760,
+          "end_ms": 33850
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 12,
+          "start_ms": 33850,
+          "end_ms": 42020
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 13,
+          "start_ms": 42020,
+          "end_ms": 42200
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 14,
+          "start_ms": 42200,
+          "end_ms": 44070
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 15,
+          "start_ms": 44070,
+          "end_ms": 70460
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 55640,
+          "end_ms": 56520,
+          "large_v3": "единственное",
+          "podlodka": "неизвестно"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 16,
+          "start_ms": 70460,
+          "end_ms": 70840
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 18,
+          "start_ms": 72270,
+          "end_ms": 72620
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 20,
+          "start_ms": 74450,
+          "end_ms": 75270
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 75060,
+          "end_ms": 75270,
+          "large_v3": "каком",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 75160,
+          "end_ms": 75250,
+          "large_v3": "",
+          "podlodka": "ну"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 22,
+          "start_ms": 76010,
+          "end_ms": 77820
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 24,
+          "start_ms": 78410,
+          "end_ms": 79290
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 25,
+          "start_ms": 79290,
+          "end_ms": 102960
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 84040,
+          "end_ms": 84760,
+          "large_v3": "это",
+          "podlodka": "мальчик тут"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 86650,
+          "end_ms": 87460,
+          "large_v3": "первые месяцы",
+          "podlodka": "первом месяце"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 103520,
+          "end_ms": 104040,
+          "large_v3": "же",
+          "podlodka": "сейчас"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 27,
+          "start_ms": 106350,
+          "end_ms": 107760
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 29,
+          "start_ms": 119060,
+          "end_ms": 120120
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 30,
+          "start_ms": 120120,
+          "end_ms": 136830
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 120320,
+          "end_ms": 121260,
+          "large_v3": "чуть чуть нервничаете",
+          "podlodka": "нервничайте"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 31,
+          "start_ms": 136830,
+          "end_ms": 136900
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 32,
+          "start_ms": 136900,
+          "end_ms": 159930
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 146340,
+          "end_ms": 146860,
+          "large_v3": "",
+          "podlodka": "процентов"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 150920,
+          "end_ms": 151530,
+          "large_v3": "",
+          "podlodka": "процентов"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 152520,
+          "end_ms": 152980,
+          "large_v3": "",
+          "podlodka": "процентов"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 155020,
+          "end_ms": 155720,
+          "large_v3": "",
+          "podlodka": "процента"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 33,
+          "start_ms": 159930,
+          "end_ms": 160770
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 160700,
+          "end_ms": 161800,
+          "large_v3": "у нас 5",
+          "podlodka": "15 процентов"
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 34,
+          "start_ms": 160770,
+          "end_ms": 205050
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 167180,
+          "end_ms": 168260,
+          "large_v3": "",
+          "podlodka": "по это"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 173580,
+          "end_ms": 175010,
+          "large_v3": "",
+          "podlodka": "как"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 177460,
+          "end_ms": 178800,
+          "large_v3": "говорите от 50 если вы",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 181680,
+          "end_ms": 182720,
+          "large_v3": "рассчитывает",
+          "podlodka": "рассчитывается"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 196200,
+          "end_ms": 196520,
+          "large_v3": "хорошо",
+          "podlodka": "больше"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 204960,
+          "end_ms": 206110,
+          "large_v3": "вы",
+          "podlodka": "ну"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 35,
+          "start_ms": 205050,
+          "end_ms": 205830
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 206850,
+          "end_ms": 208140,
+          "large_v3": "нравится и",
+          "podlodka": "нравятся"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 210820,
+          "end_ms": 211450,
+          "large_v3": "забегаете",
+          "podlodka": "забегайте"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 37,
+          "start_ms": 211840,
+          "end_ms": 213120
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 39,
+          "start_ms": 214670,
+          "end_ms": 215470
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 40,
+          "start_ms": 215470,
+          "end_ms": 218500
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 217910,
+          "end_ms": 218500,
+          "large_v3": "6",
+          "podlodka": "шесть"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 41,
+          "start_ms": 218500,
+          "end_ms": 218810
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 43,
+          "start_ms": 221770,
+          "end_ms": 222510
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 223280,
+          "end_ms": 223350,
+          "large_v3": "я",
+          "podlodka": ""
+        }
+      ]
+    },
+    {
+      "id": "r004",
+      "status": "machine_candidate_requires_full_human_listening",
+      "audio_sha256": "002d535208ce0e851514158e82bd4933f6589b411f4c0d34529b826bb101dbe8",
+      "audio_ms": 131631,
+      "candidate_sha256": "4951708f42e265420b0619f45901fce4c2c61baa68dcfd4159f0ce87eb81f70e",
+      "manually_verified": false,
+      "reviewed_by": [],
+      "reviewed_ms": 0,
+      "speakers_in_original_draft": 3,
+      "acoustic_clusters": 3,
+      "primary_model": "Whisper large-v3 q5_0",
+      "primary_model_sha256": "d75795ecff3f83b5faa89d1900604ad8c780abd5739fae406de19f23ecd98ad1",
+      "secondary_model": "Whisper podlodka turbo q4_0",
+      "asr_disagreements": 32,
+      "review_items": 50,
+      "time_adjustments": [
+        {
+          "word": 166,
+          "original": [
+            58480,
+            58480
+          ],
+          "candidate": [
+            58480,
+            58481
+          ]
+        },
+        {
+          "word": 167,
+          "original": [
+            58480,
+            58480
+          ],
+          "candidate": [
+            58480,
+            58481
+          ]
+        },
+        {
+          "word": 237,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 238,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 239,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 240,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 241,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 242,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 243,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 244,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 245,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 246,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        },
+        {
+          "word": 247,
+          "original": [
+            84200,
+            84200
+          ],
+          "candidate": [
+            84200,
+            84201
+          ]
+        }
+      ],
+      "review_queue": [
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 1270,
+          "end_ms": 1810,
+          "large_v3": "позвоню он",
+          "podlodka": "позвонил"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 2,
+          "start_ms": 2150,
+          "end_ms": 3170
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 2990,
+          "end_ms": 4040,
+          "large_v3": "там проверяется",
+          "podlodka": "он проверяет за"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 6660,
+          "end_ms": 6970,
+          "large_v3": "",
+          "podlodka": "там"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 9980,
+          "end_ms": 10500,
+          "large_v3": "все равно",
+          "podlodka": "что ему"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 4,
+          "start_ms": 11380,
+          "end_ms": 11540
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 6,
+          "start_ms": 12330,
+          "end_ms": 13010
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 8,
+          "start_ms": 13700,
+          "end_ms": 13920
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 15650,
+          "end_ms": 16540,
+          "large_v3": "везде",
+          "podlodka": "визит"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 10,
+          "start_ms": 16660,
+          "end_ms": 17070
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 18090,
+          "end_ms": 19010,
+          "large_v3": "",
+          "podlodka": "с точки зрения как"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 12,
+          "start_ms": 19410,
+          "end_ms": 21620
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 23800,
+          "end_ms": 24800,
+          "large_v3": "заполнения",
+          "podlodka": "запомнил"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 30140,
+          "end_ms": 30720,
+          "large_v3": "угрожал",
+          "podlodka": "выражал"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 32930,
+          "end_ms": 33440,
+          "large_v3": "есть но",
+          "podlodka": "весьма"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 35310,
+          "end_ms": 35410,
+          "large_v3": "",
+          "podlodka": "мы"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 14,
+          "start_ms": 38280,
+          "end_ms": 38710
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 40930,
+          "end_ms": 41620,
+          "large_v3": "осуществляют",
+          "podlodka": "осуществляю"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 16,
+          "start_ms": 41620,
+          "end_ms": 42070
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 44110,
+          "end_ms": 45050,
+          "large_v3": "торонова",
+          "podlodka": "тороного"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 50310,
+          "end_ms": 50360,
+          "large_v3": "и",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 52890,
+          "end_ms": 53100,
+          "large_v3": "",
+          "podlodka": "и"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 55770,
+          "end_ms": 56000,
+          "large_v3": "",
+          "podlodka": "это"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 64100,
+          "end_ms": 64620,
+          "large_v3": "ну новое",
+          "podlodka": "но"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 67400,
+          "end_ms": 68380,
+          "large_v3": "представляете",
+          "podlodka": "представляетесь"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 70530,
+          "end_ms": 71560,
+          "large_v3": "взыскиваете",
+          "podlodka": "взыскиваетесь"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 21,
+          "start_ms": 75400,
+          "end_ms": 75720
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 23,
+          "start_ms": 77010,
+          "end_ms": 77590
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 25,
+          "start_ms": 78460,
+          "end_ms": 78760
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 81620,
+          "end_ms": 82650,
+          "large_v3": "регулируем вопрос до",
+          "podlodka": "урегулируем вопросы"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 84200,
+          "end_ms": 86290,
+          "large_v3": "подаем",
+          "podlodka": "подавим"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 85730,
+          "end_ms": 85830,
+          "large_v3": "",
+          "podlodka": "но"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 89800,
+          "end_ms": 90800,
+          "large_v3": "арестовывать",
+          "podlodka": "арестовать"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 96370,
+          "end_ms": 96420,
+          "large_v3": "",
+          "podlodka": "в"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 97210,
+          "end_ms": 97260,
+          "large_v3": "",
+          "podlodka": "и"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 98540,
+          "end_ms": 99580,
+          "large_v3": "должен заплатить",
+          "podlodka": "два раза платить"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 101070,
+          "end_ms": 101520,
+          "large_v3": "ты",
+          "podlodka": "и"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 101380,
+          "end_ms": 102390,
+          "large_v3": "к приставу",
+          "podlodka": "в приставы"
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 102810,
+          "end_ms": 102870,
+          "large_v3": "в",
+          "podlodka": ""
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 29,
+          "start_ms": 103290,
+          "end_ms": 104940
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 108340,
+          "end_ms": 108500,
+          "large_v3": "да",
+          "podlodka": ""
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 110060,
+          "end_ms": 110110,
+          "large_v3": "",
+          "podlodka": "и"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 33,
+          "start_ms": 114440,
+          "end_ms": 116220
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 35,
+          "start_ms": 116800,
+          "end_ms": 118820
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 123500,
+          "end_ms": 123500,
+          "large_v3": "",
+          "podlodka": "там это типа да"
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 37,
+          "start_ms": 123810,
+          "end_ms": 124740
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 39,
+          "start_ms": 125490,
+          "end_ms": 126740
+        },
+        {
+          "reason": "uncertain_speaker",
+          "turn": 41,
+          "start_ms": 129600,
+          "end_ms": 130330
+        },
+        {
+          "reason": "write_numbers_as_spoken_words",
+          "turn": 42,
+          "start_ms": 130330,
+          "end_ms": 131620
+        },
+        {
+          "reason": "asr_disagreement_not_a_proven_error",
+          "start_ms": 131040,
+          "end_ms": 131620,
+          "large_v3": "звонков",
+          "podlodka": ""
+        }
+      ]
+    }
+  ]
+}
