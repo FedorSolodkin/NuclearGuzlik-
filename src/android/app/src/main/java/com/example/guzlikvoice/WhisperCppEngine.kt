@@ -295,6 +295,8 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
     }
 
     private fun findModel(): File? {
+        if (BuildConfig.CONTEST_BUILD) return File(context.filesDir, PODLODKA_TURBO_FILE)
+            .takeIf { it.isFile && it.length() > PODLODKA_TURBO_MIN_BYTES }
         // Новая q4_0 скачана — старая q5_0 (574 МБ) больше не нужна.
         val q4 = File(context.filesDir, PODLODKA_TURBO_FILE)
         val q5 = File(context.filesDir, PODLODKA_TURBO_Q5_0_FILE)

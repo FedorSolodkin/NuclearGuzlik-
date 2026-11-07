@@ -12,10 +12,10 @@ Android-приложение для локальной расшифровки р
 
 ## Запуск для экспертов
 
-1. Установите APK из [artifacts/apk](artifacts/apk/). Android 8+, ARM64.
-2. **До проверки** подготовьте модели: распознавание «Точно», голоса, Silero VAD,
-   pyannote и Gemma. Первоначальное скачивание требует интернета; модели можно
-   импортировать с диска через настройки. Подробнее: [INSTALL](docs/INSTALL.md).
+1. Установите **[единственную конкурсную APK 4.0.8 со встроенными моделями](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/contest-offline-v4.0.8)**. Android 8+, ARM64.
+2. При первом запуске дождитесь извлечения встроенных моделей. Интернет и отдельные
+   файлы моделей не нужны. В этой APK закреплены точный Whisper podlodka и Gemma 2B ru90k;
+   быстрых и альтернативных моделей в выборе нет. [Подробности](docs/CONTEST_APK.md).
 3. Включите авиарежим. В истории выберите «Расшифровать аудиофайл» и свой файл.
 4. Дождитесь текста. Откройте карточку → функции записи → разделение по голосам →
    **«Не знаю — определить автоматически»**. Дождитесь результата.
@@ -47,17 +47,19 @@ Android-приложение для локальной расшифровки р
 
 **Статус:** это рабочая подготовка конкурсной версии. Название Ultra Pro Max
 не является заявлением об идеальной точности: [LIMITATIONS](docs/LIMITATIONS.md).
-Перед окончательной сдачей нужны сквозной прогон новой APK на Android,
-измерения WER/RTF на трёх записях и [видео](artifacts/demo/README.md).
+Проверки конкурсной APK описаны в [CONTEST_APK](docs/CONTEST_APK.md).
+Перед окончательной сдачей нужны измерения WER/RTF на трёх независимых записях
+и [видео](artifacts/demo/README.md).
 
 ## Сборка
 
 ```bash
-git clone --recurse-submodules --branch codex/guzlikvoice-hackathon git@github.com:FedorSolodkin/NuclearGuzlik-.git
+git clone --recurse-submodules --branch codex/android-boundary-word-timing git@github.com:FedorSolodkin/NuclearGuzlik-.git
 cd NuclearGuzlik-/src/android
 # JDK 17, Android SDK 36, NDK 25.1.8937393, CMake 3.22.1
 ./scripts/fetch-vulkan-headers.sh
-./gradlew testStoreDebugUnitTest assembleStoreHackathon
+./gradlew -PguzlikvoiceContest=true -PguzlikvoiceBundle=/absolute/path/to/bundle \
+  testStoreHackathonUnitTest assembleStoreHackathon
 ```
 
 Путь к SDK укажите локально в `local.properties` (`sdk.dir=...`). `JAVA_HOME`

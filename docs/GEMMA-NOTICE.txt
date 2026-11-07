@@ -1,0 +1,14 @@
+gemma-2-2b-it-Q4_K_M-ru90k.gguf — ИЗМЕНЁННАЯ версия модели Gemma 2 2B (Google).
+
+Изменение (GuzlikVoice, октябрь 2026): из таблицы слов (token_embd, она же выходной
+слой) оставлены 90 234 токена из 256 000 — русские, английские, цифры, знаки и
+служебные. Остальные веса не тронуты. Исходник: bartowski/gemma-2-2b-it-GGUF,
+gemma-2-2b-it-Q4_K_M.gguf (sha256 e0aee85060f168f0f2d8473d7ea41ce2f3230c1bc1374847505ea599288a7787).
+Изменённый файл: sha256 96c22f048c16b1cf258cfa3bf8a22cb87f41a9be33eaaced4436d130a359f5f2.
+
+Gemma is provided under and subject to the Gemma Terms of Use found at
+https://ai.google.dev/gemma/terms
+Использование ограничено также Gemma Prohibited Use Policy:
+https://ai.google.dev/gemma/prohibited_use_policy
+
+This file is a modified version of Gemma. / Этот файл — изменённая версия Gemma.

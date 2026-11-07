@@ -41,6 +41,12 @@ object BundledModels {
      */
     @Synchronized
     fun install(ctx: Context, onProgress: (done: Long, total: Long, name: String) -> Unit): Result {
+        if (BuildConfig.CONTEST_BUILD) {
+            val expected = setOf(WhisperCppEngine.PODLODKA_TURBO_FILE, LlmModels.GEMMA_TRIM.fileName,
+                SpeakerEmbedder.MODEL_NAME, PyannoteSegmenter.MODEL_NAME, SileroVAD.MODEL_NAME)
+            if (assetNames(ctx).toSet() != expected)
+                return Result.Failed("В APK нет полного набора моделей. Установите полную конкурсную APK")
+        }
         val names = pending(ctx)
         if (names.isEmpty()) return Result.Ok
         val sizes = names.associateWith { assetSize(ctx, it) }
