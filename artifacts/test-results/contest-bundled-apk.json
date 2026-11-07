@@ -11,18 +11,17 @@
   "clean_model_directory": true,
   "asr_locked_accurate": true,
   "llm_locked_gemma": true,
-  "install_ms": 7694,
+  "install_ms": 8115,
   "audio_ms": 54272,
-  "asr_diarization_export_ms": 134365,
+  "asr_diarization_export_ms": 156172,
   "speakers": 2,
   "unknown_or_overlap_words": 0,
   "json_turns": 5,
   "llm_question_passed": true,
-  "llm_question_ms": 12310,
+  "llm_question_ms": 14467,
   "device": "Xiaomi M2101K6G / Android 13",
   "apk_sha256": "ba9151b0dc0205961e7f24fb6f4da874a40f300acf058f0e72bd04c713457adb",
-  "functional_test_apk_sha256": "875866dfadd2011c177f6736c82dfe62652478b907edda3a9c9804e209b1e965",
-  "post_test_change": "Hide the obsolete manual model-import hint; model and inference code unchanged. Final APK model SHA-256 and signature verified.",
+  "functional_test_apk_sha256": "ba9151b0dc0205961e7f24fb6f4da874a40f300acf058f0e72bd04c713457adb",
   "unit_tests": {
     "passed": 239,
     "skipped": 3,
@@ -35,5 +34,6 @@
     "complete bundle accepted"
   ],
   "privacy": "User audio, transcript and database remain local.",
-  "timing_scope": "One CPU regression recording; ASR/diarization/export timing excludes model initialization and audio decoding. No independent WER/DER benchmark."
+  "timing_scope": "One CPU regression recording; ASR/diarization/export timing excludes model initialization and audio decoding. No independent WER/DER benchmark.",
+  "final_offline_retest": "passed"
 }
