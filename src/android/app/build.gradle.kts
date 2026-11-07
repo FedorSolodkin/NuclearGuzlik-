@@ -252,6 +252,14 @@ android {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
+    // Встроенные модели: -PguzlikvoiceBundle=<папка с подпапкой models/>. Файлы кладутся в APK без сжатия
+    // (иначе сборка и первый запуск долгие), при первом запуске копируются в папку приложения (BundledModels).
+    (project.findProperty("guzlikvoiceBundle") as String?)?.takeIf { it.isNotBlank() }?.let { dir ->
+        sourceSets.getByName("main").assets.srcDir(dir)
+    }
+    androidResources {
+        noCompress += listOf("gguf", "onnx", "bin")
+    }
     buildFeatures {
         buildConfig = true
     }
