@@ -368,8 +368,10 @@ class TranscriptionSession(
                 Log.w(TAG, "Chunk @${startSample / sampleRate}s skipped: engine not ready")
                 return
             }
+            // Тихая запись: усиливаем копию куска для Whisper (исходное аудио остаётся для голосов).
+            val audio = PcmNormalizer.normalize(chunk)
             // Речи слишком мало, чтобы решить, — язык прошлого чанка (или русский).
-            val lang = chunkLanguage(chunk)
+            val lang = chunkLanguage(audio)
             val languageChanged = lastLanguage != null && lastLanguage != lang
             if (lang != lastLanguage) Log.i(TAG, "Chunk @${startSample / sampleRate}s language: $lang")
             lastLanguage = lang
@@ -386,7 +388,7 @@ class TranscriptionSession(
                 (if (tail.isEmpty() || languageChanged || !HallucinationFilter.isSafePrompt(tail)) "" else tail) to false
             }
             val segments = try {
-                whisper.transcribeSegments(chunk, prompt, carryPrompt = carry, useVad = true, language = lang,
+                whisper.transcribeSegments(audio, prompt, carryPrompt = carry, useVad = true, language = lang,
                                            cancelToken = cancelToken)
             } catch (e: Exception) {
                 Log.e(TAG, "Whisper error in chunk @${startSample / sampleRate}s: ${e.message}", e)
