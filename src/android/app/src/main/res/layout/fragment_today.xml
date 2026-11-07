@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Сегодня"
+            android:textSize="30sp"
+            android:fontFamily="@font/instrument_serif"
+            android:textColor="@color/textPrimary"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnRefreshToday"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Обновить"
+            android:textSize="13sp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <ProgressBar
+        android:id="@+id/progressToday"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:visibility="gone"/>
+
+    <!-- Empty state: календарь пуст или не подключён.
+         Иконка + подзаголовок стоят выше, tvTodayEmpty под ними — динамически
+         подставляет текст ("Событий сегодня нет" / "Подключите календарь"). -->
+    <LinearLayout
+        android:id="@+id/todayEmptyStateBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:paddingTop="32dp"
+        android:paddingBottom="12dp"
+        android:visibility="gone">
+
+        <ImageView
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/ic_calendar"
+            app:tint="@color/textMuted"
+            android:alpha="0.55"
+            android:layout_marginBottom="14dp"
+            android:contentDescription="@null"/>
+
+        <TextView
+            android:id="@+id/tvTodayEmpty"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="14sp"
+            android:textColor="@color/textSecondary"
+            android:gravity="center"
+            android:lineSpacingMultiplier="1.4"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnEmptyRecordToday"
+            style="@style/Widget.Material3.Button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="Начать запись"
+            android:textSize="14sp"
+            app:icon="@drawable/ic_mic"
+            app:iconSize="18dp"
+            app:cornerRadius="14dp"
+            android:visibility="gone"/>
+    </LinearLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnConnectCalendar"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:text="Подключить календарь"
+        android:textColor="@color/textPrimary"
+        android:backgroundTint="@color/primary"
+        app:cornerRadius="12dp"
+        android:visibility="gone"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvTodayEvents"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:paddingTop="8dp"
+        android:clipToPadding="false"/>
+</LinearLayout>

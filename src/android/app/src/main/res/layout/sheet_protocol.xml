@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Протокол совещания: ProtocolSheet / ProtocolRunner -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface"
+    android:paddingBottom="16dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_drag_handle"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:text="Протокол совещания"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="@color/textPrimary"/>
+
+    <TextView
+        android:id="@+id/tvProtocolStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="4dp"
+        android:textSize="12sp"
+        android:textColor="@color/textMuted"/>
+
+    <ProgressBar
+        android:id="@+id/progressProtocol"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="10dp"
+        android:indeterminate="true"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="16dp"
+        android:paddingTop="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnProtocolCopy"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:layout_marginEnd="6dp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:text="Копировать"
+            android:textColor="@color/textPrimary"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnProtocolShare"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:layout_marginHorizontal="6dp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:text="Поделиться"
+            android:textColor="@color/textPrimary"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnProtocolAgain"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="48dp"
+            android:layout_marginStart="6dp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:text="Заново"
+            android:textColor="#1A140A"
+            android:backgroundTint="@color/primary"
+            app:cornerRadius="12dp"/>
+    </LinearLayout>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnProtocolYouGile"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="4dp"
+        android:text="Отправить в YouGile"
+        android:textColor="@color/primary"
+        android:visibility="gone"/>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:id="@+id/tvProtocol"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingHorizontal="20dp"
+            android:paddingVertical="8dp"
+            android:textSize="15sp"
+            android:lineSpacingMultiplier="1.3"
+            android:textIsSelectable="true"
+            android:minHeight="120dp"
+            android:textColor="@color/textPrimary"/>
+    </androidx.core.widget.NestedScrollView>
+
+
+</LinearLayout>

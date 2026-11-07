@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp"
+    android:paddingTop="16dp"
+    android:paddingBottom="8dp">
+
+    <TextView
+        android:id="@+id/tvMonthTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@color/textPrimary"
+        android:letterSpacing="0.02"
+        android:layout_marginBottom="12dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="Пн" android:textSize="11sp" android:textColor="@color/textMuted"
+            android:textStyle="bold" android:letterSpacing="0.06"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="Вт" android:textSize="11sp" android:textColor="@color/textMuted"
+            android:textStyle="bold" android:letterSpacing="0.06"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="Ср" android:textSize="11sp" android:textColor="@color/textMuted"
+            android:textStyle="bold" android:letterSpacing="0.06"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="Чт" android:textSize="11sp" android:textColor="@color/textMuted"
+            android:textStyle="bold" android:letterSpacing="0.06"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="Пт" android:textSize="11sp" android:textColor="@color/accent"
+            android:textStyle="bold" android:letterSpacing="0.06"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="Сб" android:textSize="11sp" android:textColor="@color/accentRed"
+            android:textStyle="bold" android:letterSpacing="0.06"/>
+        <TextView android:layout_width="0dp" android:layout_height="wrap_content"
+            android:layout_weight="1" android:gravity="center"
+            android:text="Вс" android:textSize="11sp" android:textColor="@color/accentRed"
+            android:textStyle="bold" android:letterSpacing="0.06"/>
+    </LinearLayout>
+
+</LinearLayout>

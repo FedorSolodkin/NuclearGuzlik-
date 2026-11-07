@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_gradient_top"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="44dp"
+        android:paddingBottom="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GuzlikVoice"
+                android:textSize="32sp"
+                android:fontFamily="@font/instrument_serif"
+                android:letterSpacing="0"
+                android:textColor="@color/textPrimary"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="голос → структура"
+                android:textSize="12sp"
+                android:textColor="@color/textMuted"
+                android:layout_marginTop="1dp"/>
+        </LinearLayout>
+
+        <!-- Tools button: календарь (подключение + встречи), раньше было вкладкой "Сегодня" -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnTools"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            app:icon="@drawable/ic_calendar"
+            app:iconSize="22dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:iconTint="@color/textMuted"
+            android:text=""
+            android:contentDescription="Инструменты"
+            app:cornerRadius="20dp"/>
+
+        <!-- Settings button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSettings"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:insetTop="0dp"
+            android:insetBottom="0dp"
+            android:padding="0dp"
+            app:icon="@drawable/ic_settings"
+            app:iconSize="22dp"
+            app:iconPadding="0dp"
+            app:iconGravity="textStart"
+            app:iconTint="@color/textMuted"
+            android:text=""
+            android:contentDescription="Настройки"
+            app:cornerRadius="20dp"/>
+
+    </LinearLayout>
+
+    <!-- Tabs -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tabLayout"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:background="@color/background"
+        app:tabGravity="fill"
+        app:tabMode="fixed"
+        app:tabTextColor="@color/textMuted"
+        app:tabSelectedTextColor="@color/textPrimary"
+        app:tabTextAppearance="@style/TabTextAppearance"
+        app:tabIndicatorColor="@color/accent"
+        app:tabIndicatorHeight="2dp"
+        app:tabIndicatorFullWidth="false"/>
+
+    <!-- Swipeable pages -->
+    <androidx.viewpager2.widget.ViewPager2
+        android:id="@+id/viewPager"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

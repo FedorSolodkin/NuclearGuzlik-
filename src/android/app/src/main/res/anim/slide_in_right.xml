@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Enter анимация для новой Activity: заезжает справа + fade in.
+    260 мс, ease-out — Material «Sharp» кривая.
+-->
+<set xmlns:android="http://schemas.android.com/apk/res/android"
+    android:interpolator="@android:interpolator/decelerate_quad">
+    <translate
+        android:fromXDelta="10%p"
+        android:toXDelta="0"
+        android:duration="260"/>
+    <alpha
+        android:fromAlpha="0"
+        android:toAlpha="1"
+        android:duration="220"/>
+</set>

@@ -1,0 +1,17 @@
+**/.DS_Store
+**/local.properties
+**/.gradle/
+**/.kotlin/
+**/.cxx/
+**/build/
+**/__pycache__/
+**/.venv/
+**/.env
+**/.secrets/
+*.jks
+*.keystore
+*.p12
+*.gguf
+*.onnx
+!src/android/app/src/main/assets/*
+config/models/
