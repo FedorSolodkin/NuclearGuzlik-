@@ -65,7 +65,9 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
         cancelToken: Long,
     ): ByteArray
     private external fun nativeDetectLanguage(pcmData: ShortArray, vadModelPath: String, vadThreshold: Float): String
-    private external fun nativeRefineWordTiming(pcmData: ShortArray, language: String, cancelToken: Long): ByteArray
+    private external fun nativeOpenWordTimingSession(): Long
+    private external fun nativeCloseWordTimingSession(handle: Long)
+    private external fun nativeRefineWordTiming(handle: Long, pcmData: ShortArray, language: String, cancelToken: Long): ByteArray
     private external fun nativeIsGpuActive(): Boolean
     private external fun nativeAbort(cancelToken: Long)
     private external fun nativeFree()
@@ -200,11 +202,23 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
         return if (raw.isBlank()) emptyList() else parseSegments(raw)
     }
 
-    fun refineWordTiming(pcm: ShortArray, language: String, cancelToken: Long): List<WhisperHelper.Word> {
+    inner class WordTimingSession internal constructor(private var handle: Long) : java.io.Closeable {
+        @Synchronized fun refine(pcm: ShortArray, language: String, cancelToken: Long): List<WhisperHelper.Word> {
+            check(handle != 0L) { "Boundary timing session is closed" }
+            require(pcm.size <= 16 * 16_000)
+            return decodeResult(String(nativeRefineWordTiming(handle, pcm, language, cancelToken), Charsets.UTF_8))
+                .flatMap { it.words.orEmpty() }
+        }
+        @Synchronized override fun close() {
+            if (handle != 0L) { nativeCloseWordTimingSession(handle); handle = 0L }
+        }
+    }
+
+    fun openWordTimingSession(): WordTimingSession {
         check(isReady)
-        require(pcm.size <= 16 * 16_000)
-        return decodeResult(String(nativeRefineWordTiming(pcm, language, cancelToken), Charsets.UTF_8))
-            .flatMap { it.words.orEmpty() }
+        return WordTimingSession(nativeOpenWordTimingSession().also {
+            check(it != 0L) { "Не удалось загрузить модель уточнения границ слов" }
+        })
     }
 
     override fun detectLanguage(pcm: ShortArray): String? {

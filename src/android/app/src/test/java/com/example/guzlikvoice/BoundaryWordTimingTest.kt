@@ -13,7 +13,7 @@ class BoundaryWordTimingTest {
         val clips = BoundaryWordTiming.plan(input, turns + SpeakerTimeline.Region(8200, 10000, 0), 10000)
         assertEquals(1, clips.size)
         assertTrue(clips.single().endMs - clips.single().startMs <= 16000)
-        val done = input.map { s -> s.copy(words = s.words!!.map { it.copy(boundaryPassVersion = BoundaryWordTiming.VERSION) }) }
+        val done = input.map { s -> s.copy(words = s.words!!.map { it.copy(boundaryPassVersion = BoundaryWordTiming.VERSION, boundaryPassText = it.text) }) }
         assertTrue(BoundaryWordTiming.plan(done, turns, 10000).isEmpty())
         assertTrue(BoundaryWordTiming.plan(input, listOf(turns.first()), 10000).isEmpty())
     }
@@ -76,6 +76,21 @@ class BoundaryWordTimingTest {
         assertEquals(4600L, output.single().words!![2].startMs)
         assertEquals(5100L, output.single().words!![3].endMs)
         assertEquals(input.single().words!!.map { it.text }, output.single().words!!.map { it.text })
+    }
+
+    @Test fun editingOnlyOneBoundaryKeepsOtherCompletedClipsCached() {
+        val voices = listOf(SpeakerTimeline.Region(0, 4000, 0), SpeakerTimeline.Region(4100, 20000, 1),
+            SpeakerTimeline.Region(20100, 30000, 0))
+        val input = segment(List(60) { w("слово$it", it * 500L, it * 500L + 400).let {
+            it.copy(boundaryPassVersion = BoundaryWordTiming.VERSION, boundaryPassText = it.text)
+        } })
+        assertTrue(BoundaryWordTiming.plan(input, voices, 30000).isEmpty())
+        val edited = input.map { s -> s.copy(words = s.words!!.mapIndexed { i, word ->
+            if (i == 9) word.copy(text = "исправлено") else word
+        }) }
+        val clips = BoundaryWordTiming.plan(edited, voices, 30000)
+        assertEquals(1, clips.size)
+        assertTrue(clips.single().endMs < 10000)
     }
 
 }

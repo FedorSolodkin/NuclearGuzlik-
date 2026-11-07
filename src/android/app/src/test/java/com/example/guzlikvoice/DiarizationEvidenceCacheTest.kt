@@ -38,4 +38,22 @@ class DiarizationEvidenceCacheTest {
         DiarizationEvidenceCache.put(next,DiarizationEvidenceCache.ticket(43),evidence())
         assertNull(DiarizationEvidenceCache.get(key,ticket))
     }
+    @Test fun decodedAudioIsAnImmutableBoundedCopyWithTheSameInvalidationRules() {
+        val ticket = DiarizationEvidenceCache.ticket(42)
+        val samples = shortArrayOf(1, 2, 3)
+        assertTrue(DiarizationEvidenceCache.putPcm(key, ticket, ArrayPcm(samples)))
+        samples[0] = 99
+        assertArrayEquals(shortArrayOf(1, 2, 3), DiarizationEvidenceCache.getPcm(key, ticket)!!.copyOfRange(0, 3))
+        assertNull(DiarizationEvidenceCache.getPcm(key.copy(audioModified = 201), ticket))
+        assertNull(DiarizationEvidenceCache.getPcm(key.copy(models = "new"), ticket))
+        DiarizationEvidenceCache.remove(42)
+        assertNull(DiarizationEvidenceCache.getPcm(key, ticket))
+        assertFalse(DiarizationEvidenceCache.putPcm(key, ticket, ArrayPcm(samples)))
+        val current = DiarizationEvidenceCache.ticket(42)
+        assertFalse(DiarizationEvidenceCache.putPcm(key, current, ArrayPcm(ShortArray(4_194_305))))
+        assertTrue(DiarizationEvidenceCache.putPcm(key, current, ArrayPcm(samples)))
+        DiarizationEvidenceCache.clearAll()
+        assertNull(DiarizationEvidenceCache.getPcm(key, current))
+    }
+
 }

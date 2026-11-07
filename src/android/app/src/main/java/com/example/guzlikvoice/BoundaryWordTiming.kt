@@ -18,10 +18,10 @@ object BoundaryWordTiming {
         val proposed = turns.sortedBy { it.startMs }.zipWithNext().mapNotNull { (before, after) ->
             if (before.speaker == after.speaker || after.startMs - before.endMs !in 0..2000) return@mapNotNull null
             val boundary = (before.endMs + after.startMs) / 2
-            val split = words.indexOfFirst { it.startMs >= boundary }.let { if (it < 0) words.size else it }
-            val nearby = words.subList(maxOf(0, split - 3), minOf(words.size, split + 3))
-            if (nearby.none { it.boundaryPassVersion < VERSION }) return@mapNotNull null
-            Clip(maxOf(0, boundary - 4000), minOf(durationMs, boundary + 4000))
+            val clip = Clip(maxOf(0, boundary - 4000), minOf(durationMs, boundary + 4000))
+            val nearby = words.filter { it.startMs < clip.endMs && it.endMs > clip.startMs }
+            if (nearby.none { it.boundaryPassVersion < VERSION || it.boundaryPassText != it.text }) return@mapNotNull null
+            clip
         }
         val merged = mutableListOf<Clip>()
         for (clip in proposed.sortedBy { it.startMs }) {
@@ -112,7 +112,7 @@ object BoundaryWordTiming {
             val words = part.words?.mapIndexed { w, old ->
                 val result = replacements[s to w] ?: old
                 if (old.startMs < clip.endMs && old.endMs > clip.startMs)
-                    result.copy(boundaryPassVersion = VERSION) else result
+                    result.copy(boundaryPassVersion = VERSION, boundaryPassText = result.text) else result
             }
             if (words.isNullOrEmpty()) part else part.copy(words = words,
                 startMs = minOf(part.startMs, words.minOf { it.startMs }),
