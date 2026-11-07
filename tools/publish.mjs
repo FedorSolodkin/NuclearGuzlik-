@@ -9,10 +9,12 @@ import { join, extname, basename, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { randomBytes, pbkdf2Sync, createCipheriv } from 'node:crypto';
 
+// Режим без шифрования: PLAIN=1 node tools/publish.mjs <папка> — файлы кладутся в data/ как есть (только с согласия говорящих!)
+const plain = process.env.PLAIN === '1';
 const pw = process.env.LABELER_PASSWORD;
 const src = process.argv[2];
 const out = process.argv[3] || join(dirname(fileURLToPath(import.meta.url)), '..', 'data');
-if (!pw || pw.length < 8 || !src) {
+if (!src || (!plain && (!pw || pw.length < 8))) {
   console.error('Нужны LABELER_PASSWORD (минимум 8 символов, лучше длинная фраза) и папка с аудио.');
   process.exit(1);
 }
@@ -33,11 +35,16 @@ for (const f of readdirSync(src).sort()) {
   const ext = extname(f).toLowerCase();
   if (!MIME[ext]) continue;
   const id = basename(f, ext);
-  writeFileSync(join(out, id + '.audio.enc'), encrypt(readFileSync(join(src, f))));
   const draftPath = join(src, id + '.json');
   const draft = existsSync(draftPath);
-  if (draft) writeFileSync(join(out, id + '.draft.enc'), encrypt(readFileSync(draftPath)));
-  const entry = { id, ext: ext.slice(1), mime: MIME[ext], draft };
+  if (plain) {
+    writeFileSync(join(out, id + ext), readFileSync(join(src, f)));
+    if (draft) writeFileSync(join(out, id + '.draft.json'), readFileSync(draftPath));
+  } else {
+    writeFileSync(join(out, id + '.audio.enc'), encrypt(readFileSync(join(src, f))));
+    if (draft) writeFileSync(join(out, id + '.draft.enc'), encrypt(readFileSync(draftPath)));
+  }
+  const entry = { id, ext: ext.slice(1), mime: MIME[ext], draft, ...(plain ? { plain: true } : {}) };
   const i = index.findIndex(x => x.id === id);
   if (i >= 0) index[i] = entry; else index.push(entry);
   console.log('ok', id, draft ? '(+черновик)' : '');

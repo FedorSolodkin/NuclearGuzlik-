@@ -1,0 +1,30 @@
+[
+ {
+  "id": "r001",
+  "ext": "wav",
+  "mime": "audio/wav",
+  "draft": true,
+  "plain": true
+ },
+ {
+  "id": "r002",
+  "ext": "wav",
+  "mime": "audio/wav",
+  "draft": true,
+  "plain": true
+ },
+ {
+  "id": "r003",
+  "ext": "wav",
+  "mime": "audio/wav",
+  "draft": true,
+  "plain": true
+ },
+ {
+  "id": "r004",
+  "ext": "wav",
+  "mime": "audio/wav",
+  "draft": true,
+  "plain": true
+ }
+]
