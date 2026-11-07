@@ -1,0 +1,27 @@
+{
+  "audio_id": "r001",
+  "status": "partial_user_directed_speaker_corrections",
+  "manually_verified": false,
+  "source": "current editor state including user edits; identities corrected from user directions",
+  "rows_before": 32,
+  "rows_after": 45,
+  "unrelated_turns_preserved": 28,
+  "text_preserved": true,
+  "original_number_hints": [
+    12,
+    17,
+    19,
+    42
+  ],
+  "corrected_json_sha256": "a3d02a0714b8208b15d611b769f3284dbe252ad86c70b0eb6f24075264a8d8d9",
+  "timing_source": "saved Whisper word timestamps; new boundaries still require audio confirmation",
+  "confirmed_phrase_speakers": {
+    "Ну да, просто двухкомнатная квартира, где ты в одной комнате жила.": "speaker_2",
+    "Что со мной не так?": "speaker_1",
+    "Он тоже был по характеру как жиган?": "speaker_2",
+    "Классный?": "speaker_2",
+    "Он с тобой расстался?": "speaker_2",
+    "Сучевский вал?": "speaker_2",
+    "Да, Сучевский вал.": "speaker_2"
+  }
+}
