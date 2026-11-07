@@ -6,7 +6,10 @@
   "draft": true,
   "plain": true,
   "review_draft": "review/r001.candidate.json",
-  "audio_sha256": "1786e0bcd7e6a1ae45e2b5844c374fb0ece9f7b2eefdff7e1664ecf45afc5256"
+  "audio_sha256": "1786e0bcd7e6a1ae45e2b5844c374fb0ece9f7b2eefdff7e1664ecf45afc5256",
+  "published_draft": "review/r001.user-corrected.json",
+  "published_revision": "user-corrections-44-turns",
+  "published_sha256": "91ba17722902b364cbbae45f73e586c08ffed89bab59f1f5ebb9eeae0fb92a88"
  },
  {
   "id": "r002",

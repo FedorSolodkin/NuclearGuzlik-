@@ -23,5 +23,9 @@
     "Он с тобой расстался?": "speaker_2",
     "Сучевский вал?": "speaker_2",
     "Да, Сучевский вал.": "speaker_2"
-  }
+  },
+  "initial_corrected_snapshot": "artifacts/user-corrections/r001-after-initial-fixes.json",
+  "latest_user_revision_turns": 44,
+  "latest_user_revision_sha256": "91ba17722902b364cbbae45f73e586c08ffed89bab59f1f5ebb9eeae0fb92a88",
+  "street_phrases_confirmed_by_user": true
 }

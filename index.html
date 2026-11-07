@@ -58,7 +58,7 @@ kbd{background:#eef0f4;border:1px solid var(--line);border-radius:4px;padding:0 
     <select id="rec"></select>
     <input type="password" id="pw" placeholder="пароль" style="width:140px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
     <button class="primary" id="btnOpenRec">Открыть запись</button>
-    <button id="btnCandidate" style="display:none">Загрузить новый модельный черновик</button>
+    <button id="btnCandidate" style="display:none">Загрузить опубликованный черновик</button>
     <span class="small">разметка автосохраняется в браузере, по готовности скачай .json и пришли</span>
   </div>
   <div class="bar">
@@ -182,7 +182,7 @@ async function initLib(){
   $('#rec').innerHTML=LIB.map((x,i)=>`<option value="${i}">${esc(x.id)}</option>`).join('');
   $('#pw').value=sessionStorage.getItem('vm-pw')||'';
   if(LIB.every(x=>x.plain))$('#pw').style.display='none';
-  if(LIB.some(x=>x.review_draft))$('#btnCandidate').style.display='';
+  if(LIB.some(x=>x.published_draft||x.review_draft))$('#btnCandidate').style.display='';
   try{const report=await fetch('data/review/review-status.json');if(report.ok)REVIEW=(await report.json()).records;stats();}catch(e){}
 }
 $('#btnOpenRec').onclick=async()=>{
@@ -195,7 +195,7 @@ $('#btnOpenRec').onclick=async()=>{
       if(ticket!==libraryGeneration||priorAudio!==audioGeneration)return;
       const ok=await loadAudio(new File([ab],x.id+'.'+x.ext,{type:x.mime||'audio/wav'}));
       if(ok&&!S.segs.length&&x.draft){
-        const draft=await fetch('data/'+(x.review_draft||x.id+'.draft.json')).then(r=>{if(!r.ok)throw new Error('нет черновика');return r.json();});
+        const draft=await fetch('data/'+(x.published_draft||x.review_draft||x.id+'.draft.json')).then(r=>{if(!r.ok)throw new Error('нет черновика');return r.json();});
         if(ticket===libraryGeneration&&S.name===x.id)applyDraft(draft,false);
       }
     }catch(err){toast('Ошибка: '+err.message);}
@@ -216,11 +216,11 @@ $('#btnOpenRec').onclick=async()=>{
 };
 $('#btnCandidate').onclick=async()=>{
   const x=LIB[+$('#rec').value];
-  if(!x||!x.review_draft)return toast('Для этой записи нового черновика нет');
+  if(!x||!(x.published_draft||x.review_draft))return toast('Для этой записи опубликованного черновика нет');
   if(S.name!==x.id||S.audioSha!==x.audio_sha256)return toast('Сначала открой соответствующее аудио');
   const key=S.key;
   try{
-    const response=await fetch('data/'+x.review_draft);if(!response.ok)throw new Error('нет файла');
+    const response=await fetch('data/'+(x.published_draft||x.review_draft));if(!response.ok)throw new Error('нет файла');
     const draft=await response.json();if(S.key!==key)return toast('Аудио изменилось, открой черновик снова');
     applyDraft(draft,true);
   }catch(err){toast('Ошибка загрузки черновика: '+err.message);}
