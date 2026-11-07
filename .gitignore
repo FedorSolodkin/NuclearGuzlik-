@@ -15,3 +15,24 @@
 *.onnx
 !src/android/app/src/main/assets/*
 config/models/
+
+# Шаблон хакатона: секреты, редакторы, логи, зависимости
+.env
+*.key
+*.pem
+.idea/
+.vscode/
+*.swp
+*.log
+tmp/
+temp/
+node_modules/
+.venv/
+venv/
+__pycache__/
+*.py[cod]
+
+# Видео демонстрации хранится вне Git (ссылка в artifacts/demo/README.md)
+artifacts/demo/*.mp4
+artifacts/demo/*.mov
+artifacts/demo/*.mkv
