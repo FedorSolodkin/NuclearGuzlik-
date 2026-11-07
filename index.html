@@ -50,6 +50,13 @@ kbd{background:#eef0f4;border:1px solid var(--line);border-radius:4px;padding:0 
     <span class="sp"></span>
     <button class="primary" id="btnExport">Скачать эталон .json</button>
   </div>
+  <div class="bar" id="lib" style="display:none">
+    <b>Записи:</b>
+    <select id="rec"></select>
+    <input type="password" id="pw" placeholder="пароль" style="width:140px;padding:4px 6px;border:1px solid var(--line);border-radius:6px">
+    <button class="primary" id="btnOpenRec">Открыть запись</button>
+    <span class="small">разметка автосохраняется в браузере, по готовности скачай .json и пришли</span>
+  </div>
   <div class="bar">
     <button id="btnPlay">▶ / ⏸</button>
     <button data-seek="-3">−3 с</button><button data-seek="3">+3 с</button>
@@ -107,8 +114,7 @@ function mkSegs(arr){return arr.map(g=>({id:S.uid++,speaker:g.speaker_id||g.spea
   start:Math.round(g.start_ms??g.start??0),end:Math.round(g.end_ms??g.end??0),text:String(g.text||'')}));}
 
 /* ---------- загрузка ---------- */
-$('#audioFile').onchange=async e=>{
-  const f=e.target.files[0];if(!f)return;
+async function loadAudio(f){
   S.name=f.name.replace(/\.[^.]+$/,'');S.key='vm-label:'+f.name+':'+f.size;
   audio.src=URL.createObjectURL(f);
   try{
@@ -123,17 +129,53 @@ $('#audioFile').onchange=async e=>{
   if(saved){const o=JSON.parse(saved);S.segs=mkSegs(o.segs.map(g=>({speaker:g.speaker,start:g.start,end:g.end,text:g.text})));S.cond=o.cond||'clean';toast('Восстановлено автосохранение');}
   else S.segs=[];
   render();
-};
+  return true;
+}
+$('#audioFile').onchange=e=>{const f=e.target.files[0];if(f)loadAudio(f);};
+function applyDraft(o,ask){
+  const arr=Array.isArray(o)?o:o.transcript;
+  if(!Array.isArray(arr))throw new Error('нет поля transcript');
+  if(ask&&S.segs.length&&!confirm('Заменить текущую разметку содержимым файла?'))return;
+  S.segs=mkSegs(arr);S.segs.sort((a,b)=>a.start-b.start);render();save();toast('Загружено реплик: '+S.segs.length);
+}
 $('#jsonFile').onchange=async e=>{
   const f=e.target.files[0];if(!f)return;
-  try{
-    const o=JSON.parse(await f.text());const arr=Array.isArray(o)?o:o.transcript;
-    if(!Array.isArray(arr))throw new Error('нет поля transcript');
-    if(S.segs.length&&!confirm('Заменить текущую разметку содержимым файла?'))return;
-    S.segs=mkSegs(arr);S.segs.sort((a,b)=>a.start-b.start);render();save();toast('Загружено реплик: '+S.segs.length);
-  }catch(err){toast('Ошибка JSON: '+err.message);}
+  try{applyDraft(JSON.parse(await f.text()),true);}catch(err){toast('Ошибка JSON: '+err.message);}
   e.target.value='';
 };
+
+/* ---------- зашифрованная библиотека записей (data/index.json) ---------- */
+async function decryptBuf(buf,pw){
+  const u=new Uint8Array(buf),salt=u.slice(0,16),iv=u.slice(16,28),ct=u.slice(28);
+  const km=await crypto.subtle.importKey('raw',new TextEncoder().encode(pw),'PBKDF2',false,['deriveKey']);
+  const key=await crypto.subtle.deriveKey({name:'PBKDF2',salt,iterations:200000,hash:'SHA-256'},km,{name:'AES-GCM',length:256},false,['decrypt']);
+  return crypto.subtle.decrypt({name:'AES-GCM',iv},key,ct);
+}
+let LIB=[];
+async function initLib(){
+  try{
+    const r=await fetch('data/index.json',{cache:'no-cache'});if(!r.ok)return;
+    LIB=await r.json();if(!LIB.length)return;
+  }catch(e){return;}
+  $('#lib').style.display='';
+  $('#rec').innerHTML=LIB.map((x,i)=>`<option value="${i}">${esc(x.id)}</option>`).join('');
+  $('#pw').value=sessionStorage.getItem('vm-pw')||'';
+}
+$('#btnOpenRec').onclick=async()=>{
+  const x=LIB[+$('#rec').value],pw=$('#pw').value;
+  if(!x)return;if(!pw)return toast('Введи пароль');
+  try{
+    toast('Загружаю и расшифровываю…');
+    const ab=await decryptBuf(await fetch('data/'+x.id+'.audio.enc').then(r=>{if(!r.ok)throw new Error('нет файла');return r.arrayBuffer();}),pw);
+    sessionStorage.setItem('vm-pw',pw);
+    const ok=await loadAudio(new File([ab],x.id+'.'+(x.ext||'wav'),{type:x.mime||'audio/wav'}));
+    if(ok&&!S.segs.length&&x.draft){
+      const d=await decryptBuf(await fetch('data/'+x.id+'.draft.enc').then(r=>r.arrayBuffer()),pw);
+      applyDraft(JSON.parse(new TextDecoder().decode(d)),false);
+    }
+  }catch(err){toast(err.name==='OperationError'?'Неверный пароль':'Ошибка: '+err.message);}
+};
+initLib();
 
 /* ---------- волна ---------- */
 function drawWave(){
