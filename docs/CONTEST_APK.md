@@ -1,7 +1,7 @@
 # Автономная конкурсная APK 4.0.8
 
 Единственная APK для установки: **GuzlikVoice-4.0.8-contest-offline.apk** в
-[релизе contest-offline-v4.0.8](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8).
+[релизе guzlikvoice-contest-v4.0.8](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8).
 Размер около 1,92 ГБ, Android 8+, ARM64, пакет `ru.guzlik.voice.hackathon`.
 Подпись совместима с предыдущей конкурсной APK: обновление сохраняет записи.
 

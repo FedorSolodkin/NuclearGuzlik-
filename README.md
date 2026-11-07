@@ -10,7 +10,7 @@ Android-приложение, которое локально превращае
 - `docs/` — архитектура, ограничения, протокол (формат JSON), проверки, установка
 - `artifacts/apk/` — APK; `artifacts/test-results/` — результаты тестов (`results.csv`); `artifacts/demo/` — видео
 - `test_data/` — четыре живые записи и эталоны к ним для проверки; `config/` — параметры сборки и список моделей
-- `scripts/`, `tools/` — оценка WER/RTF/DER и вспомогательные инструменты
+- `scripts/`, `src/android/tools/` — оценка WER/RTF/DER и вспомогательные инструменты
 
 ## Запуск для экспертов
 
@@ -35,6 +35,16 @@ Android-приложение, которое локально превращае
 Whisper podlodka-turbo (q4_0), Gemma 2 2B (ru90k), WeSpeaker, pyannote segmentation, Silero VAD. Быстрых и альтернативных
 моделей в выборе нет. Размеры и контрольные суммы: [config/contest-models.json](config/contest-models.json).
 
+## Требования задания: как закрыто
+
+| Уровень | Что сделано | Что не сделано или не измерено |
+|---|---|---|
+| Базовый | APK, импорт файла, локальные Whisper и Gemma, автоматическая диаризация, метки времени, просмотр, экспорт JSON | WER/DER на конкурсной APK по независимым наборам пока не измерены |
+| Средний | VAD (паузы и неречь), прогресс в процентах, плеер с переходом к реплике, разметка участников при смене реплик | Отдельного шумоподавления и модели пунктуации нет (знаки даёт Whisper) |
+| Ultra Pro Max | Метки `overlap` и `unknown`, аудио на диске вместо RAM, динамический Vulkan, редактирование текста, повторное разделение голосов | Смесь одновременной речи не разделяется; повторное распознавание произвольного фрагмента не реализовано |
+
+Каждая строка с доказательствами: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md).
+
 ## Статус и проверки
 
 Автономная работа подтверждена на Xiaomi (Android 13) в авиарежиме на одной записи; 239 юнит-тестов проходят. Независимых замеров WER/DER
@@ -47,4 +57,4 @@ Whisper podlodka-turbo (q4_0), Gemma 2 2B (ru90k), WeSpeaker, pyannote segmentat
 Из исходников: [src/README.md](src/README.md) и раздел «Воспроизведение сборки» в [docs/CONTEST_APK.md](docs/CONTEST_APK.md).
 
 [Архитектура](docs/ARCHITECTURE.md) · [Установка](docs/INSTALL.md) · [Ограничения](docs/LIMITATIONS.md) ·
-[Проверки](docs/TEST_RESULTS.md) · [Соответствие заданию](docs/REQUIREMENTS.md)
+[Проверки](docs/TEST_RESULTS.md) · [Соответствие заданию](docs/REQUIREMENTS.md) · [Защита](docs/PRESENTATION.md) · [Комплектность](docs/SUBMISSION_CHECKLIST.md)
