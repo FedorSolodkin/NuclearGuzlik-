@@ -6,6 +6,7 @@
 //       → {"frame_ms":32,"probs":[...]}  вероятности речи Silero по кадрам
 //   segs    pcm=<путь> thr= min_speech= min_silence= pad=
 //       → {"segs":[[t0,t1],...]}  отрезки речи в сотых секунды (сегментация whisper.cpp)
+//   guardthr pcm=<путь>  → {"thr":..,"floor":..,"coverage":..}  как autothr + проверка покрытия (thr −2 = без VAD)
 //   asr     pcm=<путь> lang=ru prompt=<текст> carry=0|1 beam=1 threads=N
 //           vad=0|1 thr=0.5 min_speech=250 min_silence=100 pad=30 gain=1.0
 //       → {"segments":[{"t0":ms,"t1":ms,"text":...}],"ms":время,"speech_s":секунд речи после VAD}
@@ -124,6 +125,16 @@ static void cmd_autothr(std::map<std::string, std::string>& kv) {
     std::cout << b << std::endl;
 }
 
+// autothr + проверка покрытия: thr = −2 означает «кусок без VAD» (autovad::kNoVad).
+static void cmd_guardthr(std::map<std::string, std::string>& kv) {
+    auto pcm = load_pcm(kv["pcm"], 1.f);
+    float floorDb = 0, cover = 1;
+    float thr = autovad::chooseGuarded(pcm, vad_model, &floorDb, &cover);
+    char b[128];
+    snprintf(b, sizeof b, "{\"thr\":%.4f,\"floor\":%.2f,\"coverage\":%.4f}", thr, floorDb, cover);
+    std::cout << b << std::endl;
+}
+
 static void cmd_asr(whisper_context* ctx, std::map<std::string, std::string>& kv) {
     auto pcm = load_pcm(kv["pcm"], fget(kv, "gain", 1.f));
     const int beam = (int)fget(kv, "beam", 1);
@@ -209,6 +220,7 @@ int main(int argc, char** argv) {
         else if (cmd == "asr") cmd_asr(ctx, kv);
         else if (cmd == "segs") cmd_segs(kv);
         else if (cmd == "autothr") cmd_autothr(kv);
+        else if (cmd == "guardthr") cmd_guardthr(kv);
         else if (cmd == "quit") break;
         else std::cout << "{\"error\":\"unknown command\"}" << std::endl;
     }

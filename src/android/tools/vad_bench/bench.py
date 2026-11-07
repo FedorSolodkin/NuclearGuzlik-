@@ -448,3 +448,42 @@ def gated_adaptive(floor_db=-40.0, quiet_pct=10.0, noise_q=95.0, margin=0.1, lo=
             thr = float(np.clip(np.percentile(p[quiet], noise_q) + margin, lo, hi))
         return dict(thr=thr, min_speech=min_speech, min_silence=min_silence, pad=pad), 1.0
     return strat
+
+
+# ── проверка покрытия речи (порт autovad::chooseGuarded) ───────────────────────
+
+LADDER = (0.35, 0.25, 0.15)
+
+
+def _coverage(pcm: np.ndarray, probs: np.ndarray, vad: dict) -> float:
+    """Доля «заведомо слышимых» кадров (на 20 дБ выше фона и не тише −45 dBFS) внутри отрезков VAD."""
+    n = len(probs)
+    e = frame_energy_db(pcm, n)
+    loud = e > max(np.percentile(e, 10) + 20.0, -45.0)
+    if loud.sum() < 20:
+        return 1.0
+    cov = np.zeros(n, bool)
+    for a, b in segments_from_probs(probs, **vad):
+        cov[a // FRAME: b // FRAME + 1] = True
+    return float((cov & loud).sum() / loud.sum())
+
+
+def guarded_adaptive(min_cov=0.85, floor_db=-58.0) -> Strategy:
+    """
+    gated_adaptive + проверка покрытия — то, что делает приложение (auto_vad.h, chooseGuarded).
+    Silero занижает вероятность речи на узкополосном («телефонном») звуке, и от куска остаются
+    крохи, а автопорог этого не видит (фон — цифровая тишина, «ворота» держат 0.5). Покрытие
+    ниже min_cov → порог 0.35 → 0.25 → 0.15, иначе кусок без VAD (стратегия вернёт vad=None).
+    """
+    base = gated_adaptive(floor_db=floor_db)
+
+    def strat(ctx: ChunkCtx):
+        vad, g = base(ctx)
+        if _coverage(ctx.pcm, ctx.probs, vad) >= min_cov:
+            return vad, g
+        for t in LADDER:
+            v = dict(vad, thr=t)
+            if t < vad["thr"] and _coverage(ctx.pcm, ctx.probs, v) >= min_cov:
+                return v, g
+        return None, g
+    return strat
