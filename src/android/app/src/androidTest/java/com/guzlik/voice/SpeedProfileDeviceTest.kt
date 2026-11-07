@@ -26,10 +26,28 @@ class SpeedProfileDeviceTest {
     private val tag = "SpeedProfile"
     private fun now() = SystemClock.elapsedRealtime()
 
+    /** Вопрос к Gemma по готовому тексту (eval/text.json) при загруженном Whisper: пик памяти и скорость. */
+    private fun gemmaOnly() {
+        val pss = { android.os.Debug.getPss() / 1024 }
+        val text = File(ctx.filesDir, "eval/text.json").readText().take(8000)
+        val whisper = WhisperHelper(ctx); val ready = CountDownLatch(1)
+        whisper.init({ ready.countDown() }, { ready.countDown() }); ready.await(5, TimeUnit.MINUTES)
+        Log.i(tag, "PSS with Whisper: ${pss()} MB")
+        val llm = LlmHelper(ctx)
+        val g0 = now(); assertTrue(llm.load()); val gl = now() - g0
+        val g1 = now()
+        val answer = llm.askQuestion(text, "О чём этот разговор? Ответь одним предложением.")
+        Log.i(tag, "GEMMA load $gl ms, answer ${now() - g1} ms, PSS after: ${pss()} MB, answer: ${answer.take(200)}")
+        File(ctx.filesDir, "eval/out").mkdirs()
+        File(ctx.filesDir, "eval/out/gemma.txt").writeText("load_ms=$gl ask_ms=${now() - g1} pss=${pss()}\n$answer")
+        llm.release()
+    }
+
     @Test fun profile() {
         assumeTrue(args.getString("speedProfile") == "true")
         val inDir = File(ctx.filesDir, "eval/audio")
         val outDir = File(ctx.filesDir, "eval/out").apply { mkdirs() }
+        if (args.getString("gemmaOnly") == "true") { gemmaOnly(); return }
         val only = args.getString("only")
         val files = inDir.listFiles { f -> f.name.endsWith(".wav") && (only == null || only.split(",").any { f.name.contains(it) }) }
             ?.sortedBy { it.name }.orEmpty()
@@ -109,6 +127,21 @@ class SpeedProfileDeviceTest {
                 .put("rtf_total", (now() - tStart).toDouble() / audioMs)
             File(outDir, "$name.timing.json").writeText(t.toString())
             Log.i(tag, "$name DONE $t")
+        }
+
+        if (args.getString("gemma") == "true") {
+            val pss = { android.os.Debug.getPss() / 1024 }
+            Log.i(tag, "PSS before Gemma: ${pss()} MB")
+            val text = File(outDir, files.last().nameWithoutExtension + ".json").readText().take(8000)
+            val llm = LlmHelper(ctx)
+            val g0 = now()
+            assertTrue("gemma load", llm.load())
+            val gl = now() - g0
+            val g1 = now()
+            val answer = llm.askQuestion(text, "О чём этот разговор? Ответь одним предложением.")
+            Log.i(tag, "GEMMA load $gl ms, answer ${now() - g1} ms, PSS after: ${pss()} MB, answer: ${answer.take(200)}")
+            File(outDir, "gemma.txt").writeText("load_ms=$gl ask_ms=${now() - g1}\n$answer")
+            llm.release()
         }
     }
 }
