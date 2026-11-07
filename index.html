@@ -160,10 +160,23 @@ async function initLib(){
   $('#lib').style.display='';
   $('#rec').innerHTML=LIB.map((x,i)=>`<option value="${i}">${esc(x.id)}</option>`).join('');
   $('#pw').value=sessionStorage.getItem('vm-pw')||'';
+  if(LIB.every(x=>x.plain))$('#pw').style.display='none';
 }
 $('#btnOpenRec').onclick=async()=>{
   const x=LIB[+$('#rec').value],pw=$('#pw').value;
-  if(!x)return;if(!pw)return toast('Введи пароль');
+  if(!x)return;
+  if(x.plain){
+    try{
+      toast('Загружаю…');
+      const ab=await fetch('data/'+x.id+'.'+x.ext).then(r=>{if(!r.ok)throw new Error('нет файла');return r.arrayBuffer();});
+      const ok=await loadAudio(new File([ab],x.id+'.'+x.ext,{type:x.mime||'audio/wav'}));
+      if(ok&&!S.segs.length&&x.draft){
+        applyDraft(await fetch('data/'+x.id+'.draft.json').then(r=>r.json()),false);
+      }
+    }catch(err){toast('Ошибка: '+err.message);}
+    return;
+  }
+  if(!pw)return toast('Введи пароль');
   try{
     toast('Загружаю и расшифровываю…');
     const ab=await decryptBuf(await fetch('data/'+x.id+'.audio.enc').then(r=>{if(!r.ok)throw new Error('нет файла');return r.arrayBuffer();}),pw);
