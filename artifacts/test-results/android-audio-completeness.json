@@ -1,0 +1,25 @@
+{
+  "device": "Xiaomi M2101K6G / Android 13",
+  "source_audio_ms": 54272,
+  "old_evidence_end_ms": 32768,
+  "new_evidence_end_ms": 54272,
+  "words_preserved": true,
+  "detected_speakers": 2,
+  "remaining_unknown_words": 1,
+  "unit_tests": {
+    "total": 232,
+    "passed": 229,
+    "skipped": 3,
+    "failed": 0
+  },
+  "device_tests": [
+    "explicit recording reprocessing: passed",
+    "read-only saved evidence replay: passed"
+  ],
+  "privacy": "Recording, transcript, database and acoustic vectors remain local and are excluded from this change.",
+  "limitations": [
+    "One word at a speaker transition remains unknown.",
+    "Short-word edge decisions do not resolve real changes or overlaps.",
+    "Installed diagnostic APK uses preinstalled models; LIGHT/HEAVY bundled APKs are not produced by this fix."
+  ]
+}

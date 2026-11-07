@@ -20,6 +20,7 @@ object AudioDecoder {
 
     private const val TAG = "AudioDecoder"
     private const val TIMEOUT_US = 1_000L
+    private class IncompleteDecode(message: String) : java.io.IOException(message)
 
     /** Весь файл в один массив (разделение по голосам, экспорт). Буфер сразу под длительность файла. */
     fun decode(file: File): ShortArray {
@@ -43,8 +44,11 @@ object AudioDecoder {
 
     /** Decode once to disk; the diarizer only loads small windows, not the entire recording. */
     fun decodeToFile(file: File, cacheDir: File, isCancelled: () -> Boolean): FilePcm {
-        val tmp = File.createTempFile("diarization-", ".pcm", cacheDir)
-        try {
+        // A codec may report EOS before the complete track has been drained.
+        // Retry into a NEW file: a streaming sink cannot retract an emitted prefix.
+        repeat(2) { attempt ->
+          val tmp = File.createTempFile("diarization-", ".pcm", cacheDir)
+          try {
             val samples = tmp.outputStream().buffered().use { out ->
                 decodeStreaming(file) { frame ->
                     if (isCancelled()) throw java.util.concurrent.CancellationException()
@@ -55,7 +59,13 @@ object AudioDecoder {
             }
             check(samples > 0) { "Не удалось декодировать аудио" }
             return FilePcm(tmp)
-        } catch (e: Throwable) { tmp.delete(); throw e }
+          } catch (e: IncompleteDecode) {
+            tmp.delete()
+            if (attempt == 1) throw e
+            Log.w(TAG, "Incomplete codec output; reopening the track once")
+          } catch (e: Throwable) { tmp.delete(); throw e }
+        }
+        error("Audio decode retry exhausted")
     }
 
     private fun decodeInto(file: File, makeBuilder: (MediaFormat) -> ShortArrayBuilder): ShortArrayBuilder? {
@@ -68,6 +78,8 @@ object AudioDecoder {
             decodeTrack(extractor, format, out)
             out
         } catch (e: java.util.concurrent.CancellationException) {
+            throw e
+        } catch (e: IncompleteDecode) {
             throw e
         } catch (e: Exception) {
             Log.e(TAG, "Decode failed: ${e.message}", e)
@@ -112,6 +124,7 @@ object AudioDecoder {
                     val inIdx = codec.dequeueInputBuffer(0)
                     if (inIdx < 0) break
                     val inBuf = checkNotNull(codec.getInputBuffer(inIdx))
+                    inBuf.clear()
                     val size = extractor.readSampleData(inBuf, 0)
                     if (size < 0) {
                         codec.queueInputBuffer(inIdx, 0, 0, 0, MediaCodec.BUFFER_FLAG_END_OF_STREAM)
@@ -163,6 +176,10 @@ object AudioDecoder {
             try { if (started) codec.stop() } finally { codec.release() }
         }
 
+        val expectedUs = if (format.containsKey(MediaFormat.KEY_DURATION)) format.getLong(MediaFormat.KEY_DURATION) else 0L
+        if (expectedUs > 0 && out.total * 1_000_000L / 16_000 + 1_000_000L < expectedUs) {
+            throw IncompleteDecode("Аудио декодировано не полностью. Повторите обработку записи")
+        }
         Log.i(TAG, "Decoded ${out.total} samples (${out.total / 16000}s at 16kHz, src ${srcRate}Hz × $channels ch)")
     }
 
