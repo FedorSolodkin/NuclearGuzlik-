@@ -37,7 +37,7 @@ def main():
         cases.append(directory)
     def run(command,env=None):subprocess.run([str(x) for x in command],cwd=repository,env=env,check=True)
     env=dict(os.environ,JAVA_HOME=args.java_home,GUZLIKVOICE_DIAR_BENCHMARK=str(corpus))
-    gradle=['./gradlew',':app:testStoreDebugUnitTest','--tests','com.example.guzlikvoice.LocalDiarizationBenchmarkTest','--offline']
+    gradle=['./gradlew',':app:testStoreDebugUnitTest','--tests','com.guzlik.voice.LocalDiarizationBenchmarkTest','--offline']
     for directory in cases:
         print('CAPTURE',directory.name,flush=True)
         run([sys.executable,'tools/device_test/capture_evidence_host.py',directory/'audio-16k.wav',directory/'full-evidence.json'])
@@ -54,7 +54,7 @@ def main():
     run(gradle,env)
     run([sys.executable,'tools/device_test/evaluate_diarization_benchmark.py',corpus])
     digest=hashlib.sha256()
-    for source in sorted((repository/'app/src/main/java/com/example/guzlikvoice').glob('*.kt')):
+    for source in sorted((repository/'app/src/main/java/com/guzlik/voice').glob('*.kt')):
         digest.update(source.name.encode());digest.update(source.read_bytes())
     identity=dict(kotlin_sources_sha256=digest.hexdigest(),runtime='host CPU ONNX + JVM; not Android timing',
                   manifest_sha256=hashlib.sha256((corpus/'manifest.json').read_bytes()).hexdigest(),

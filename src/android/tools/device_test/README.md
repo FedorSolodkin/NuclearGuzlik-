@@ -74,12 +74,12 @@ adb install -r -t app/build/outputs/apk/androidTest/legacy/debug/app-legacy-debu
 python3 tools/device_test/run.py prepare     # эталоны из ~/guzlikvoice-bench/data
 ```
 
-Тесты движков идут на отладочной сборке `com.example.guzlikvoice.dev`. Она ставится
+Тесты движков идут на отладочной сборке `com.guzlik.voice.dev`. Она ставится
 рядом с рабочим приложением и не трогает его записи. Модели в неё кладутся по USB
 (мобильный трафик не тратится):
 
 ```bash
-P=com.example.guzlikvoice.dev
+P=com.guzlik.voice.dev
 adb push model.gguf /sdcard/Android/data/$P/files/    # приложение ищет модели и здесь
 ```
 
@@ -100,10 +100,10 @@ adb push model.gguf /sdcard/Android/data/$P/files/    # приложение и�
 ## Данные 3.9 для теста переноса
 
 ```bash
-adb exec-out run-as com.example.guzlikvoice tar cf - --exclude='*.gguf' --exclude='ggml-whisper*' . > data.tar
+adb exec-out run-as com.guzlik.voice tar cf - --exclude='*.gguf' --exclude='ggml-whisper*' . > data.tar
 adb push data.tar /data/local/tmp/vm39.tar
-adb shell run-as com.example.guzlikvoice.dev rm -rf databases
-adb shell run-as com.example.guzlikvoice.dev tar xf /data/local/tmp/vm39.tar ./files ./shared_prefs
+adb shell run-as com.guzlik.voice.dev rm -rf databases
+adb shell run-as com.guzlik.voice.dev tar xf /data/local/tmp/vm39.tar ./files ./shared_prefs
 python3 tools/device_test/run.py migration
 ```
 
@@ -150,21 +150,21 @@ python3 -m unittest discover -s tools/device_test -p test_diar_score.py -v
 
 ### Акустический smoke-тест на отдельной store-debug установке
 
-Эта проверка использует `ru.guzlikvoice.app.dev`, не рабочее приложение. Для
-`run.py` выше используется другой flavor — `com.example.guzlikvoice.dev`.
+Эта проверка использует `ru.guzlik.voice.dev`, не рабочее приложение. Для
+`run.py` выше используется другой flavor — `com.guzlik.voice.dev`.
 
 ```bash
 ./gradlew assembleStoreDebug assembleStoreDebugAndroidTest
 adb install -r app/build/outputs/apk/store/debug/GuzlikVoice-v4.0.7-dev-store-debug.apk
 adb install -r -t app/build/outputs/apk/androidTest/store/debug/app-store-debug-androidTest.apk
 # Явно разрешённая загрузка двух публичных ONNX-моделей, проверка SHA-256:
-adb shell am instrument -w -e class com.example.guzlikvoice.EngineEvalDeviceTest#prepareDiarizationModels -e downloadModels true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.EngineEvalDeviceTest#prepareDiarizationModels -e downloadModels true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 python3 tools/device_test/make_acoustic_smoke.py
-adb shell mkdir -p /sdcard/Android/data/ru.guzlikvoice.app.dev/files/eval/diar
-adb push tools/device_test/assets/diar/*.s16 /sdcard/Android/data/ru.guzlikvoice.app.dev/files/eval/diar/
-adb shell am instrument -w -e class com.example.guzlikvoice.EngineEvalDeviceTest#diarizationAcoustics ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell mkdir -p /sdcard/Android/data/ru.guzlik.voice.dev/files/eval/diar
+adb push tools/device_test/assets/diar/*.s16 /sdcard/Android/data/ru.guzlik.voice.dev/files/eval/diar/
+adb shell am instrument -w -e class com.guzlik.voice.EngineEvalDeviceTest#diarizationAcoustics ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 mkdir -p tools/device_test/out
-adb pull /sdcard/Android/data/ru.guzlikvoice.app.dev/files/eval/out/diar-acoustics.json tools/device_test/out/
+adb pull /sdcard/Android/data/ru.guzlik.voice.dev/files/eval/out/diar-acoustics.json tools/device_test/out/
 python3 tools/device_test/summarize_acoustic_smoke.py tools/device_test/out/diar-acoustics.json --output tools/device_test/out/acoustic-summary.json
 ```
 
@@ -252,10 +252,10 @@ AES-256-GCM, отдельный ключ Android Keystore, AAD с версией
 ### Проверка продолжения, интерфейса и первого анализа на телефоне
 
 ```bash
-adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationQualityDeviceTest#inferenceResumeAndPerformance -e qualityAudit true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
-adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationQualityDeviceTest#spinningComparison -e spinAudit true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
-adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationQualityDeviceTest#onnxThreadComparison -e threadAudit true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
-adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationUiDeviceTest -e qualityUi true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.DiarizationQualityDeviceTest#inferenceResumeAndPerformance -e qualityAudit true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.DiarizationQualityDeviceTest#spinningComparison -e spinAudit true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.DiarizationQualityDeviceTest#onnxThreadComparison -e threadAudit true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.DiarizationUiDeviceTest -e qualityUi true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 Первый тест сравнивает 1/2/3 обработчика, прерывает реальную модель после второго
@@ -278,8 +278,8 @@ adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationUiDeviceT
 Проверка восстановления полной истории в отдельном процессе:
 
 ```bash
-adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationReplayDeviceTest#replayAndJobRunner -e historyReplay true -e importReviewCopy true -e seedOnly true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
-adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationReplayDeviceTest#recoverPersistedJobInFreshProcess -e historyRecovery true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.DiarizationReplayDeviceTest#replayAndJobRunner -e historyReplay true -e importReviewCopy true -e seedOnly true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.DiarizationReplayDeviceTest#recoverPersistedJobInFreshProcess -e historyRecovery true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 Файлы истории находятся только в debug-пакете, `expected-v2.json` должен быть
@@ -298,14 +298,14 @@ adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationReplayDev
 `expected-acoustics.json` с хешами интервалов и назначений:
 
 ```bash
-GUZLIKVOICE_ACOUSTIC_EVIDENCE=/absolute/private/fixture ./gradlew :app:testStoreDebugUnitTest --tests com.example.guzlikvoice.LocalAcousticReplayTest
+GUZLIKVOICE_ACOUSTIC_EVIDENCE=/absolute/private/fixture ./gradlew :app:testStoreDebugUnitTest --tests com.guzlik.voice.LocalAcousticReplayTest
 ```
 
 Для паритета Android передайте эти два входа (`full-evidence.json` и
 `expected-acoustics.json`) в `eval/acoustic/<fixture>/` debug-приложения:
 
 ```bash
-adb shell am instrument -w -e class com.example.guzlikvoice.EngineEvalDeviceTest#cachedAcousticsParity -e acousticReplay true -e fixture interview-2026-11-04 ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.EngineEvalDeviceTest#cachedAcousticsParity -e acousticReplay true -e fixture interview-2026-11-04 ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 Этот вызов проверяет полную кластеризацию и объединение интервалов. Извлечение
@@ -360,7 +360,7 @@ PCM через `diarizationAcoustics -e captureEvidence true`. При перен
 системного срока, проверяя отсутствие аварии и оставшейся службы:
 
 ```bash
-adb shell am instrument -w -e class com.example.guzlikvoice.RecordingServiceDeviceTest -e serviceAudit true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.RecordingServiceDeviceTest -e serviceAudit true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 Автоматический подсчёт также учитывает временную поддержку обычных кластеров:
@@ -384,8 +384,8 @@ adb shell am instrument -w -e class com.example.guzlikvoice.RecordingServiceDevi
 (16 кГц, mono, PCM16 little endian):
 
 ```bash
-adb shell am instrument -w -e class com.example.guzlikvoice.LongAudioDiarizationDeviceTest#extractWholeRecording -e longAudio true -e predecoded true -e fixture interview-2026-11-04 ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
-adb shell am instrument -w -e class com.example.guzlikvoice.BoundaryRefinementDeviceTest -e boundaryAudit true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.LongAudioDiarizationDeviceTest#extractWholeRecording -e longAudio true -e predecoded true -e fixture interview-2026-11-04 ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.BoundaryRefinementDeviceTest -e boundaryAudit true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 При `predecoded=true` оба нейросетевых прохода выполняются на телефоне, а AAC
@@ -407,7 +407,7 @@ Keystore и сравнивает признаки и интервалы с не�
 Для настройки ORT на человеческом монтаже вместо синтетики:
 
 ```bash
-adb shell am instrument -w -e class com.example.guzlikvoice.DiarizationQualityDeviceTest#onnxThreadComparison -e threadAudit true -e threadFixture interview_validation_montage.s16 ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.DiarizationQualityDeviceTest#onnxThreadComparison -e threadAudit true -e threadFixture interview_validation_montage.s16 ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 Сравниваются 2/4/4/2 потока. Профиль меняется только при заметном выигрыше и
@@ -474,11 +474,11 @@ Opt-in JVM-проверки с локальными фикстурами все�
 открывает приложение штатным launcher-входом MIUI и пишет этапы в `FullUserFlow`.
 
 ```bash
-adb shell am instrument -w -e class com.example.guzlikvoice.FullUserFlowDeviceTest#importEditTimeLinksQuestionExportRotationAndDiarization -e fullFlow true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
-adb shell am instrument -w -e class com.example.guzlikvoice.FullUserFlowDeviceTest#legacySrtUsesBoundedAsrAndCachesTimestamps -e legacyFlow true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.FullUserFlowDeviceTest#importEditTimeLinksQuestionExportRotationAndDiarization -e fullFlow true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.FullUserFlowDeviceTest#legacySrtUsesBoundedAsrAndCachesTimestamps -e legacyFlow true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 # Только явная установка штатной публичной модели помощника, с проверкой SHA-256 и докачкой:
-adb shell am instrument -w -e class com.example.guzlikvoice.FullUserFlowDeviceTest#prepareAssistantForFullFlow -e downloadAssistant true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
-adb shell am instrument -w -e class com.example.guzlikvoice.FullUserFlowDeviceTest#assistantNoteQuestionProtocolAndPdf -e assistantFlow true ru.guzlikvoice.app.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.FullUserFlowDeviceTest#prepareAssistantForFullFlow -e downloadAssistant true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
+adb shell am instrument -w -e class com.guzlik.voice.FullUserFlowDeviceTest#assistantNoteQuestionProtocolAndPdf -e assistantFlow true ru.guzlik.voice.dev.test/androidx.test.runner.AndroidJUnitRunner
 ```
 
 Проверяемые цепочки:

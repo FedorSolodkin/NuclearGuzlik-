@@ -17,7 +17,7 @@ val authRequiredOverride: Boolean? = (project.findProperty("guzlikvoiceAuthRequi
     }
 
 android {
-    namespace = "com.example.guzlikvoice"
+    namespace = "com.guzlik.voice"
     compileSdk = 36
     ndkVersion = "25.1.8937393"
 
@@ -36,7 +36,7 @@ android {
         //   googleOauthClientId=1234567890-xxxxx.apps.googleusercontent.com
         // Сервер подписки и публичный ключ лицензий (см. server/README.md).
         // Без ключа приложение работает со старым сервером в режиме /subscription/status.
-        val apiUrl = (project.findProperty("guzlikvoiceApiUrl") as String?) ?: "https://api.voice-mind.ru"
+        val apiUrl = (project.findProperty("guzlikvoiceApiUrl") as String?) ?: ""
         val licenseKey = (project.findProperty("guzlikvoiceLicensePublicKey") as String?).orEmpty()
         buildConfigField("String", "API_BASE_URL", "\"$apiUrl\"")
         buildConfigField("String", "LICENSE_PUBLIC_KEY", "\"$licenseKey\"")
@@ -58,7 +58,7 @@ android {
         }
         buildConfigField("String", "LLM_MODELS", "\"$llmModels\"")
 
-        // Свой сервер моделей (server/, Caddy /models/): -PguzlikvoiceModelsUrl=https://api.voice-mind.ru/models/
+        // Свой сервер моделей (server/, Caddy /models/): -PguzlikvoiceModelsUrl=<url>
         // Задан — модели качаются сначала оттуда, потом с зеркала на GitHub, потом из оригиналов.
         val modelsUrl = (project.findProperty("guzlikvoiceModelsUrl") as String?).orEmpty().trim()
             .let { if (it.isEmpty() || it.endsWith("/")) it else "$it/" }
@@ -153,18 +153,18 @@ android {
         // Основное приложение: новый пакет и новый ключ (с v4.0).
         create("store") {
             dimension = "channel"
-            applicationId = "ru.guzlikvoice.app"
+            applicationId = "ru.guzlik.voice"
             versionCode = 47
             versionName = "4.0.7"
             buildConfigField("boolean", "LEGACY_BRIDGE", "false")
             signingConfigs.findByName("release")?.let { signingConfig = it }
         }
-        // Мостовая версия для тех, у кого стоит com.example.guzlikvoice (≤3.9):
+        // Мостовая версия для тех, у кого стоит com.guzlik.voice (≤3.9):
         // ставится поверх старой, даёт выгрузить все записи архивом и
         // предлагает перейти на новое приложение.
         create("legacy") {
             dimension = "channel"
-            applicationId = "com.example.guzlikvoice"
+            applicationId = "com.guzlik.voice"
             versionCode = 14
             versionName = "3.10"
             // Мостовое окно «перейдите на 4.0» включаем, когда выйдет 4.0

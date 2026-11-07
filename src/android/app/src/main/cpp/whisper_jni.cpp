@@ -67,7 +67,7 @@ static jbyteArray to_jbytes(JNIEnv* env, const std::string& s) {
 extern "C" {
 
 JNIEXPORT jboolean JNICALL
-Java_com_example_guzlikvoice_WhisperCppEngine_nativeInit(
+Java_com_guzlik_voice_WhisperCppEngine_nativeInit(
         JNIEnv* env, jobject /*thiz*/, jstring modelPath, jboolean useGpu, jstring nativeLibDir) {
 
     const char* libDir = env->GetStringUTFChars(nativeLibDir, nullptr);
@@ -118,13 +118,13 @@ Java_com_example_guzlikvoice_WhisperCppEngine_nativeInit(
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_example_guzlikvoice_WhisperCppEngine_nativeIsGpuActive(JNIEnv*, jobject) {
+Java_com_guzlik_voice_WhisperCppEngine_nativeIsGpuActive(JNIEnv*, jobject) {
     return g_gpu_active ? JNI_TRUE : JNI_FALSE;
 }
 
 // Отменяет все вызовы с [token]: идущий прерывает, ещё не начатые не запустятся.
 JNIEXPORT void JNICALL
-Java_com_example_guzlikvoice_WhisperCppEngine_nativeAbort(JNIEnv*, jobject, jlong token) {
+Java_com_guzlik_voice_WhisperCppEngine_nativeAbort(JNIEnv*, jobject, jlong token) {
     if (token == 0) return;
     std::lock_guard<std::mutex> lock(g_tok_mutex);
     g_aborted_tokens.insert(token);
@@ -140,7 +140,7 @@ Java_com_example_guzlikvoice_WhisperCppEngine_nativeAbort(JNIEnv*, jobject, jlon
 //   audioCtx      — 0 = полное окно; >0 — укороченное (для замеров)
 //   language      — "ru" / "en" (выбирается заранее, см. nativeDetectLanguage)
 JNIEXPORT jbyteArray JNICALL
-Java_com_example_guzlikvoice_WhisperCppEngine_nativeTranscribe(
+Java_com_guzlik_voice_WhisperCppEngine_nativeTranscribe(
         JNIEnv* env, jobject /*thiz*/,
         jshortArray pcmData, jstring initialPrompt, jboolean carryPrompt,
         jstring vadModelPath, jfloat vadThreshold, jint beamSize, jint audioCtx, jstring language,
@@ -338,7 +338,7 @@ Java_com_example_guzlikvoice_WhisperCppEngine_nativeTranscribe(
 // в разы дешевле полного 30-сек окна. Отдельный state ещё и не зависит от
 // audio_ctx, оставшегося в общем от прошлого вызова (после прогрева — 5 с).
 JNIEXPORT jstring JNICALL
-Java_com_example_guzlikvoice_WhisperCppEngine_nativeDetectLanguage(
+Java_com_guzlik_voice_WhisperCppEngine_nativeDetectLanguage(
         JNIEnv* env, jobject /*thiz*/, jshortArray pcmData, jstring vadModelPath, jfloat vadThreshold) {
 
     jsize len = env->GetArrayLength(pcmData);
@@ -436,7 +436,7 @@ Java_com_example_guzlikvoice_WhisperCppEngine_nativeDetectLanguage(
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_guzlikvoice_WhisperCppEngine_nativeFree(JNIEnv* /*env*/, jobject /*thiz*/) {
+Java_com_guzlik_voice_WhisperCppEngine_nativeFree(JNIEnv* /*env*/, jobject /*thiz*/) {
     g_abort_all.store(true);   // если идёт расшифровка — прервём, чтобы не ждать минутами
     std::lock_guard<std::mutex> lock(g_mutex);
     if (g_ctx) {

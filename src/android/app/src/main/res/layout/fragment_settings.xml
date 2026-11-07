@@ -32,6 +32,7 @@
         android:textColor="@color/textPrimary"
         android:layout_marginBottom="20dp"/>
 
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
     <!-- ── Transcription ──────────────────────────────────── -->
     <TextView
         android:layout_width="match_parent"
@@ -279,7 +280,10 @@
         android:alpha="0.15"
         android:layout_marginBottom="24dp"/>
 
-    <!-- ── YouGile: отправка протоколов в таск-трекер ─────── -->
+        </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+<!-- ── YouGile: отправка протоколов в таск-трекер ─────── -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -359,7 +363,10 @@
         android:alpha="0.15"
         android:layout_marginBottom="24dp"/>
 
-    <!-- ── Микрофон ───────────────────────────────────────── -->
+        </LinearLayout>
+
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+<!-- ── Микрофон ───────────────────────────────────────── -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -446,7 +453,9 @@
         android:lineSpacingMultiplier="1.35"
         android:layout_marginBottom="20dp"/>
 
-    <!-- ── Мой словарь: имена и редкие слова для подсказки Whisper ── -->
+        </LinearLayout>
+
+<!-- ── Мой словарь: имена и редкие слова для подсказки Whisper ── -->
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -488,7 +497,9 @@
             android:textSize="14sp"/>
     </com.google.android.material.textfield.TextInputLayout>
 
-    <!-- ── Календарь и встречи: подключение Google/Яндекс + список встреч ──
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
+<!-- ── Календарь и встречи: подключение Google/Яндекс + список встреч ──
          вынесено в отдельный экран ToolsActivity (раньше было тут + вкладка "Сегодня"). -->
     <LinearLayout
         android:id="@+id/rowTools"
@@ -533,6 +544,8 @@
             android:textColor="@color/textMuted"/>
     </LinearLayout>
 
+    </LinearLayout>
+
     <!-- Divider -->
     <View
         android:layout_width="match_parent"
@@ -553,6 +566,7 @@
         android:textColor="@color/textMuted"
         android:layout_marginBottom="12dp"/>
 
+    <LinearLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:orientation="vertical" android:visibility="gone">
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnExportAll"
         style="@style/Widget.Material3.Button.OutlinedButton"
@@ -580,6 +594,8 @@
         android:text="Все записи с аудио, клиенты и голоса в одном файле, зашифрованном паролем. Пригодится при смене телефона."
         android:textSize="11sp"
         android:textColor="@color/textMuted"/>
+
+    </LinearLayout>
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnWipeAll"
@@ -655,7 +671,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="4dp"
         android:layout_marginBottom="8dp"
-        android:text="Соберёт сведения о телефоне и технический журнал (без записей и текста) и откроет «Поделиться». Отправьте файл нам и опишите, что случилось — контакты в Telegram-канале @IGuzlikVoice."
+        android:text="Соберёт сведения о телефоне и технический журнал (без записей и текста) и откроет «Поделиться». Отправьте файл нам и опишите, что случилось."
         android:textSize="11sp"
         android:textColor="@color/textMuted"
         android:lineSpacingMultiplier="1.35"/>
@@ -721,5 +737,6 @@
             android:lineSpacingMultiplier="1.35"/>
     </LinearLayout>
 
+    </LinearLayout>
 </LinearLayout>
 </androidx.core.widget.NestedScrollView>

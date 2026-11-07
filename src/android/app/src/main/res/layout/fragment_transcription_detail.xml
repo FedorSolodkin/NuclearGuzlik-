@@ -339,6 +339,7 @@
             <!-- Клиент, к которому привязана запись (Pro-фича) -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardClientLink"
+        android:visibility="gone"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
@@ -441,7 +442,7 @@
                 android:layout_height="48dp"
                 android:layout_marginHorizontal="16dp"
                 android:layout_marginBottom="8dp"
-                android:text="Экспортировать (SRT, PDF, Word)"
+                android:text="Экспорт (JSON, SRT, аудио)"
                 android:textColor="@color/primary"
                 app:strokeColor="@color/primary"
                 app:cornerRadius="12dp"/>

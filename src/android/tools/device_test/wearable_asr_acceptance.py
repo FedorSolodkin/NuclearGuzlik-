@@ -53,7 +53,7 @@ def summarize(cases, results):
 def main():
     p = argparse.ArgumentParser(description=__doc__)
     p.add_argument("manifest", type=Path)
-    p.add_argument("--package", default="ru.guzlikvoice.app.prototype")
+    p.add_argument("--package", default="ru.guzlik.voice.prototype")
     p.add_argument("--adb", default=os.environ.get("ADB", "adb"))
     p.add_argument("--serial")
     p.add_argument("--output", type=Path, required=True)
@@ -82,7 +82,7 @@ def main():
     for c in cases:
         adb("push", str(a.manifest.parent / c["pcm"]), remote + "/asr/" + c["id"] + ".s16")
     log = adb("shell", "am", "instrument", "-w", "-e", "class",
-              "com.example.guzlikvoice.EngineEvalDeviceTest#asrPipeline",
+              "com.guzlik.voice.EngineEvalDeviceTest#asrPipeline",
               a.package + ".test/androidx.test.runner.AndroidJUnitRunner", timeout=6 * 3600)
     if "OK (" not in log or "FAILURES" in log:
         raise RuntimeError(log)

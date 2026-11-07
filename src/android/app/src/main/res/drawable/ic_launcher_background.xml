@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- Фон иконки — тёмный тёплый, как у логотипа на voice-mind.ru (site/assets/logo.svg). -->
+<!-- Фон иконки — тёмный тёплый, как у логотипа на guzlik-voice.ru (site/assets/logo.svg). -->
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
     <solid android:color="#1C1A15" />
 </shape>

@@ -122,6 +122,7 @@
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnExportDay"
+        android:visibility="gone"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
