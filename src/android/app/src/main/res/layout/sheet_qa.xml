@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface"
+    android:paddingBottom="16dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_drag_handle"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="16dp"
+        android:paddingBottom="12dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:text="Спросить о записи"
+            android:textSize="17sp"
+            android:textStyle="bold"
+            android:textColor="@color/textPrimary"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:src="@drawable/ic_sparkle"
+                app:tint="@color/primary"
+                android:layout_marginEnd="4dp"
+                android:contentDescription="@null"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ИИ"
+                android:textSize="12sp"
+                android:textColor="@color/primary"/>
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Ввод вопроса -->
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:hint="Ваш вопрос по записи"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etQaQuestion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:minLines="2"
+            android:maxLines="4"
+            android:gravity="top"
+            android:inputType="textMultiLine|textCapSentences"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- Быстрые подсказки-примеры -->
+    <com.google.android.material.chip.ChipGroup
+        android:id="@+id/qaSuggestions"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="8dp"
+        app:chipSpacingHorizontal="6dp"
+        app:singleLine="false">
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipSummary"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Кратко о чём"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipDecisions"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Какие решения"/>
+
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chipTodos"
+            style="@style/Widget.Material3.Chip.Assist"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Что делать"/>
+
+    </com.google.android.material.chip.ChipGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnAsk"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="12dp"
+        android:text="Спросить"
+        android:textColor="@color/background"
+        app:cornerRadius="12dp"
+        app:backgroundTint="@color/primary"/>
+
+    <ProgressBar
+        android:id="@+id/progressQa"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="4dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="8dp"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/primary"
+        android:visibility="gone"/>
+
+    <!-- Область ответа -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/cardQaAnswer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@color/surfaceElevated">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ответ"
+                android:textSize="10sp"
+                android:textAllCaps="true"
+                android:letterSpacing="0.14"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:layout_marginBottom="8dp"/>
+
+            <TextView
+                android:id="@+id/tvQaAnswer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="14sp"
+                android:lineSpacingMultiplier="1.5"
+                android:textColor="@color/textPrimary"
+                android:textIsSelectable="true"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnQaCopy"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="end"
+                android:text="Копировать"
+                android:textSize="12sp"
+                android:paddingHorizontal="0dp"
+                android:layout_marginTop="8dp"/>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+</LinearLayout>

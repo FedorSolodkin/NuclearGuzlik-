@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Consent-диалог перед началом записи. Custom view нужен только ради чекбокса
+    "больше не показывать" — стандартный AlertDialog его не поддерживает.
+-->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="8dp"
+    android:paddingBottom="4dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Убедитесь, что окружающие не возражают против записи разговора. В большинстве стран запись без согласия участников является нарушением закона."
+        android:textSize="14sp"
+        android:textColor="?attr/colorOnSurface"
+        android:lineSpacingMultiplier="1.35"/>
+
+    <!-- Замер 8–9.10: с 2–3 м ошибок 35–55% против 8–18% вблизи. -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp"
+        android:text="Совет: положите телефон ближе к говорящим — в центр стола. С расстояния 2–3 метров распознавание заметно хуже; для большой комнаты лучше проводной микрофон."
+        android:textSize="13sp"
+        android:textColor="?attr/colorOnSurfaceVariant"
+        android:lineSpacingMultiplier="1.35"/>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cbDontAskAgain"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Больше не спрашивать"
+        android:textSize="13sp"
+        android:textColor="?attr/colorOnSurfaceVariant"/>
+</LinearLayout>

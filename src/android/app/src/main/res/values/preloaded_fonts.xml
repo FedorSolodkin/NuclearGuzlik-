@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Google Play Services скачивает и кэширует эти шрифты после установки —
+    первый запуск не показывает fallback-Roboto пока идёт network fetch.
+-->
+<resources>
+    <array name="preloaded_fonts" translatable="false">
+        <item>@font/inter</item>
+        <item>@font/inter_medium</item>
+        <item>@font/inter_bold</item>
+        <item>@font/space_grotesk</item>
+        <item>@font/space_grotesk_bold</item>
+    </array>
+</resources>

@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Отправка протокола в YouGile: YouGileSendSheet -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface"
+    android:paddingHorizontal="20dp"
+    android:paddingBottom="20dp">
+
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_drag_handle"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="16dp"
+        android:text="Отправить в YouGile"
+        android:textSize="17sp"
+        android:textStyle="bold"
+        android:textColor="@color/textPrimary"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Текст протокола уйдёт на сервер YouGile. Без этой кнопки записи остаются только на телефоне."
+        android:textSize="12sp"
+        android:textColor="@color/textMuted"/>
+
+    <RadioGroup
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="12dp">
+
+        <RadioButton
+            android:id="@+id/rbYgNew"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="Новая задача"
+            android:textColor="@color/textPrimary"/>
+
+        <EditText
+            android:id="@+id/etYgTitle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:hint="Название задачи"
+            android:inputType="textCapSentences"
+            android:textColor="@color/textPrimary"/>
+
+        <TextView
+            android:id="@+id/tvYgColumn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="32dp"
+            android:textSize="12sp"
+            android:textColor="@color/textMuted"/>
+
+        <RadioButton
+            android:id="@+id/rbYgExisting"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Добавить в существующую задачу"
+            android:textColor="@color/textPrimary"/>
+    </RadioGroup>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnYgPickTask"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginStart="32dp"
+        android:maxLines="1"
+        android:text="Найти задачу"
+        android:textColor="@color/textPrimary"
+        app:cornerRadius="12dp"/>
+
+    <CheckBox
+        android:id="@+id/cbYgTranscript"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:checked="true"
+        android:text="Приложить расшифровку"
+        android:textColor="@color/textPrimary"/>
+
+    <TextView
+        android:id="@+id/tvYgStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="12sp"
+        android:textColor="@color/textMuted"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnYgSend"
+        android:layout_width="match_parent"
+        android:layout_height="52dp"
+        android:layout_marginTop="8dp"
+        android:text="Отправить"
+        android:textColor="#1A140A"
+        android:backgroundTint="@color/primary"
+        app:cornerRadius="12dp"/>
+</LinearLayout>

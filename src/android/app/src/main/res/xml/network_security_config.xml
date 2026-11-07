@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Only HTTPS to well-known model / OAuth / CalDAV hosts.
+    cleartext=false blocks any accidental http:// URL (a bad redirect, a typo).
+    If a new host is added, extend this list; do NOT open cleartext globally.
+-->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="false">
+        <trust-anchors>
+            <certificates src="system"/>
+        </trust-anchors>
+    </base-config>
+
+    <domain-config cleartextTrafficPermitted="false">
+        <domain includeSubdomains="true">huggingface.co</domain>
+        <domain includeSubdomains="true">hf.co</domain>
+        <domain includeSubdomains="true">alphacephei.com</domain>
+        <domain includeSubdomains="true">googleapis.com</domain>
+        <domain includeSubdomains="true">google.com</domain>
+        <domain includeSubdomains="true">accounts.google.com</domain>
+        <domain includeSubdomains="true">oauth2.googleapis.com</domain>
+        <domain includeSubdomains="true">caldav.yandex.ru</domain>
+        <domain includeSubdomains="true">yandex.ru</domain>
+    </domain-config>
+</network-security-config>
