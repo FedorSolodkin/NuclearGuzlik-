@@ -70,4 +70,11 @@ class HallucinationFilterTest {
         assertFalse(HallucinationFilter.isGarbage("Продолжение следует в следующий вторник, обсудим бюджет."))
         assertFalse(HallucinationFilter.isGarbage("Я сделал субтитры к видео для клиента."))
     }
+
+    @Test fun veryShortSegmentsAreGarbage() {
+        assertTrue(HallucinationFilter.isGarbage("."))
+        assertTrue(HallucinationFilter.isGarbage(" А. "))
+        assertFalse(HallucinationFilter.isGarbage("Да."))
+        assertFalse(HallucinationFilter.isGarbage("12"))
+    }
 }
