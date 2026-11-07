@@ -65,6 +65,7 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
         cancelToken: Long,
     ): ByteArray
     private external fun nativeDetectLanguage(pcmData: ShortArray, vadModelPath: String, vadThreshold: Float): String
+    private external fun nativeRefineWordTiming(pcmData: ShortArray, language: String, cancelToken: Long): ByteArray
     private external fun nativeIsGpuActive(): Boolean
     private external fun nativeAbort(cancelToken: Long)
     private external fun nativeFree()
@@ -197,6 +198,13 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
     internal fun decodeResult(raw: String): List<WhisperHelper.Segment> {
         NativeAsrResult.check(raw)
         return if (raw.isBlank()) emptyList() else parseSegments(raw)
+    }
+
+    fun refineWordTiming(pcm: ShortArray, language: String, cancelToken: Long): List<WhisperHelper.Word> {
+        check(isReady)
+        require(pcm.size <= 16 * 16_000)
+        return decodeResult(String(nativeRefineWordTiming(pcm, language, cancelToken), Charsets.UTF_8))
+            .flatMap { it.words.orEmpty() }
     }
 
     override fun detectLanguage(pcm: ShortArray): String? {

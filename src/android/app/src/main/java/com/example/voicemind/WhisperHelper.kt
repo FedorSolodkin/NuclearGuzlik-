@@ -30,7 +30,8 @@ class WhisperHelper(context: Context) {
     }
 
     /** Слово с таймкодами и уверенностью модели (минимальная вероятность его токенов, 0..1). */
-    data class Word(val text: String, val startMs: Long, val endMs: Long, val p: Float)
+    data class Word(val text: String, val startMs: Long, val endMs: Long, val p: Float,
+        val boundaryPassVersion: Int = 0)
 
     companion object {
         /**
@@ -88,6 +89,10 @@ class WhisperHelper(context: Context) {
 
     /** Отменяет только вызовы с этим токеном (см. [newCancelToken]). */
     fun abort(cancelToken: Long) = engine.abort(cancelToken)
+
+    /** Local DTW pass on a short boundary clip. Does not replace transcript text. */
+    fun refineWordTiming(pcm: ShortArray, cancelToken: Long): List<Word> =
+        (engine as? WhisperCppEngine)?.refineWordTiming(pcm, resolveLanguage(pcm), cancelToken).orEmpty()
 
     // ── Время жизни движка ─────────────────────────────────────────────────────
     // Модель в нативном коде одна на процесс. Раньше экран записи освобождал её при

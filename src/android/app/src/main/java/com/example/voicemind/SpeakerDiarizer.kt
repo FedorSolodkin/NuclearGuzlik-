@@ -59,6 +59,15 @@ object SpeakerDiarizer {
         val checkpoint: ((Int, Int, EvidenceSnapshot) -> Unit)? = null, val checkpointEveryChunks: Int = 10, val allowSpinning: Boolean? = null,
         val onnxThreads: Int? = null, val refineBoundaries: Boolean = true)
 
+    /** Updated word timing must not recluster voices or alter their names. */
+    fun reassignWords(segments: List<WhisperHelper.Segment>, base: Result): Result {
+        if (base.turns.isEmpty()) return base
+        val units = DiarizationUnits.expand(segments) ?: segments
+        val labels = SpeakerTimeline(base.turns).decideWords(units.map { it.startMs to it.endMs })
+        return base.copy(text = buildTextWithNames(units, labels, base.displayNames), units = units,
+            speakers = labels, rawSpeakers = labels)
+    }
+
     // ── Entry point ───────────────────────────────────────────────────────────
 
     /** Backward-compat обёртка — возвращает только текст. */
