@@ -63,6 +63,8 @@ android {
         buildConfigField("boolean", "AUTH_REQUIRED", (authRequiredOverride ?: true).toString())
         buildConfigField("boolean", "OFFLINE_PROTOTYPE", "false")
         buildConfigField("boolean", "CONTEST_BUILD", contestBuild.toString())
+        // Быстрый ASR (GigaAM) по умолчанию: -PguzlikvoiceFastAsr=true. Без флага — Whisper.
+        buildConfigField("boolean", "FAST_ASR", ((project.findProperty("guzlikvoiceFastAsr") as String?) == "true").toString())
 
         // Какие модели ИИ-анализа можно выбрать в настройках: id через запятую
         // (-PguzlikvoiceLlmModels=gemma2-2b — сборка «только Gemma»). Пусто — все.
