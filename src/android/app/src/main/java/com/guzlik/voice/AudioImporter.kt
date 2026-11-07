@@ -113,7 +113,7 @@ object AudioImporter {
             return
         }
 
-        // Голоса при импорте не делим: это отдельная кнопка «Разделить по голосам» в записи.
+        // Голоса делятся автоматически после расшифровки (AutoDiarization); вручную можно «Разделить заново».
         // try/finally: движок отпускаем на любом выходе (см. WhisperHelper.retain).
         try {
             val glossary = Glossary.buildPrompt(ctx)
@@ -149,6 +149,7 @@ object AudioImporter {
             }
             Log.i(TAG, "Importing ${file.name}: ${samples / 16_000} s")
             var saved = 0L
+            var savedSegments: List<WhisperHelper.Segment> = emptyList()
             session.flushAndWait(onDone = { text, segments, diarization ->
                 lease.check()
                 if (text.isBlank() && session.failedChunks == 0) return@flushAndWait
@@ -160,6 +161,7 @@ object AudioImporter {
                 saved = RecordStorage.addToToday(ctx, cleaned, "import", null, file.absolutePath,
                     linkPendingEvent = false)
                 if (segments.isNotEmpty()) RecordStorage.updateEntrySegments(ctx, saved, segments)
+                savedSegments = segments
                 SpeakerCentroidStorage.putFromResult(ctx, saved, diarization)
             })
             session.release()
@@ -167,6 +169,7 @@ object AudioImporter {
                 ProcessingNotifier.notifyReady(ctx, saved, "Расшифровка неполная — часть файла не распознана")
             } else if (saved != 0L) {
                 ProcessingNotifier.notifyReady(ctx, saved, "Файл расшифрован")
+                AutoDiarization.start(ctx, file, saved, savedSegments)
             } else {
                 toast(ctx, "В файле не найдено речи")
                 file.delete()

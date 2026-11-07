@@ -689,6 +689,14 @@ class TranscriptionDetailSheet : BottomSheetDialogFragment() {
                 ExportPickerSheet.Format.DOCX -> exporter.exportDocument(EntryExporter.Doc.DOCX,date,timestamp,transcript)
             }
         }
+        // Экспорт JSON одной кнопкой: сразу в «Загрузки» с возможностью поделиться.
+        view.findViewById<MaterialButton>(R.id.btnExportJsonQuick).setOnClickListener {
+            if (DiarizationJobRunner.stateOf(timestamp) is DiarizationJobRunner.State.Running) {
+                Toast.makeText(requireContext(), "Разделение по голосам ещё идёт — дождитесь окончания", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            exporter.exportJson(timestamp, currentTranscript(), parseStoredSegments())
+        }
         view.findViewById<MaterialButton>(R.id.btnExportFormats).setOnClickListener {
             if (!ProFeatures.requirePro(requireContext(),ProFeatures.Feature.ADVANCED_EXPORTS)) return@setOnClickListener
             if (parentFragmentManager.findFragmentByTag("export_picker") == null)

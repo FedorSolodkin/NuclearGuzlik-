@@ -233,6 +233,20 @@
                 android:paddingVertical="16dp"
                 android:textIsSelectable="true"/>
 
+            <!-- Экспорт JSON одной кнопкой (контракт задания) -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExportJsonQuick"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="8dp"
+                android:text="Экспорт JSON"
+                android:textColor="#1A140A"
+                android:textStyle="bold"
+                android:backgroundTint="@color/primary"
+                app:cornerRadius="12dp"/>
+
             <!-- Функции записи: свёрнуты в одну строку, чтобы не закрывать текст -->
             <LinearLayout
                 android:id="@+id/rowActionsToggle"

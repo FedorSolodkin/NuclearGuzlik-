@@ -749,6 +749,7 @@ class RecordFragment : Fragment(R.layout.fragment_record) {
                             sess.clearWal()
                             ProcessingNotifier.notifyReady(appCtx, saved,
                                 if (sess.failedChunks > 0) "Расшифровка неполная" else "Транскрипт готов")
+                            if (sess.failedChunks == 0) AutoDiarization.start(appCtx, savedAudio, saved, segments)
                         }
                     }
                 })
