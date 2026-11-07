@@ -232,6 +232,9 @@ android {
     testOptions {
         unitTests.isIncludeAndroidResources = true
         unitTests.all {
+            // Robolectric downloads its Android runtime outside Gradle repositories.
+            // Use the canonical Central endpoint instead of the rate-limited repo1 alias.
+            it.systemProperty("robolectric.dependency.repo.url", "https://repo.maven.apache.org/maven2")
             // Private opt-in fixtures live outside Gradle's declared inputs and
             // can change between runs. Never reuse a stale evaluation result.
             if (System.getenv("VOICEMIND_LOCAL_EVIDENCE") != null ||
