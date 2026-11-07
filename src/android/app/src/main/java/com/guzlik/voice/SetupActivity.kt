@@ -93,6 +93,13 @@ class SetupActivity : AppCompatActivity() {
         btnSkip.visibility = View.GONE
         btnRetry.visibility = View.GONE
 
+        if (BuildConfig.CONTEST_BUILD) {
+            autoDownloadTiny = false
+            autoDownloadLlm = false
+            installBundled()
+            return
+        }
+
         // Модели лежат внутри APK: копируем их в папку приложения, без интернета.
         if (BundledModels.pending(this).isNotEmpty()) { installBundled(); return }
 

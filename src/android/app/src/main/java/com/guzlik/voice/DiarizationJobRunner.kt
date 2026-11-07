@@ -270,12 +270,15 @@ object DiarizationJobRunner {
         }
         if (cached != null) DiarizationEvidenceCache.put(key,ticket,cached)
         var decoded: FilePcm? = null
-        fun pcm(): FilePcm = decoded ?: AudioDecoder.decodeToFile(audioFile, appCtx.cacheDir, ::cancelled).also {
-            decoded = it; lap("decode ${it.size / 16_000} s of audio", tStart)
+        val reusedPcm: PcmAudio? = DiarizationEvidenceCache.getPcm(key, ticket)
+        fun pcm(): PcmAudio = reusedPcm ?: decoded ?: AudioDecoder.decodeToFile(audioFile, appCtx.cacheDir, ::cancelled).also {
+            decoded = it
+            if (!cancelled()) DiarizationEvidenceCache.putPcm(key, ticket, it)
+            lap("decode ${it.size / 16_000} s of audio", tStart)
         }
         try {
             // Missing times in one phrase no longer cause full-record ASR.
-            val segments = reuse ?: run {
+            var segments = reuse ?: run {
                 if (whisper == null || !whisper.isReady)
                     return State.Failed(timestamp, "Сначала откройте вкладку «Запись»: распознавание ещё запускается")
                 pushRunning(State.Running(timestamp, "Распознаю..."))
@@ -303,7 +306,7 @@ object DiarizationJobRunner {
             if (segments.isEmpty()) return State.Failed(timestamp, "Речь не распознана")
             if (reuse == null && checkpointAllowed) RecordStorage.updateEntrySegments(appCtx, timestamp, segments)
             val tDiar = System.nanoTime()
-            val result = if (cached?.boundaryRefinement?.completed == true) {
+            var result = if (cached?.boundaryRefinement?.completed == true) {
                 pushRunning(State.Running(timestamp, "Обновляю разделение..."))
                 Log.i(TAG, "Reusing in-memory speaker evidence; skipping decode and models")
                 SpeakerDiarizer.diarize(segments, emptyMap(), null, context = appCtx, numSpeakers = numSpeakers,
@@ -333,6 +336,27 @@ object DiarizationJobRunner {
                 } finally { embedder.release() }
             }
             lap("diarization", tDiar)
+            val aligner = (whisper ?: WhisperHelper.active)?.takeIf { it.isReady }
+            val evidence = DiarizationEvidenceCache.get(key, ticket)
+            if (aligner != null && evidence != null && result.centroids.size > 1 && aligner.retain()) {
+                val token = WhisperHelper.newCancelToken()
+                whisperCalls[timestamp] = aligner to token
+                try {
+                    val clips = BoundaryWordTiming.plan(segments, result.turns, evidence.windows.maxOf { it.endMs })
+                    val audio = if (clips.isNotEmpty()) pcm() else null
+                    if (audio != null) aligner.withWordTimingSession(token) { refine ->
+                        for ((i, clip) in clips.withIndex()) {
+                            if (cancelled()) throw CancellationException("Boundary pass cancelled")
+                            pushRunning(State.Running(timestamp, "Уточняю слова у смены голоса ${i + 1}/${clips.size}..."))
+                            val refined = refine(audio.copyOfRange((clip.startMs * 16).toInt(),
+                                minOf(audio.size, (clip.endMs * 16).toInt())))
+                                .map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }
+                            segments = BoundaryWordTiming.apply(segments, clip, refined, result.turns)
+                        }
+                    }
+                    if (clips.isNotEmpty()) result = SpeakerDiarizer.reassignWords(segments, result)
+                } finally { whisperCalls.remove(timestamp); aligner.releaseUse() }
+            }
             currentCoroutineContext().ensureActive()
             if (result.centroids.isEmpty()) {
                 finishCheckpoint()

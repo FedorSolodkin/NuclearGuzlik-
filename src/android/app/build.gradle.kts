@@ -16,6 +16,23 @@ val authRequiredOverride: Boolean? = (project.findProperty("guzlikvoiceAuthRequi
         }
     }
 
+// Contest APK has exactly one ASR and one LLM, both shipped inside the APK.
+val contestBuild = (project.findProperty("guzlikvoiceContest") as String?)?.let {
+    it.toBooleanStrictOrNull() ?: throw GradleException("guzlikvoiceContest: true или false")
+} ?: false
+if (contestBuild) {
+    val bundle = (project.findProperty("guzlikvoiceBundle") as String?)
+        ?: throw GradleException("Конкурсная сборка требует -PguzlikvoiceBundle=<папка со всеми models/>")
+    val expected = mapOf("ggml-whisper-podlodka-turbo-q4_0.bin" to 473_992_235L,
+        "gemma-2-2b-it-Q4_K_M-ru90k.gguf" to 1_391_349_280L,
+        "speaker_model.onnx" to 26_535_549L, "pyannote_segmentation.onnx" to 5_986_908L,
+        "silero_vad.onnx" to 2_327_524L)
+    val folder = file("$bundle/models")
+    val actual = folder.listFiles()?.filter { it.isFile }?.map { it.name }?.toSet().orEmpty()
+    if (actual != expected.keys || folder.listFiles().orEmpty().any { it.isFile && it.length() != expected[it.name] })
+        throw GradleException("Конкурсная models/: нужны ровно $expected; найдены $actual")
+}
+
 android {
     namespace = "com.guzlik.voice"
     compileSdk = 36
@@ -45,13 +62,17 @@ android {
         // Пилотная сборка без сервера: -PguzlikvoiceAuthRequired=false (работает и для release).
         buildConfigField("boolean", "AUTH_REQUIRED", (authRequiredOverride ?: true).toString())
         buildConfigField("boolean", "OFFLINE_PROTOTYPE", "false")
+        buildConfigField("boolean", "CONTEST_BUILD", contestBuild.toString())
 
         // Какие модели ИИ-анализа можно выбрать в настройках: id через запятую
         // (-PguzlikvoiceLlmModels=gemma2-2b — сборка «только Gemma»). Пусто — все.
         // Проверка файлов и удаление уже скачанных работают для всех моделей.
         // Опечатка в id молча вернула бы все модели — поэтому сверяем со списком.
         val knownLlmIds = setOf("gemma2-2b", "gemma2-2b-v90k", "gemma2-2b-q4_0", "vm-qwen06-ft")   // = LlmModels.ALL[*].id
-        val llmModels = (project.findProperty("guzlikvoiceLlmModels") as String?).orEmpty()
+        val requestedLlm = (project.findProperty("guzlikvoiceLlmModels") as String?).orEmpty()
+        if (contestBuild && requestedLlm.isNotBlank() && requestedLlm != "gemma2-2b-v90k")
+            throw GradleException("Конкурсная сборка использует только gemma2-2b-v90k")
+        val llmModels = if (contestBuild) "gemma2-2b-v90k" else requestedLlm
         val unknownLlm = llmModels.split(',').map { it.trim() }.filter { it.isNotEmpty() && it !in knownLlmIds }
         if (unknownLlm.isNotEmpty()) {
             throw GradleException("guzlikvoiceLlmModels: неизвестные модели $unknownLlm, есть $knownLlmIds")
@@ -154,8 +175,8 @@ android {
         create("store") {
             dimension = "channel"
             applicationId = "ru.guzlik.voice"
-            versionCode = 47
-            versionName = "4.0.7"
+            versionCode = if (contestBuild) 48 else 47
+            versionName = if (contestBuild) "4.0.8-contest" else "4.0.7"
             buildConfigField("boolean", "LEGACY_BRIDGE", "false")
             signingConfigs.findByName("release")?.let { signingConfig = it }
         }

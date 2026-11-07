@@ -1,0 +1,34 @@
+{
+  "device": "Xiaomi M2101K6G / Android 13",
+  "scope": "One local user-reported recording; not a dataset-wide DER benchmark.",
+  "source_audio_ms": 54272,
+  "detected_speakers": 2,
+  "words_preserved": true,
+  "unknown_words_before": 1,
+  "unknown_words_after": 0,
+  "reported_transition_word_expected_speaker_test": "passed",
+  "surrounding_turn_replay": "Question and closing acknowledgement assigned to first voice; short answer assigned to second voice.",
+  "boundary_pass_ms": 42415,
+  "cached_repeat_ms": 1135,
+  "timing_scope": "Boundary pass includes decoding and local DTW, reuses previously completed acoustic evidence; model initialization and original ASR excluded. Single device runs.",
+  "unit_tests": {
+    "total": 240,
+    "passed": 237,
+    "skipped": 3,
+    "failed": 0
+  },
+  "device_tests": [
+    "explicit-record boundary repair: passed",
+    "read-only saved-result replay: passed",
+    "cached repeated repair: passed"
+  ],
+  "apk_sha256": "816ed13a1b18023fe8dfe81fc3ed054853c157deecae73ebf79400be983df726",
+  "privacy": "Audio, transcript, database and acoustic vectors stay local and are excluded from this change.",
+  "limitations": [
+    "Local re-decode supplies timing only; original transcript characters are retained.",
+    "A joined local word can be mapped to 2–3 uniquely matching saved words; internal times are interpolated within the DTW span.",
+    "Ambiguous matches, low confidence, simultaneous speech and ordering conflicts remain unresolved rather than forcing a speaker.",
+    "No proof of general DER improvement or memory/performance on other phones.",
+    "Diagnostic APK uses preinstalled models; this change does not produce standalone LIGHT/HEAVY bundles."
+  ]
+}
