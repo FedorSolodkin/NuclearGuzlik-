@@ -259,7 +259,7 @@ class TranscriptionSession(
         Log.i(TAG, "Whisper tail done in ${whisperDone - t0} ms, ${rawText.length} chars, ${allSegments.size} segments")
         onRawReady(rawText)
 
-        val segs = allSegments.toList()
+        var segs = allSegments.toList()
 
         // Склеиваем кадры, отпуская каждый сразу после копирования: на пике в
         // памяти ~одна копия записи: на 45 мин 86 МБ, а раньше (кадры + склейка +
@@ -277,9 +277,20 @@ class TranscriptionSession(
 
         // Без модели голосов (embedder == null) не делим ничего: раньше диаризатор в этом случае молча расставлял
         // «говорящих» по паузам, и запись сразу получала неверные метки.
-        val diarization = if (segs.isNotEmpty() && !cancelled && embedder != null) {
-            SpeakerDiarizer.diarize(segs, emptyMap(), embedder, fullPcm, context)
+        var diarization = if (segs.isNotEmpty() && !cancelled && embedder != null) {
+            SpeakerDiarizer.diarize(segs, emptyMap(), embedder, fullPcm, context, isCancelled = { cancelled })
         } else null
+        val base = diarization
+        if (base != null && base.centroids.size > 1 && !cancelled) {
+            for (clip in BoundaryWordTiming.plan(segs, base.turns, fullPcm.size * 1000L / 16_000)) {
+                if (cancelled) { onDone("", emptyList(), null); return }
+                val anchors = whisper.refineWordTiming(fullPcm.copyOfRange((clip.startMs * 16).toInt(),
+                    minOf(fullPcm.size, (clip.endMs * 16).toInt())), cancelToken)
+                    .map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }
+                segs = BoundaryWordTiming.apply(segs, clip, anchors, base.turns)
+            }
+            diarization = SpeakerDiarizer.reassignWords(segs, base)
+        }
         val finalText = diarization?.text ?: rawText
         Log.i(TAG, "Diarization done in ${System.currentTimeMillis() - whisperDone} ms")
 

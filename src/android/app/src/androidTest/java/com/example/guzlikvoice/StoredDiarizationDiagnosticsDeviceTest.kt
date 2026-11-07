@@ -9,7 +9,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 
-/** Explicit local diagnosis only. Does not change the recording or upload evidence. */
+/** Opt-in local diagnosis/repair of an explicitly selected recording; never uploads evidence. */
 @RunWith(AndroidJUnit4::class)
 class StoredDiarizationDiagnosticsDeviceTest {
     @Test fun reprocessExplicitlySelectedRecordingWithCompleteAudio() {
@@ -29,8 +29,19 @@ class StoredDiarizationDiagnosticsDeviceTest {
             true
         }
         DiarizationJobRunner.addListener(listener)
+        var aligner: WhisperHelper? = null
         try {
-            DiarizationJobRunner.start(ctx, File(original.audioPath), timestamp, null, original.segments, null, true)
+            val args = InstrumentationRegistry.getArguments()
+            if (args.getString("refineBoundaries") == "true") {
+                val loaded = java.util.concurrent.CountDownLatch(1)
+                var error: String? = null
+                aligner = WhisperHelper(ctx)
+                aligner.init({ loaded.countDown() }, { error = it; loaded.countDown() })
+                assertTrue("Whisper init timed out", loaded.await(90, java.util.concurrent.TimeUnit.SECONDS))
+                assertNull(error)
+            }
+            val started = android.os.SystemClock.elapsedRealtime()
+            DiarizationJobRunner.start(ctx, File(original.audioPath), timestamp, null, original.segments, aligner, true)
             assertTrue("Diarization timed out", done.await(180, java.util.concurrent.TimeUnit.SECONDS))
             assertTrue("Diarization failed: $outcome", outcome is DiarizationJobRunner.State.Done)
             val saved = RecordStorage.findEntryByTimestamp(ctx, timestamp)!!.second
@@ -43,14 +54,55 @@ class StoredDiarizationDiagnosticsDeviceTest {
             val lastWord = requireNotNull(original.segments).maxOf { it.endMs }
             assertTrue("Acoustic evidence truncated before the final words",
                 checkpoint.evidence.windows.maxOf { it.endMs } + 1000 >= lastWord)
+            val expectedWord = args.getString("assertSpeakerWord")
+            if (expectedWord != null) {
+                val result = SpeakerDiarizer.diarize(saved.segments!!, emptyMap(), null, cachedEvidence = checkpoint.evidence)
+                val after = args.getString("assertWordAfterMs")?.toLong() ?: 0L
+                val selected = result.units.indices.filter { result.units[it].startMs >= after &&
+                    result.units[it].text.filter { c -> c.isLetterOrDigit() }.equals(expectedWord, true) }
+                assertTrue("Requested word not found", selected.isNotEmpty())
+                for (i in selected) assertEquals("Boundary word still belongs to the wrong speaker",
+                    args.getString("assertSpeakerIndex")!!.toInt(), result.speakers[i])
+            }
             val dir = File(ctx.noBackupFilesDir, "record-diarization-debug").apply { mkdirs() }
             File(dir, "repair.json").writeText(Gson().toJson(mapOf(
                 "speakers" to (outcome as DiarizationJobRunner.State.Done).speakers,
                 "evidence_end_ms" to checkpoint.evidence.windows.maxOf { it.endMs },
-                "last_word_ms" to lastWord, "words_preserved" to true)))
+                "last_word_ms" to lastWord, "words_preserved" to true,
+                "total_ms" to (android.os.SystemClock.elapsedRealtime() - started),
+                "boundary_pass_words" to saved.segments!!.sumOf { s -> s.words.orEmpty().count { it.boundaryPassVersion > 0 } })))
         } finally {
             DiarizationJobRunner.removeListener(listener)
+            aligner?.release()
         }
+    }
+
+    @Test fun inspectBoundaryAlignmentWithoutChangingText() {
+        val args = InstrumentationRegistry.getArguments()
+        val timestamp = args.getString("inspectBoundaryTimestamp")?.toLongOrNull()
+        assumeTrue(timestamp != null)
+        val ctx = InstrumentationRegistry.getInstrumentation().targetContext
+        require(ctx.packageName.endsWith(".dev") || ctx.packageName.endsWith(".hackathon"))
+        val entry = RecordStorage.findEntryByTimestamp(ctx, timestamp!!)!!.second
+        require(!entry.isEncrypted)
+        val ready = java.util.concurrent.CountDownLatch(1)
+        val aligner = WhisperHelper(ctx)
+        var error: String? = null
+        try {
+            aligner.init({ ready.countDown() }, { error = it; ready.countDown() })
+            assertTrue(ready.await(90, java.util.concurrent.TimeUnit.SECONDS)); assertNull(error)
+            val key = DiarizationEvidenceCache.keyFor(ctx, File(entry.audioPath), timestamp)
+            val evidence = DiarizationCheckpointStore.load(ctx, key)!!.evidence
+            val base = SpeakerDiarizer.diarize(entry.segments!!, emptyMap(), null, cachedEvidence = evidence)
+            val audio = AudioDecoder.decode(File(entry.audioPath))
+            val clip = BoundaryWordTiming.Clip(args.getString("clipStartMs")!!.toLong(), audio.size / 16L)
+            val fresh = aligner.refineWordTiming(audio.copyOfRange((clip.startMs * 16).toInt(), audio.size), WhisperHelper.newCancelToken())
+                .map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }
+            val after = BoundaryWordTiming.apply(entry.segments!!, clip, fresh, base.turns)
+            val dir = File(ctx.noBackupFilesDir, "record-diarization-debug").apply { mkdirs() }
+            File(dir, "boundary.json").writeText(Gson().toJson(mapOf("before" to entry.segments,
+                "fresh" to fresh, "after" to after, "turns" to base.turns)))
+        } finally { aligner.release() }
     }
 
     @Test fun replaySavedRecordingWithoutChangingIt() {
