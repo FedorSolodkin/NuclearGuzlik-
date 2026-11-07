@@ -115,6 +115,12 @@ class SettingsSheet : BottomSheetDialogFragment() {
             else                -> R.id.btnModelSmall
         })
         refreshUi(currentModel)
+        if (BuildConfig.CONTEST_BUILD) {
+            modelToggle.visibility = View.GONE
+            tvChangeHint.visibility = View.GONE
+            view.findViewById<View>(R.id.btnImportModel).visibility = View.GONE
+            view.findViewById<View>(R.id.tvModelImportHint).visibility = View.GONE
+        }
 
         modelToggle.addOnButtonCheckedListener { _, checkedId, isChecked ->
             if (!isChecked) return@addOnButtonCheckedListener
@@ -279,7 +285,7 @@ class SettingsSheet : BottomSheetDialogFragment() {
             "VoiceMind ${BuildConfig.VERSION_NAME} · всё считается на телефоне"
 
         // «Тест скорости ИИ» идёт 15–20 минут и выгружает рабочую модель — тестерам пилота не нужен.
-        view.findViewById<View>(R.id.groupSpeedLab).visibility = if (BuildConfig.DEBUG) View.VISIBLE else View.GONE
+        view.findViewById<View>(R.id.groupSpeedLab).visibility = if (BuildConfig.DEBUG && !BuildConfig.CONTEST_BUILD) View.VISIBLE else View.GONE
         view.findViewById<MaterialButton>(R.id.btnSpeedLab).setOnClickListener {
             activity?.let { SpeedLab.showDialog(it) }
         }
@@ -414,6 +420,11 @@ class SettingsSheet : BottomSheetDialogFragment() {
 
     private fun refreshUi(model: String) {
         val ready = isModelReady(model)
+        if (BuildConfig.CONTEST_BUILD) {
+            tvHint.text = "Точная модель распознавания и Gemma встроены в приложение. Всё работает без интернета"
+            btnDownload.visibility = View.GONE
+            return
+        }
         if (BuildConfig.OFFLINE_PROTOTYPE) {
             tvHint.text = if (ready) "Модель установлена. Распознавание работает без интернета"
                           else "Установите модель из файла — в этой сборке интернет отключён"
@@ -448,6 +459,8 @@ class SettingsSheet : BottomSheetDialogFragment() {
 
     private fun isModelReady(model: String): Boolean {
         val ctx = context ?: return false
+        if (BuildConfig.CONTEST_BUILD) return File(ctx.filesDir, ACCURATE_NAME)
+            .let { it.isFile && it.length() > ACCURATE_MIN_SIZE }
         // Для точной модели принимаем И новый q4_0, И legacy q5_0 — пользователю
         // v3.5 не показываем «Скачать», если у него уже есть 574 МБ q5_0.
         val candidates = when (model) {
