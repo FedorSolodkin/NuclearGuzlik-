@@ -93,6 +93,9 @@ class SetupActivity : AppCompatActivity() {
         btnSkip.visibility = View.GONE
         btnRetry.visibility = View.GONE
 
+        // Модели лежат внутри APK: копируем их в папку приложения, без интернета.
+        if (BundledModels.pending(this).isNotEmpty()) { installBundled(); return }
+
         when (SetupChoices.route(autoDownloadTiny, autoDownloadLlm, whisperExists(), SetupChoices.completed(this), allModelsReady())) {
             SetupChoices.Route.TINY -> checkTinyDirect()
             SetupChoices.Route.LLM -> checkLlm()
@@ -441,6 +444,42 @@ class SetupActivity : AppCompatActivity() {
     }
 
     // ─── Helpers ──────────────────────────────────────────────────────────────
+
+    /** Первый запуск со встроенными моделями: копирование из APK с индикатором прогресса. */
+    private fun installBundled() {
+        btnRetry.visibility = View.GONE
+        btnSkip.visibility = View.GONE
+        progressBar.visibility = View.VISIBLE
+        progressBar.isIndeterminate = false
+        progressBar.max = 1000
+        progressBar.progress = 0
+        tvStatus.text = "Подготовка к работе"
+        tvProgress.text = "Первый запуск: устанавливаем встроенные модели. Интернет не нужен."
+        Thread {
+            val result = BundledModels.install(this) { done, total, _ ->
+                mainHandler.post {
+                    if (total > 0) progressBar.progress = (1000.0 * done / total).toInt()
+                    tvProgress.text = "Установлено ${done / 1_000_000} из ${total / 1_000_000} МБ"
+                }
+            }
+            mainHandler.post {
+                when (result) {
+                    is BundledModels.Result.Ok -> { SetupChoices.finish(this); proceed() }
+                    is BundledModels.Result.NoSpace -> showBundledError(
+                        "Не хватает места: освободите ещё ${result.missingBytes / 1_000_000 + 1} МБ и повторите.")
+                    is BundledModels.Result.Failed -> showBundledError("Не удалось установить модели: ${result.message}")
+                }
+            }
+        }.start()
+    }
+
+    private fun showBundledError(text: String) {
+        tvStatus.text = "Установка не завершена"
+        tvProgress.text = text
+        btnRetry.text = "Повторить"
+        btnRetry.visibility = View.VISIBLE
+        btnRetry.setOnClickListener { btnRetry.setOnClickListener(null); installBundled() }
+    }
 
     private fun proceed() {
         if (whisperExists()) SetupChoices.finish(this)
