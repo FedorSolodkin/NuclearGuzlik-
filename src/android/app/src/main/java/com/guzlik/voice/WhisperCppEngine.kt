@@ -65,6 +65,9 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
         cancelToken: Long,
     ): ByteArray
     private external fun nativeDetectLanguage(pcmData: ShortArray, vadModelPath: String, vadThreshold: Float): String
+    private external fun nativeOpenWordTimingSession(): Long
+    private external fun nativeCloseWordTimingSession(handle: Long)
+    private external fun nativeRefineWordTiming(handle: Long, pcmData: ShortArray, language: String, cancelToken: Long): ByteArray
     private external fun nativeIsGpuActive(): Boolean
     private external fun nativeAbort(cancelToken: Long)
     private external fun nativeFree()
@@ -199,6 +202,25 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
         return if (raw.isBlank()) emptyList() else parseSegments(raw)
     }
 
+    inner class WordTimingSession internal constructor(private var handle: Long) : java.io.Closeable {
+        @Synchronized fun refine(pcm: ShortArray, language: String, cancelToken: Long): List<WhisperHelper.Word> {
+            check(handle != 0L) { "Boundary timing session is closed" }
+            require(pcm.size <= 16 * 16_000)
+            return decodeResult(String(nativeRefineWordTiming(handle, pcm, language, cancelToken), Charsets.UTF_8))
+                .flatMap { it.words.orEmpty() }
+        }
+        @Synchronized override fun close() {
+            if (handle != 0L) { nativeCloseWordTimingSession(handle); handle = 0L }
+        }
+    }
+
+    fun openWordTimingSession(): WordTimingSession {
+        check(isReady)
+        return WordTimingSession(nativeOpenWordTimingSession().also {
+            check(it != 0L) { "Не удалось загрузить модель уточнения границ слов" }
+        })
+    }
+
     override fun detectLanguage(pcm: ShortArray): String? {
         if (!isReady || pcm.isEmpty()) return null
         val t0 = System.currentTimeMillis()
@@ -273,6 +295,8 @@ class WhisperCppEngine(private val context: Context) : AsrEngine {
     }
 
     private fun findModel(): File? {
+        if (BuildConfig.CONTEST_BUILD) return File(context.filesDir, PODLODKA_TURBO_FILE)
+            .takeIf { it.isFile && it.length() > PODLODKA_TURBO_MIN_BYTES }
         // Новая q4_0 скачана — старая q5_0 (574 МБ) больше не нужна.
         val q4 = File(context.filesDir, PODLODKA_TURBO_FILE)
         val q5 = File(context.filesDir, PODLODKA_TURBO_Q5_0_FILE)

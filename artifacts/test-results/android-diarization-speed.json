@@ -1,0 +1,49 @@
+{
+  "device": "Xiaomi M2101K6G / Android 13",
+  "source_audio_ms": 54272,
+  "benchmark": {
+    "clips": 2,
+    "decode_ms": 2609,
+    "independent_contexts_ms": 47179,
+    "reused_context_ms": 40595,
+    "pcm_cache_hit": true,
+    "native_words_exactly_equal": true,
+    "speakers_exactly_equal": true,
+    "completed_clips_skipped": true,
+    "remaining_unknown_words": 0
+  },
+  "integration": {
+    "full_pass_job_log_ms_rounded": 61300,
+    "warm_one_clip_ms": 25978,
+    "unchanged_repeat_ms": 596,
+    "words_and_labels_preserved": true,
+    "warm_repair_segments_exactly_equal": true,
+    "reported_transition_word_expected_speaker_test": "passed"
+  },
+  "implementation": [
+    "One temporary DTW context per pass, closed in finally; identical model, clips, decoding parameters and acceptance rules.",
+    "Last decoded recording retained only in RAM as an immutable copy, capped at 8 MiB. Existing per-job file PCM is reused for larger recordings.",
+    "PCM key includes audio and model metadata; deletion, encryption, wipe and stale-writer revisions invalidate it.",
+    "Completed boundary words retain the text they were checked against; a changed local text requests that clip again and leaves other completed clips cached."
+  ],
+  "unit_tests": {
+    "total": 242,
+    "passed": 239,
+    "skipped": 3,
+    "failed": 0
+  },
+  "device_tests": [
+    "independent versus reused contexts: exact native words/probabilities/times and speaker labels match",
+    "full repair followed by one invalidated clip using RAM PCM: passed; full saved segments and labels unchanged",
+    "unchanged repeat skips local inference: passed"
+  ],
+  "apk_sha256": "ba5aa23479f02eea7564a7ac89f6a5e6e9c5095794889e91bcc4de1a3e1c7ac9",
+  "limitations": [
+    "Single local recording and sequential measurements, not a general speed or DER benchmark.",
+    "The isolated context comparison measured 47.179 s versus 40.595 s. Another full job measured 61.3 s; do not promise a fixed speedup.",
+    "The 25.978 s partial repair performs one clip, so it is not an equal-work comparison against the full pass.",
+    "RAM PCM is lost on process exit and is not retained for recordings larger than 8 MiB decoded. No decoded audio is newly persisted.",
+    "Audio, transcript, database and embeddings stay local; only anonymous counts/timings are included.",
+    "Installed diagnostic APK uses preinstalled phone models."
+  ]
+}

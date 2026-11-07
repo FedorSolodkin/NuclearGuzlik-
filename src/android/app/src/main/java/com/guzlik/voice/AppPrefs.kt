@@ -50,6 +50,7 @@ object AppPrefs {
     }
 
     fun getWhisperModel(ctx: Context): String {
+        if (BuildConfig.CONTEST_BUILD) return MODEL_ACCURATE
         val prefs = ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE)
         val stored = prefs.getString(KEY_WHISPER_MODEL, null)
         // Legacy: до v3.5 "точная" модель хранилась как "small" (whisper-small.bin).
@@ -63,7 +64,7 @@ object AppPrefs {
 
     fun setWhisperModel(ctx: Context, model: String) =
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).edit()
-            .putString(KEY_WHISPER_MODEL, model).apply()
+            .putString(KEY_WHISPER_MODEL, if (BuildConfig.CONTEST_BUILD) MODEL_ACCURATE else model).apply()
 
     /** Возвращает id выбранного шаблона обработки или null для свободной записи. */
     fun getSelectedTemplateId(ctx: Context): String? =

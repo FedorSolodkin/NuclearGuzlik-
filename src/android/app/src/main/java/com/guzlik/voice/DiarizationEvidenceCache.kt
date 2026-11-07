@@ -13,6 +13,20 @@ object DiarizationEvidenceCache {
     private var epoch = 0L
     private val revisions = mutableMapOf<Long, Long>()
     private var last: Entry? = null
+    private data class Decoded(val key: Key, val ticket: Ticket, val pcm: ArrayPcm)
+    private var lastPcm: Decoded? = null
+
+    /** Small recordings only, immutable private copy. Long recordings stay on disk. */
+    @Synchronized fun putPcm(key: Key, ticket: Ticket, pcm: PcmAudio): Boolean {
+        if (key.timestamp != ticket.timestamp || !isCurrent(ticket)) return false
+        lastPcm = null
+        if (pcm.size <= 0 || pcm.size * 2L > MAX_BYTES) return false
+        lastPcm = Decoded(key, ticket, ArrayPcm(pcm.copyOfRange(0, pcm.size)))
+        return true
+    }
+
+    @Synchronized fun getPcm(key: Key, ticket: Ticket): PcmAudio? =
+        lastPcm?.takeIf { it.key == key && it.ticket == ticket && isCurrent(ticket) }?.pcm
 
     fun keyFor(ctx: Context, audio: File, timestamp: Long): Key {
         val models = listOf(SpeakerEmbedder.MODEL_NAME, PyannoteSegmenter.MODEL_NAME).flatMap { name ->
@@ -35,6 +49,7 @@ object DiarizationEvidenceCache {
         val bytes = evidence.embeddings.sumOf { it.size * 4L + 32 } + evidence.regions.size * 48L + evidence.windows.size * 32L +
             (evidence.boundaryRefinement?.observations?.sumOf {it.embedding.size*4L+64} ?: 0L)
         if (bytes > MAX_BYTES || evidence.embeddings.isEmpty()) return false
+        if (lastPcm?.key != key) lastPcm = null
         last = Entry(key, ticket, evidence)
         return true
     }
@@ -43,7 +58,8 @@ object DiarizationEvidenceCache {
     @Synchronized fun remove(timestamp: Long) {
         revisions[timestamp] = (revisions[timestamp] ?: 0L) + 1
         if (last?.key?.timestamp == timestamp) last = null
+        if (lastPcm?.key?.timestamp == timestamp) lastPcm = null
     }
 
-    @Synchronized fun clearAll() { epoch++; revisions.clear(); last = null }
+    @Synchronized fun clearAll() { epoch++; revisions.clear(); last = null; lastPcm = null }
 }

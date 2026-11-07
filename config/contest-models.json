@@ -1,0 +1,44 @@
+{
+  "asr": "accurate",
+  "llm": "gemma2-2b-v90k",
+  "models": [
+    {
+      "file": "gemma-2-2b-it-Q4_K_M-ru90k.gguf",
+      "bytes": 1391349280,
+      "stored": true,
+      "sha256": "96c22f048c16b1cf258cfa3bf8a22cb87f41a9be33eaaced4436d130a359f5f2"
+    },
+    {
+      "file": "ggml-whisper-podlodka-turbo-q4_0.bin",
+      "bytes": 473992235,
+      "stored": true,
+      "sha256": "172d761c921345082986689cb622f891184da29476b85e873bb272687a3c73a7"
+    },
+    {
+      "file": "pyannote_segmentation.onnx",
+      "bytes": 5986908,
+      "stored": true,
+      "sha256": "057ee564753071c0b09b5b611648b50ac188d50846bff5f01e9f7bbf1591ea25"
+    },
+    {
+      "file": "silero_vad.onnx",
+      "bytes": 2327524,
+      "stored": true,
+      "sha256": "1a153a22f4509e292a94e67d6f9b85e8deb25b4988682b7e174c65279d8788e3"
+    },
+    {
+      "file": "speaker_model.onnx",
+      "bytes": 26535549,
+      "stored": true,
+      "sha256": "3955447b0499dc9e0a4541a895df08b03c69098eba4e56c02b5603e9f7f4fcbb"
+    }
+  ],
+  "auxiliary_assets": [
+    {
+      "asset": "assets/ggml-silero-v6.2.0.bin",
+      "bytes": 885098,
+      "sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
+      "purpose": "Whisper native VAD; not an alternate transcription model"
+    }
+  ]
+}
