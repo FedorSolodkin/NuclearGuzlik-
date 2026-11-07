@@ -1,4 +1,4 @@
-# VoiceMind · Nuclear IT Hack 2026
+# GuzlikVoice · Nuclear IT Hack 2026
 
 Android-приложение для локальной расшифровки разговоров, автоматического разделения
 говорящих и анализа текста локальной LLM. Аудио и текст обрабатываются на устройстве.
@@ -14,7 +14,7 @@ Android-приложение для локальной расшифровки р
 
 ## Запуск для экспертов
 
-1. Установите **[единственную конкурсную APK 4.0.8 со встроенными моделями](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/contest-offline-v4.0.8)**. Android 8+, ARM64.
+1. Установите **[единственную конкурсную APK 4.0.8 со встроенными моделями](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8)**. Android 8+, ARM64.
 2. При первом запуске дождитесь извлечения встроенных моделей. Интернет и отдельные
    файлы моделей не нужны. В этой APK закреплены точный Whisper podlodka и Gemma 2B ru90k;
    быстрых и альтернативных моделей в выборе нет. [Подробности](docs/CONTEST_APK.md).
@@ -60,7 +60,7 @@ git clone --recurse-submodules --branch codex/android-boundary-word-timing git@g
 cd NuclearGuzlik-/src/android
 # JDK 17, Android SDK 36, NDK 25.1.8937393, CMake 3.22.1
 ./scripts/fetch-vulkan-headers.sh
-./gradlew -PvoicemindContest=true -PvoicemindBundle=/absolute/path/to/bundle \
+./gradlew -PguzlikvoiceContest=true -PguzlikvoiceBundle=/absolute/path/to/bundle \
   testStoreHackathonUnitTest assembleStoreHackathon
 ```
 

@@ -1,6 +1,6 @@
 # APK для экспертов
 
-Устанавливать **[VoiceMind-4.0.8-contest-offline.apk из релиза](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/contest-offline-v4.0.8)**.
+Устанавливать **[GuzlikVoice-4.0.8-contest-offline.apk из релиза](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8)**.
 
 Это единственная конкурсная APK: точный Whisper podlodka, Gemma ru90k и модели
 диаризации/VAD уже внутри. Дополнительные скачивания не нужны.

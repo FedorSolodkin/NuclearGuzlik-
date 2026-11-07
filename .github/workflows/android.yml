@@ -39,7 +39,7 @@ jobs:
         run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
       - uses: actions/upload-artifact@v4
         with:
-          name: VoiceMind-hackathon-APK
+          name: GuzlikVoice-hackathon-APK
           path: src/android/app/build/outputs/apk/store/hackathon/*.apk
       - uses: actions/upload-artifact@v4
         if: always()

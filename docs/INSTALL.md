@@ -2,7 +2,7 @@
 
 ## Конкурсная APK 4.0.8
 
-Установите **[VoiceMind-4.0.8-contest-offline.apk из релиза](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/contest-offline-v4.0.8)**.
+Установите **[GuzlikVoice-4.0.8-contest-offline.apk из релиза](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8)**.
 Точный Whisper, Gemma ru90k и модели диаризации/VAD встроены. Первый запуск извлекает
 их из APK без скачивания. Полная инструкция и сборка: [CONTEST_APK](CONTEST_APK.md).
 Для чистой установки желательно 5 ГБ свободного места до установки.
@@ -12,8 +12,8 @@
 
 ## Подготовка до оценки
 
-Установите APK из artifacts/apk. Пакет `ru.voicemind.app.hackathon` устанавливается
-рядом с обычной VoiceMind и не использует её записи или ранее скачанные модели.
+Установите APK из artifacts/apk. Пакет `ru.guzlik.voice.hackathon` устанавливается
+рядом с прежними версиями и не использует их записи или ранее скачанные модели.
 
 Откройте приложение с интернетом, скачайте модель распознавания «Точно», голоса
 и детекторы речи. В настройках установите Gemma 2 2B; не пропускайте LLM перед
@@ -33,11 +33,11 @@ python3 scripts/prepare_models.py --verify-only
 а не по имени. Для первого запуска без сети можно скопировать модели через ADB:
 
 ```bash
-adb install artifacts/apk/VoiceMind-hackathon.apk
+adb install artifacts/apk/GuzlikVoice-4.0.8-contest-offline.apk
 # Откройте приложение один раз, чтобы Android создал каталог.
-adb shell mkdir -p /sdcard/Android/data/ru.voicemind.app.hackathon/files
+adb shell mkdir -p /sdcard/Android/data/ru.guzlik.voice.hackathon/files
 # В папке config/models файлы должны называться как device_name из models.json.
-adb push config/models/. /sdcard/Android/data/ru.voicemind.app.hackathon/files/
+adb push config/models/. /sdcard/Android/data/ru.guzlik.voice.hackathon/files/
 ```
 
 Если выбран вариант с ADB, до запуска проверки убедитесь, что все модели видны

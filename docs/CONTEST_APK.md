@@ -1,13 +1,13 @@
 # Автономная конкурсная APK 4.0.8
 
-Единственная APK для установки: **VoiceMind-4.0.8-contest-offline.apk** в
-[релизе contest-offline-v4.0.8](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/contest-offline-v4.0.8).
-Размер около 1,92 ГБ, Android 8+, ARM64, пакет `ru.voicemind.app.hackathon`.
+Единственная APK для установки: **GuzlikVoice-4.0.8-contest-offline.apk** в
+[релизе contest-offline-v4.0.8](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8).
+Размер около 1,92 ГБ, Android 8+, ARM64, пакет `ru.guzlik.voice.hackathon`.
 Подпись совместима с предыдущей конкурсной APK: обновление сохраняет записи.
 
 ## Установка
 
-1. Скачайте APK, установите её и откройте VoiceMind.
+1. Скачайте APK, установите её и откройте GuzlikVoice.
 2. Дождитесь завершения экрана «Подготовка к работе»: файлы извлекаются из APK.
    Интернет для этого не нужен. Для чистой установки желательно иметь 5 ГБ свободного места
    до установки: APK, извлечённые модели и запас для Android/обработки.
@@ -35,14 +35,14 @@ Gemma notice встроен в APK; копия: [GEMMA-NOTICE.txt](GEMMA-NOTICE.
 python3 scripts/verify_contest_bundle.py --bundle /absolute/path/to/bundle
 cd src/android
 # JDK 17, SDK 36, NDK 25.1.8937393, CMake 3.22.1; Ninja в PATH
-./gradlew -PvoicemindContest=true -PvoicemindBundle=/absolute/path/to/bundle \
-  -PvoicemindTestBuildType=hackathon :app:cleanPackageStoreHackathon \
+./gradlew -PguzlikvoiceContest=true -PguzlikvoiceBundle=/absolute/path/to/bundle \
+  -PguzlikvoiceTestBuildType=hackathon :app:cleanPackageStoreHackathon \
   :app:testStoreHackathonUnitTest :app:assembleStoreHackathon
 cd ../..
-python3 scripts/verify_contest_bundle.py --apk /absolute/path/to/VoiceMind-4.0.8-contest-offline.apk
+python3 scripts/verify_contest_bundle.py --apk /absolute/path/to/GuzlikVoice-4.0.8-contest-offline.apk
 ```
 
-Флаг `voicemindContest=true` обязателен: он закрепляет модели и запрещает сборку
+Флаг `guzlikvoiceContest=true` обязателен: он закрепляет модели и запрещает сборку
 без полного встроенного набора. Обычная сборка без этого флага предназначена для разработки.
 
 ## Границы проверки
