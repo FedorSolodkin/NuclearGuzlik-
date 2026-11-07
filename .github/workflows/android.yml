@@ -30,7 +30,10 @@ jobs:
           sdkmanager 'ndk;25.1.8937393' 'cmake;3.22.1' 'platforms;android-36'
           echo "$ANDROID_HOME/cmake/3.22.1/bin" >> "$GITHUB_PATH"
       - run: ./scripts/fetch-vulkan-headers.sh
-      - run: ./gradlew --no-daemon testStoreDebugUnitTest assembleStoreHackathon
+      - name: Android unit tests
+        run: ./gradlew --no-daemon testStoreDebugUnitTest
+      - name: Build hackathon APK
+        run: ./gradlew --no-daemon assembleStoreHackathon
       - name: Evaluation tool tests
         working-directory: .
         run: python3 -m unittest discover -s scripts -p 'test_*.py' -v
