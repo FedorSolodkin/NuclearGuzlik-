@@ -325,23 +325,71 @@ Java_com_example_voicemind_WhisperCppEngine_nativeTranscribe(
     return to_jbytes(env, result);
 }
 
-// Short boundary-only DTW context. The main fast/flash-attention context remains unchanged.
-JNIEXPORT jbyteArray JNICALL
-Java_com_example_voicemind_WhisperCppEngine_nativeRefineWordTiming(
-        JNIEnv* env, jobject, jshortArray pcmData, jstring language, jlong cancelToken) {
-    const jsize len = env->GetArrayLength(pcmData);
-    if (len <= 0 || len > 16 * 16000) return to_jbytes(env, "");
-    const char* rawLanguage = env->GetStringUTFChars(language, nullptr);
-    const std::string lang = rawLanguage;
-    env->ReleaseStringUTFChars(language, rawLanguage);
-    std::vector<float> pcm(len);
-    jshort* raw = env->GetShortArrayElements(pcmData, nullptr);
-    for (int i = 0; i < len; ++i) pcm[i] = raw[i] / 32768.0f;
-    env->ReleaseShortArrayElements(pcmData, raw, JNI_ABORT);
+// Context lifetime is one boundary pass, not one clip. Main ASR keeps its
+// fast context; this CPU/DTW context is always freed by the caller's finally.
+static std::string refine_word_timing(whisper_context* ctx, const std::vector<float>& pcm,
+                                      const std::string& lang) {
+    const int len = static_cast<int>(pcm.size());
+    auto params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
+    params.n_threads = vm::pick_n_threads();
+    params.language = lang.c_str();
+    params.print_progress = params.print_realtime = params.print_timestamps = false;
+    params.token_timestamps = true;
+    params.no_context = true;
+    params.audio_ctx = std::clamp((((len + 319) / 320 + 64 + 63) / 64) * 64, 256, 1500);
+    params.abort_callback = abort_cb;
+    const int rc = whisper_full(ctx, params, pcm.data(), len);
+    if (g_abort.load() || g_abort_all.load()) return "!CANCELLED";
+    if (rc != 0) return "!ERROR\tНе удалось уточнить границы слов";
+    struct Word { std::string text; int64_t first = -1, last = -1; float p = 1.0f; };
+    std::vector<Word> words;
+    const auto eot = whisper_token_eot(ctx);
+    for (int s = 0; s < whisper_full_n_segments(ctx); ++s) {
+        for (int t = 0; t < whisper_full_n_tokens(ctx, s); ++t) {
+            const auto td = whisper_full_get_token_data(ctx, s, t);
+            if (td.id >= eot) continue;
+            const char* token = whisper_full_get_token_text(ctx, s, t);
+            std::string piece = token ? token : "";
+            const bool starts = !piece.empty() && piece[0] == ' ';
+            if (starts) piece.erase(0, 1);
+            if (starts || words.empty()) words.emplace_back();
+            auto& w = words.back(); w.text += piece; w.p = std::min(w.p, td.p);
+            const bool punctuation = piece == "«" || piece == "»" || piece == "—" || piece == "…";
+            const bool lexical = !punctuation && std::any_of(piece.begin(), piece.end(),
+                [](unsigned char c) { return c >= 128 || std::isalnum(c); });
+            if (lexical && td.t_dtw >= 0) {
+                if (w.first < 0) w.first = td.t_dtw;
+                w.last = td.t_dtw;
+            }
+        }
+    }
+    words.erase(std::remove_if(words.begin(), words.end(), [](const Word& w) {
+        return w.text.empty() || w.first < 0 || w.last < w.first;
+    }), words.end());
+    std::string text;
+    for (const auto& w : words) { if (!text.empty()) text += ' '; text += w.text; }
+    for (auto& c : text) if (c == '\t' || c == '\n') c = ' ';
+    const int64_t duration = len * 1000LL / 16000;
+    std::string result = "S\t0\t" + std::to_string(duration) + "\t" + text + "\n";
+    for (size_t i = 0; i < words.size(); ++i) {
+        auto& w = words[i];
+        const int64_t left = i ? (words[i - 1].last + w.first) * 5 : w.first * 10 - 100;
+        const int64_t right = i + 1 < words.size() ? (w.last + words[i + 1].first) * 5 : w.last * 10 + 100;
+        // Midpoints alone would stretch a word through the silence until the
+        // next speaker. Bound each word by its own lexical DTW anchors too.
+        const int64_t a = std::clamp<int64_t>(std::max(left, w.first * 10 - 100), 0, duration - 1);
+        const int64_t b = std::clamp<int64_t>(std::min(right, w.last * 10 + 100), a + 1, duration);
+        for (auto& c : w.text) if (c == '\t' || c == '\n') c = ' ';
+        result += "W\t" + std::to_string(a) + "\t" + std::to_string(b) + "\t"
+            + std::to_string((int)std::lround(std::clamp(w.p, 0.0f, 1.0f) * 1000)) + "\t" + w.text + "\n";
+    }
+    return result;
+}
+
+JNIEXPORT jlong JNICALL
+Java_com_example_voicemind_WhisperCppEngine_nativeOpenWordTimingSession(JNIEnv*, jobject) {
     std::lock_guard<std::mutex> lock(g_mutex);
-    if (!g_ctx || g_model_path.empty()) return to_jbytes(env, "");
-    if (!begin_call(cancelToken)) { end_call(); return to_jbytes(env, "!CANCELLED"); }
-    struct CallGuard { ~CallGuard() { end_call(); } } callGuard;
+    if (!g_ctx || g_model_path.empty()) return 0;
     auto cp = whisper_context_default_params();
     cp.use_gpu = false;
     cp.flash_attn = false;
@@ -351,65 +399,33 @@ Java_com_example_voicemind_WhisperCppEngine_nativeRefineWordTiming(
     if (layers == 4 && width == 1280) cp.dtw_aheads_preset = WHISPER_AHEADS_LARGE_V3_TURBO;
     else if (layers == 12 && width == 768) cp.dtw_aheads_preset = WHISPER_AHEADS_SMALL;
     else if (layers == 4 && width == 384) cp.dtw_aheads_preset = WHISPER_AHEADS_TINY;
-    else return to_jbytes(env, "");
+    else return 0;
+    return reinterpret_cast<jlong>(whisper_init_from_file_with_params(g_model_path.c_str(), cp));
+}
+
+JNIEXPORT void JNICALL
+Java_com_example_voicemind_WhisperCppEngine_nativeCloseWordTimingSession(JNIEnv*, jobject, jlong handle) {
+    std::lock_guard<std::mutex> lock(g_mutex);
+    if (handle) whisper_free(reinterpret_cast<whisper_context*>(handle));
+}
+
+JNIEXPORT jbyteArray JNICALL
+Java_com_example_voicemind_WhisperCppEngine_nativeRefineWordTiming(
+        JNIEnv* env, jobject, jlong handle, jshortArray pcmData, jstring language, jlong cancelToken) {
+    const jsize len = env->GetArrayLength(pcmData);
+    if (!handle || len <= 0 || len > 16 * 16000) return to_jbytes(env, "");
+    const char* rawLanguage = env->GetStringUTFChars(language, nullptr);
+    const std::string lang = rawLanguage;
+    env->ReleaseStringUTFChars(language, rawLanguage);
+    std::vector<float> pcm(len);
+    jshort* raw = env->GetShortArrayElements(pcmData, nullptr);
+    for (int i = 0; i < len; ++i) pcm[i] = raw[i] / 32768.0f;
+    env->ReleaseShortArrayElements(pcmData, raw, JNI_ABORT);
+    std::lock_guard<std::mutex> lock(g_mutex);
+    if (!begin_call(cancelToken)) { end_call(); return to_jbytes(env, "!CANCELLED"); }
+    struct CallGuard { ~CallGuard() { end_call(); } } callGuard;
     try {
-        std::unique_ptr<whisper_context, decltype(&whisper_free)> ctx(
-            whisper_init_from_file_with_params(g_model_path.c_str(), cp), whisper_free);
-        if (!ctx) return to_jbytes(env, "!ERROR\tНе удалось уточнить границы слов");
-        auto params = whisper_full_default_params(WHISPER_SAMPLING_GREEDY);
-        params.n_threads = vm::pick_n_threads();
-        params.language = lang.c_str();
-        params.print_progress = params.print_realtime = params.print_timestamps = false;
-        params.token_timestamps = true;
-        params.no_context = true;
-        params.audio_ctx = std::clamp((((len + 319) / 320 + 64 + 63) / 64) * 64, 256, 1500);
-        params.abort_callback = abort_cb;
-        const int rc = whisper_full(ctx.get(), params, pcm.data(), len);
-        if (g_abort.load() || g_abort_all.load()) return to_jbytes(env, "!CANCELLED");
-        if (rc != 0) return to_jbytes(env, "!ERROR\tНе удалось уточнить границы слов");
-        struct Word { std::string text; int64_t first = -1, last = -1; float p = 1.0f; };
-        std::vector<Word> words;
-        const auto eot = whisper_token_eot(ctx.get());
-        for (int s = 0; s < whisper_full_n_segments(ctx.get()); ++s) {
-            for (int t = 0; t < whisper_full_n_tokens(ctx.get(), s); ++t) {
-                const auto td = whisper_full_get_token_data(ctx.get(), s, t);
-                if (td.id >= eot) continue;
-                const char* token = whisper_full_get_token_text(ctx.get(), s, t);
-                std::string piece = token ? token : "";
-                const bool starts = !piece.empty() && piece[0] == ' ';
-                if (starts) piece.erase(0, 1);
-                if (starts || words.empty()) words.emplace_back();
-                auto& w = words.back(); w.text += piece; w.p = std::min(w.p, td.p);
-                const bool punctuation = piece == "«" || piece == "»" || piece == "—" || piece == "…";
-                const bool lexical = !punctuation && std::any_of(piece.begin(), piece.end(),
-                    [](unsigned char c) { return c >= 128 || std::isalnum(c); });
-                if (lexical && td.t_dtw >= 0) {
-                    if (w.first < 0) w.first = td.t_dtw;
-                    w.last = td.t_dtw;
-                }
-            }
-        }
-        words.erase(std::remove_if(words.begin(), words.end(), [](const Word& w) {
-            return w.text.empty() || w.first < 0 || w.last < w.first;
-        }), words.end());
-        std::string text;
-        for (const auto& w : words) { if (!text.empty()) text += ' '; text += w.text; }
-        for (auto& c : text) if (c == '\t' || c == '\n') c = ' ';
-        const int64_t duration = len * 1000LL / 16000;
-        std::string result = "S\t0\t" + std::to_string(duration) + "\t" + text + "\n";
-        for (size_t i = 0; i < words.size(); ++i) {
-            auto& w = words[i];
-            const int64_t left = i ? (words[i - 1].last + w.first) * 5 : w.first * 10 - 100;
-            const int64_t right = i + 1 < words.size() ? (w.last + words[i + 1].first) * 5 : w.last * 10 + 100;
-            // Midpoints alone would stretch a word through the silence until the
-            // next speaker. Bound each word by its own lexical DTW anchors too.
-            const int64_t a = std::clamp<int64_t>(std::max(left, w.first * 10 - 100), 0, duration - 1);
-            const int64_t b = std::clamp<int64_t>(std::min(right, w.last * 10 + 100), a + 1, duration);
-            for (auto& c : w.text) if (c == '\t' || c == '\n') c = ' ';
-            result += "W\t" + std::to_string(a) + "\t" + std::to_string(b) + "\t"
-                + std::to_string((int)std::lround(std::clamp(w.p, 0.0f, 1.0f) * 1000)) + "\t" + w.text + "\n";
-        }
-        return to_jbytes(env, result);
+        return to_jbytes(env, refine_word_timing(reinterpret_cast<whisper_context*>(handle), pcm, lang));
     } catch (const std::exception& e) {
         LOGE("Boundary DTW failed: %s", e.what());
         return to_jbytes(env, "!ERROR\tНе удалось уточнить границы слов");

@@ -282,13 +282,17 @@ class TranscriptionSession(
         } else null
         val base = diarization
         if (base != null && base.centroids.size > 1 && !cancelled) {
-            for (clip in BoundaryWordTiming.plan(segs, base.turns, fullPcm.size * 1000L / 16_000)) {
-                if (cancelled) { onDone("", emptyList(), null); return }
-                val anchors = whisper.refineWordTiming(fullPcm.copyOfRange((clip.startMs * 16).toInt(),
-                    minOf(fullPcm.size, (clip.endMs * 16).toInt())), cancelToken)
-                    .map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }
-                segs = BoundaryWordTiming.apply(segs, clip, anchors, base.turns)
+            val clips = BoundaryWordTiming.plan(segs, base.turns, fullPcm.size * 1000L / 16_000)
+            if (clips.isNotEmpty()) whisper.withWordTimingSession(cancelToken) { refine ->
+                for (clip in clips) {
+                    if (cancelled) return@withWordTimingSession
+                    val anchors = refine(fullPcm.copyOfRange((clip.startMs * 16).toInt(),
+                        minOf(fullPcm.size, (clip.endMs * 16).toInt())))
+                        .map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }
+                    segs = BoundaryWordTiming.apply(segs, clip, anchors, base.turns)
+                }
             }
+            if (cancelled) { onDone("", emptyList(), null); return }
             diarization = SpeakerDiarizer.reassignWords(segs, base)
         }
         val finalText = diarization?.text ?: rawText

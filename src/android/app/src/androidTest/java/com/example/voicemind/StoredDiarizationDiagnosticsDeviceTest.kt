@@ -64,17 +64,119 @@ class StoredDiarizationDiagnosticsDeviceTest {
                 for (i in selected) assertEquals("Boundary word still belongs to the wrong speaker",
                     args.getString("assertSpeakerIndex")!!.toInt(), result.speakers[i])
             }
+            val firstPassMs = android.os.SystemClock.elapsedRealtime() - started
+            var warmMs: Long? = null
+            if (args.getString("repeatWarmBoundaryRepair") == "true") {
+                val ticket = DiarizationEvidenceCache.ticket(timestamp)
+                assertNotNull("Decoded audio must remain reusable", DiarizationEvidenceCache.getPcm(key, ticket))
+                var changed = false
+                // Invalidate one local pass in the request only; never edit the user's text.
+                val edited = saved.segments!!.map { part -> part.copy(words = part.words?.map { word ->
+                    if (!changed && word.boundaryPassText != null) {
+                        changed = true; word.copy(boundaryPassText = null)
+                    } else word
+                }) }
+                assertTrue(changed)
+                assertEquals(1, BoundaryWordTiming.plan(edited,
+                    SpeakerDiarizer.diarize(edited, emptyMap(), null, cachedEvidence = checkpoint.evidence).turns,
+                    checkpoint.evidence.windows.maxOf { it.endMs }).size)
+                val cleanupDeadline = android.os.SystemClock.elapsedRealtime() + 5000
+                while (DiarizationJobRunner.hasActiveJob(timestamp) && android.os.SystemClock.elapsedRealtime() < cleanupDeadline)
+                    android.os.SystemClock.sleep(10)
+                assertFalse(DiarizationJobRunner.hasActiveJob(timestamp))
+                val warmDone = java.util.concurrent.CountDownLatch(1)
+                var warmOutcome: DiarizationJobRunner.State? = null
+                val warmListener: (DiarizationJobRunner.State) -> Boolean = { state ->
+                    if (state.timestamp == timestamp && state !is DiarizationJobRunner.State.Running) {
+                        warmOutcome = state; warmDone.countDown()
+                    }
+                    true
+                }
+                DiarizationJobRunner.addListener(warmListener)
+                try {
+                    val warmStart = android.os.SystemClock.elapsedRealtime()
+                    DiarizationJobRunner.start(ctx, File(saved.audioPath), timestamp, null, edited, aligner, true)
+                    assertTrue(warmDone.await(180, java.util.concurrent.TimeUnit.SECONDS))
+                    assertTrue("Warm repair failed: $warmOutcome", warmOutcome is DiarizationJobRunner.State.Done)
+                    warmMs = android.os.SystemClock.elapsedRealtime() - warmStart
+                    val again = RecordStorage.findEntryByTimestamp(ctx, timestamp)!!.second
+                    assertEquals("Warm repair changed the transcript or labels", saved.text, again.text)
+                    assertEquals(saved.segments, again.segments)
+                } finally { DiarizationJobRunner.removeListener(warmListener) }
+            }
             val dir = File(ctx.noBackupFilesDir, "record-diarization-debug").apply { mkdirs() }
             File(dir, "repair.json").writeText(Gson().toJson(mapOf(
                 "speakers" to (outcome as DiarizationJobRunner.State.Done).speakers,
                 "evidence_end_ms" to checkpoint.evidence.windows.maxOf { it.endMs },
                 "last_word_ms" to lastWord, "words_preserved" to true,
-                "total_ms" to (android.os.SystemClock.elapsedRealtime() - started),
+                "total_ms" to firstPassMs,
+                "warm_one_clip_ms" to warmMs,
                 "boundary_pass_words" to saved.segments!!.sumOf { s -> s.words.orEmpty().count { it.boundaryPassVersion > 0 } })))
         } finally {
             DiarizationJobRunner.removeListener(listener)
             aligner?.release()
         }
+    }
+
+    @Test fun compareReusedContextAgainstIndependentClips() {
+        val args = InstrumentationRegistry.getArguments()
+        val timestamp = args.getString("benchmarkBoundaryTimestamp")?.toLongOrNull()
+        assumeTrue(timestamp != null)
+        val ctx = InstrumentationRegistry.getInstrumentation().targetContext
+        require(ctx.packageName.endsWith(".dev") || ctx.packageName.endsWith(".hackathon"))
+        val original = RecordStorage.findEntryByTimestamp(ctx, timestamp!!)!!.second
+        require(!original.isEncrypted)
+        val segments = original.segments!!.map { s -> s.copy(words = s.words?.map {
+            it.copy(boundaryPassVersion = 0, boundaryPassText = null)
+        }) }
+        val key = DiarizationEvidenceCache.keyFor(ctx, File(original.audioPath), timestamp)
+        val evidence = DiarizationCheckpointStore.load(ctx, key)!!.evidence
+        val base = SpeakerDiarizer.diarize(segments, emptyMap(), null, cachedEvidence = evidence)
+        val ready = java.util.concurrent.CountDownLatch(1)
+        val aligner = WhisperHelper(ctx)
+        var error: String? = null
+        fun now() = android.os.SystemClock.elapsedRealtime()
+        try {
+            aligner.init({ ready.countDown() }, { error = it; ready.countDown() })
+            assertTrue(ready.await(90, java.util.concurrent.TimeUnit.SECONDS)); assertNull(error)
+            val decodeStart = now()
+            val audio = AudioDecoder.decode(File(original.audioPath))
+            val decodeMs = now() - decodeStart
+            val clips = BoundaryWordTiming.plan(segments, base.turns, audio.size / 16L)
+            assertTrue("Need multiple boundary clips to compare context reuse", clips.size > 1)
+            val token = WhisperHelper.newCancelToken()
+            val independentStart = now()
+            val independent = clips.map { clip -> aligner.refineWordTiming(
+                audio.copyOfRange((clip.startMs * 16).toInt(), (clip.endMs * 16).toInt()), token) }
+            val independentMs = now() - independentStart
+            val ticket = DiarizationEvidenceCache.ticket(timestamp)
+            assertTrue(DiarizationEvidenceCache.putPcm(key, ticket, ArrayPcm(audio)))
+            val cached = requireNotNull(DiarizationEvidenceCache.getPcm(key, ticket))
+            assertArrayEquals(audio, cached.copyOfRange(0, cached.size))
+            val reusedStart = now()
+            val reused = aligner.withWordTimingSession(token) { refine ->
+                clips.map { clip -> refine(cached.copyOfRange((clip.startMs * 16).toInt(), (clip.endMs * 16).toInt())) }
+            }
+            val reusedMs = now() - reusedStart
+            assertEquals("Context reuse changed recognition, probabilities or word timing", independent, reused)
+            fun apply(all: List<List<WhisperHelper.Word>>): List<WhisperHelper.Segment> {
+                var result = segments
+                for ((i, clip) in clips.withIndex()) result = BoundaryWordTiming.apply(result, clip,
+                    all[i].map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }, base.turns)
+                return result
+            }
+            val repaired = apply(reused)
+            assertEquals(apply(independent), repaired)
+            val result = SpeakerDiarizer.reassignWords(repaired, base)
+            assertArrayEquals(SpeakerDiarizer.reassignWords(apply(independent), base).speakers, result.speakers)
+            assertTrue("Completed clips must not run again", BoundaryWordTiming.plan(repaired, base.turns, audio.size / 16L).isEmpty())
+            assertEquals(original.text, RecordStorage.findEntryByTimestamp(ctx, timestamp)!!.second.text)
+            val dir = File(ctx.noBackupFilesDir, "record-diarization-debug").apply { mkdirs() }
+            File(dir, "speed.json").writeText(Gson().toJson(mapOf("clips" to clips.size,
+                "decode_ms" to decodeMs, "independent_contexts_ms" to independentMs, "reused_context_ms" to reusedMs,
+                "pcm_cache_hit" to true, "native_words_exactly_equal" to true, "speakers_exactly_equal" to true,
+                "completed_clips_skipped" to true, "remaining_unknown_words" to result.speakers.count { it < 0 })))
+        } finally { aligner.release() }
     }
 
     @Test fun inspectBoundaryAlignmentWithoutChangingText() {

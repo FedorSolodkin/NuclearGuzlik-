@@ -270,8 +270,11 @@ object DiarizationJobRunner {
         }
         if (cached != null) DiarizationEvidenceCache.put(key,ticket,cached)
         var decoded: FilePcm? = null
-        fun pcm(): FilePcm = decoded ?: AudioDecoder.decodeToFile(audioFile, appCtx.cacheDir, ::cancelled).also {
-            decoded = it; lap("decode ${it.size / 16_000} s of audio", tStart)
+        val reusedPcm: PcmAudio? = DiarizationEvidenceCache.getPcm(key, ticket)
+        fun pcm(): PcmAudio = reusedPcm ?: decoded ?: AudioDecoder.decodeToFile(audioFile, appCtx.cacheDir, ::cancelled).also {
+            decoded = it
+            if (!cancelled()) DiarizationEvidenceCache.putPcm(key, ticket, it)
+            lap("decode ${it.size / 16_000} s of audio", tStart)
         }
         try {
             // Missing times in one phrase no longer cause full-record ASR.
@@ -340,14 +343,16 @@ object DiarizationJobRunner {
                 whisperCalls[timestamp] = aligner to token
                 try {
                     val clips = BoundaryWordTiming.plan(segments, result.turns, evidence.windows.maxOf { it.endMs })
-                    for ((i, clip) in clips.withIndex()) {
-                        currentCoroutineContext().ensureActive()
-                        pushRunning(State.Running(timestamp, "Уточняю слова у смены голоса ${i + 1}/${clips.size}..."))
-                        val audio = pcm()
-                        val refined = aligner.refineWordTiming(audio.copyOfRange((clip.startMs * 16).toInt(),
-                            minOf(audio.size, (clip.endMs * 16).toInt())), token)
-                            .map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }
-                        segments = BoundaryWordTiming.apply(segments, clip, refined, result.turns)
+                    val audio = if (clips.isNotEmpty()) pcm() else null
+                    if (audio != null) aligner.withWordTimingSession(token) { refine ->
+                        for ((i, clip) in clips.withIndex()) {
+                            if (cancelled()) throw CancellationException("Boundary pass cancelled")
+                            pushRunning(State.Running(timestamp, "Уточняю слова у смены голоса ${i + 1}/${clips.size}..."))
+                            val refined = refine(audio.copyOfRange((clip.startMs * 16).toInt(),
+                                minOf(audio.size, (clip.endMs * 16).toInt())))
+                                .map { it.copy(startMs = it.startMs + clip.startMs, endMs = it.endMs + clip.startMs) }
+                            segments = BoundaryWordTiming.apply(segments, clip, refined, result.turns)
+                        }
                     }
                     if (clips.isNotEmpty()) result = SpeakerDiarizer.reassignWords(segments, result)
                 } finally { whisperCalls.remove(timestamp); aligner.releaseUse() }
