@@ -1,0 +1,2 @@
+test_id,timestamp_utc,commit,apk,device,file_name,audio_seconds,processing_seconds,rtf,wer_percent,der_percent,airplane_mode,success,notes
+emulator-001,2026-11-07T17:49:00Z,86e1712,LIGHT,"Android emulator arm64 API 35 4 GB CPU only",r002.wav,139.2,103,0.74,,,true,true,"Approximate wall time from file selection to result; WER and DER not computed; speaker separation was not started automatically; emulator CPU is not a phone"
