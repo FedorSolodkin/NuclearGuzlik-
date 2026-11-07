@@ -274,26 +274,4 @@ class EngineEvalDeviceTest {
         }
     }
 
-    /** Скачивание с нашего зеркала тем же кодом, что в настройках: редиректы GitHub, allowlist, SHA-256. */
-    @Test fun mirrorDownload() {
-        assumeTrue("включается -e mirror 1", args.getString("mirror") == "1")
-        val name = "mirror_probe_silero_vad.onnx"
-        File(ctx.filesDir, name).delete(); File(ctx.filesDir, "$name.tmp").delete()
-        val latch = CountDownLatch(1)
-        var ok = false
-        val l = object : ModelDownloader.Listener {
-            override fun onProgress(modelName: String, pct: Int, downloadedMb: Long, totalMb: Long) {}
-            override fun onFinished(modelName: String, success: Boolean) { ok = success; latch.countDown() }
-        }
-        ModelDownloader.addListener(l)
-        try {
-            assertTrue(ModelDownloader.start(ctx, name, listOf(ModelMirror.BASE + ModelMirror.VAD_ASSET), 1_000_000L))
-            assertTrue("timeout", latch.await(5, TimeUnit.MINUTES))
-        } finally { ModelDownloader.removeListener(l) }
-        val f = File(ctx.filesDir, name)
-        assertTrue("скачано с зеркала", ok && f.exists())
-        assertEquals("1a153a22f4509e292a94e67d6f9b85e8deb25b4988682b7e174c65279d8788e3", ModelIntegrity.sha256(f))
-        f.delete()
-        File(outDir, "mirror.json").writeText(JSONArray().put("ok").toString())
-    }
 }

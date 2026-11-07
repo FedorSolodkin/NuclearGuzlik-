@@ -31,10 +31,7 @@ object ModelIntegrity {
     private const val PYANNOTE_SHA = "057ee564753071c0b09b5b611648b50ac188d50846bff5f01e9f7bbf1591ea25"
     private val SHA256_BY_URL = mapOf(
         "https://huggingface.co/onnx-community/wespeaker-voxceleb-resnet34-LM/resolve/main/onnx/model.onnx" to SPEAKER_SHA,
-        ModelMirror.BASE + ModelMirror.SPEAKER_ASSET to SPEAKER_SHA,
         "https://huggingface.co/onnx-community/pyannote-segmentation-3.0/resolve/main/onnx/model.onnx" to PYANNOTE_SHA,
-        ModelMirror.BASE + ModelMirror.PYANNOTE_ASSET to PYANNOTE_SHA,
-        ModelMirror.BASE + ModelMirror.VAD_ASSET to VAD_SHA,
     ) + BuildConfig.MODELS_BASE_URL.takeIf { it.isNotBlank() }?.let { server ->
         // Свой сервер моделей (-PguzlikvoiceModelsUrl): те же файлы, что в зеркале.
         mapOf(

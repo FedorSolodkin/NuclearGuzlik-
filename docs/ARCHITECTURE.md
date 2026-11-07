@@ -4,8 +4,8 @@
 
 Android-приложение превращает запись разговора в структурированную расшифровку: текст реплик,
 говорящие и временные метки. Вся обработка идёт на устройстве, без сети и серверов.
-Основа — существующее приложение VoiceMind (см. PROVENANCE.md); для конкурса добавлены JSON-экспорт
-по контракту задания, отдельная сборка без аккаунта и модели внутри APK.
+Для конкурса добавлены JSON-экспорт по контракту задания, отдельная сборка без аккаунта
+и модели внутри APK.
 
 ```mermaid
 flowchart TD
@@ -57,7 +57,7 @@ Native CPU-варианты выбираются по возможностям �
 
 whisper.cpp (GGML), llama.cpp, ONNX Runtime (pyannote segmentation 3.0, WeSpeaker ResNet34), Silero VAD,
 Room, Kotlin/Android SDK 36, NDK 25.1. Модели: Whisper podlodka-turbo q4_0, Gemma 2 2B Q4_K_M (ru90k),
-Qwen3 0.6B; контрольные суммы в config/models.json.
+Qwen3 0.6B; контрольные суммы в config/contest-models.json.
 
 ## Безопасность и приватность
 

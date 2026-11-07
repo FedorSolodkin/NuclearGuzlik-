@@ -15,8 +15,8 @@ echo "sdk.dir=/путь/к/Android/sdk" > local.properties
 
 ### Сборки со встроенными моделями (для проверки без интернета)
 
-Подготовьте папки `bundles/light/models` и `bundles/heavy/models` с файлами (имена обязательны; источники и
-контрольные суммы в `config/models.json`, дополнительно в `config/example.env`):
+Подготовьте папки `bundles/light/models` и `bundles/heavy/models` с файлами (имена обязательны; контрольные суммы в
+`config/contest-models.json`, параметры сборки — в `config/example.env`):
 
 | Файл | LIGHT | HEAVY |
 |---|---|---|

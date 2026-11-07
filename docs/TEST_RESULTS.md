@@ -32,7 +32,7 @@ Android. Для точности: WER по эталонным расшифров
   времени/диаризации, удалённые метки, некорректные времена.
 - Python evaluator: 4 теста проходят; WER, нормализация, строгие типы и overlap.
 - APK: `apksigner verify --verbose` подтверждает v2-подпись; `aapt dump badging`
-  подтверждает пакет `ru.voicemind.app.hackathon`, minSdk 26.
+  подтверждает пакет `ru.guzlik.voice.hackathon`, minSdk 26.
 - Манифест, размер и SHA-256 APK: artifacts/apk/manifest.json.
 - Android по ADB не подключён. Сквозной импорт/ASR/диаризация/LLM/экспорт,
   восстановление после выгрузки, RAM, нагрев и RTF **не проверены на новой APK**.
