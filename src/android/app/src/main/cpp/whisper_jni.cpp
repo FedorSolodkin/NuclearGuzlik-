@@ -221,9 +221,17 @@ Java_com_example_guzlikvoice_WhisperCppEngine_nativeTranscribe(
         params.vad_model_path = vadPath.c_str();
         params.vad_params     = whisper_vad_default_params();
         if (vadThreshold < 0) {
-            float floorDb = 0;
-            params.vad_params.threshold = autovad::choose(pcmF, vadPath, &floorDb);
-            LOGI("auto VAD: noise floor %.1f dBFS → threshold %.2f", floorDb, params.vad_params.threshold);
+            float floorDb = 0, cover = 1;
+            params.vad_params.threshold = autovad::chooseGuarded(pcmF, vadPath, &floorDb, &cover);
+            if (params.vad_params.threshold == autovad::kNoVad) {
+                // VAD отрезал слышимую речь (узкополосный звук) и понижение порога не помогло:
+                // этот кусок идёт в Whisper целиком, как при выключенном VAD.
+                params.vad = false;
+                params.vad_params.threshold = autovad::kBase;
+                LOGI("auto VAD: noise floor %.1f dBFS, coverage %.2f → без VAD", floorDb, cover);
+            } else {
+                LOGI("auto VAD: noise floor %.1f dBFS, coverage %.2f → threshold %.2f", floorDb, cover, params.vad_params.threshold);
+            }
         } else {
             params.vad_params.threshold = vadThreshold;
         }

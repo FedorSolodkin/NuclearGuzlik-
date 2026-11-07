@@ -40,6 +40,7 @@ CONFIGS = {
     # ворота по фактическому фону кусков (p10 уровня кадров): тишина ≤ −60, комната ~−56,
     # офис ~−53, громко ~−41 dBFS
     "gate58":     bench.gated_adaptive(floor_db=-58),
+    "guard58":    bench.guarded_adaptive(),               # gate58 + проверка покрытия (как в приложении)
     "gate54":     bench.gated_adaptive(floor_db=-54),
     "gate50":     bench.gated_adaptive(floor_db=-50),
 }
