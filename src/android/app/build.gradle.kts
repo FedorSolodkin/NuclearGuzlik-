@@ -245,7 +245,7 @@ android {
         }
     }
     testBuildType = (project.findProperty("guzlikvoiceTestBuildType") as String?)?.also {
-        require(it == "debug" || it == "prototype") { "guzlikvoiceTestBuildType: debug или prototype" }
+        require(it in setOf("debug", "prototype", "hackathon")) { "guzlikvoiceTestBuildType: debug, prototype или hackathon" }
     } ?: "debug"
     sourceSets.getByName("androidTest").assets.srcDir("src/test/resources/wearable")
     compileOptions {
