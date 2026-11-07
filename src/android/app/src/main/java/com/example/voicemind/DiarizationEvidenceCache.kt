@@ -21,7 +21,7 @@ object DiarizationEvidenceCache {
         return Key(timestamp, audio.absolutePath, audio.length(), audio.lastModified(),
             // Refinement plans depend on the voice inventory. A completed plan
             // from the old cluster-support policy cannot be treated as current.
-            "evidence-v4-boundaries2|" + models.joinToString("|") { "${it.absolutePath}:${it.length()}:${it.lastModified()}" })
+            "evidence-v5-complete-pcm|" + models.joinToString("|") { "${it.absolutePath}:${it.length()}:${it.lastModified()}" })
     }
 
     @Synchronized fun ticket(timestamp: Long) = Ticket(timestamp, epoch, revisions[timestamp] ?: 0L)

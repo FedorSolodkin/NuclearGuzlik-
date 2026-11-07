@@ -422,7 +422,8 @@ object SpeakerDiarizer {
         val previews=SpeakerPreviews.select(snapshot,labels,centroids,turns)
         val tWords = System.nanoTime()
         val timeline = SpeakerTimeline(turns)
-        val assignments = IntArray(segments.size) { i -> checkCancelled(); timeline.decide(segments[i].startMs, segments[i].endMs).speaker }
+        checkCancelled()
+        val assignments = timeline.decideWords(segments.map { it.startMs to it.endMs })
         Log.i(TAG, "Evidence stages ms: clustering=${(tFusion-tCluster)/1_000_000}, fusion=${(tWords-tFusion)/1_000_000}, words=${(System.nanoTime()-tWords)/1_000_000}")
         Log.i(TAG, "Clustering ${embeddings.size} embeddings → $k voices (requested ${fixedK ?: "auto"})")
         return AcousticResult(assignments, centroids, previews, turns)

@@ -245,7 +245,7 @@ android {
         }
     }
     testBuildType = (project.findProperty("voicemindTestBuildType") as String?)?.also {
-        require(it == "debug" || it == "prototype") { "voicemindTestBuildType: debug или prototype" }
+        require(it in setOf("debug", "prototype", "hackathon")) { "voicemindTestBuildType: debug, prototype или hackathon" }
     } ?: "debug"
     sourceSets.getByName("androidTest").assets.srcDir("src/test/resources/wearable")
     compileOptions {
