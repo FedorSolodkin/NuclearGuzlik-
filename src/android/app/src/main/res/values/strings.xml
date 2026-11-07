@@ -1,0 +1,14 @@
+<resources>
+    <string name="app_name">VoiceMind</string>
+    <string name="tab_record">Запись</string>
+    <string name="tab_history">История</string>
+    <string name="status_loading">Подготовка…</string>
+    <string name="status_ready">Готов к записи</string>
+    <string name="status_connecting">Подключаюсь по Bluetooth…</string>
+    <string name="status_connected">Устройство подключено — говорите</string>
+    <string name="status_recording">Идёт запись</string>
+    <string name="status_saving">Сохраняю…</string>
+    <string name="record_hint">Нажмите, чтобы начать запись</string>
+    <string name="record_hint_stop">Нажмите, чтобы остановить</string>
+    <string name="no_entries">На этот день пока нет записей</string>
+</resources>

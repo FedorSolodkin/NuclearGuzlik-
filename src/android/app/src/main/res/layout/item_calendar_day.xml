@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:paddingVertical="6dp">
+
+    <TextView
+        android:id="@+id/tvCalDay"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:gravity="center"
+        android:textSize="14sp"
+        android:textColor="@color/textSecondary"
+        android:background="@drawable/bg_calendar_day_selector"/>
+
+    <View
+        android:id="@+id/dotIndicator"
+        android:layout_width="5dp"
+        android:layout_height="5dp"
+        android:layout_marginTop="3dp"
+        android:background="@drawable/bg_calendar_dot"
+        android:visibility="invisible"/>
+
+</LinearLayout>

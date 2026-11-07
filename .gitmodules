@@ -1,0 +1,10 @@
+[submodule "whisper.cpp"]
+    path = src/android/app/src/main/cpp/whisper.cpp
+    url = https://github.com/ggml-org/whisper.cpp.git
+    shallow = true
+    ignore = dirty
+[submodule "llama.cpp"]
+    path = src/android/app/src/main/cpp/llama.cpp
+    url = https://github.com/ggml-org/llama.cpp.git
+    shallow = true
+    ignore = dirty

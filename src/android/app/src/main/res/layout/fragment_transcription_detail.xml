@@ -1,0 +1,601 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface">
+
+    <!-- Drag handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="4dp"
+        android:layout_gravity="center_horizontal"
+        android:background="@drawable/bg_drag_handle"/>
+
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingVertical="16dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvDetailTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="24sp"
+                android:fontFamily="@font/instrument_serif"
+                android:textColor="@color/textPrimary"/>
+
+            <TextView
+                android:id="@+id/tvDetailDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="13sp"
+                android:textColor="@color/textMuted"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tvDetailChars"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:maxLines="1"
+            android:textSize="12sp"
+            android:textColor="@color/accent"
+            android:background="@drawable/bg_pill_secondary"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="4dp"/>
+
+        <ImageButton
+            android:id="@+id/btnDetailDelete"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="8dp"
+            android:src="@drawable/ic_delete"
+            android:scaleType="center"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Удалить запись"
+            app:tint="@color/textMuted"/>
+    </LinearLayout>
+
+    <!-- Кнопка разблокировки vault — видна только если запись зашифрована и vault заперт -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnUnlockVault"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="Разблокировать запись"
+        android:textColor="@color/textPrimary"
+        android:backgroundTint="@color/accent"
+        app:icon="@drawable/ic_lock_open"
+        app:iconTint="@color/textPrimary"
+        app:iconSize="18dp"
+        app:cornerRadius="12dp"
+        android:visibility="gone"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"/>
+
+    <!-- Audio player (виден только если у записи есть аудио) -->
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/playerContainer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="16dp"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="4dp"
+        android:visibility="gone"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="#1AFFFFFF">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="12dp">
+
+            <!-- Кнопка + прогресс -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageButton
+                    android:id="@+id/btnDetailPlayPause"
+                    android:layout_width="56dp"
+                    android:layout_height="56dp"
+                    android:src="@drawable/ic_play"
+                    android:scaleType="center"
+                    android:background="@drawable/bg_record_button"
+                    android:padding="0dp"
+                    android:elevation="4dp"
+                    android:contentDescription="Воспроизвести запись"/>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="12dp"
+                    android:orientation="vertical">
+
+                    <SeekBar
+                        android:id="@+id/seekDetailAudio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:max="1000"
+                        android:progressTint="@color/primary"
+                        android:thumbTint="@color/primary"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal"
+                        android:layout_marginTop="2dp">
+
+                        <TextView
+                            android:id="@+id/tvDetailPlayedTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="11sp"
+                            android:textColor="@color/textMuted"
+                            android:text="0:00"/>
+
+                        <View
+                            android:layout_width="0dp"
+                            android:layout_height="1dp"
+                            android:layout_weight="1"/>
+
+                        <TextView
+                            android:id="@+id/tvDetailTotalTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="11sp"
+                            android:textColor="@color/textMuted"
+                            android:text="0:00"/>
+
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.card.MaterialCardView>
+
+    <View
+        android:id="@+id/playerDivider"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/divider"
+        android:visibility="gone"/>
+
+    <!-- ТЗ проекта, Р-7: пользователь знает, что расшифровка автоматическая и может ошибаться. -->
+    <TextView
+        android:id="@+id/tvAutoNotice"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:paddingBottom="4dp"
+        android:text="Расшифровка сделана автоматически и может содержать ошибки. Нажмите на фразу, чтобы послушать её."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"/>
+
+    <!-- Подсказка про подсвеченные сомнительные слова (показывается, если они есть) -->
+    <TextView
+        android:id="@+id/tvDoubtHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingHorizontal="20dp"
+        android:textSize="12sp"
+        android:textColor="@color/textMuted"
+        android:visibility="gone"/>
+
+    <!-- Текст и функции записи — одна прокрутка на всю высоту карточки.
+         NestedScrollView (а не ScrollView): обычный не участвует в nested-scroll
+         протоколе BottomSheetBehavior, и жест внутри текста складывал карточку. -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="4dp"
+        style="?android:attr/scrollbarStyle">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="12dp">
+
+            <TextView
+                android:id="@+id/tvDetailText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:lineSpacingMultiplier="1.6"
+                android:textColor="@color/textPrimary"
+                android:paddingHorizontal="20dp"
+                android:paddingVertical="16dp"
+                android:textIsSelectable="true"/>
+
+            <!-- Функции записи: свёрнуты в одну строку, чтобы не закрывать текст -->
+            <LinearLayout
+                android:id="@+id/rowActionsToggle"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginTop="4dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingHorizontal="12dp"
+                android:background="@drawable/bg_pill_secondary"
+                android:clickable="true"
+                android:focusable="true">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Функции записи"
+                    android:textSize="14sp"
+                    android:textColor="@color/textPrimary"/>
+
+                <TextView
+                    android:id="@+id/tvActionsChevron"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="▸"
+                    android:textSize="16sp"
+                    android:textColor="@color/accent"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/layoutRecordActions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone">
+
+            <!-- Событие календаря, к которому привязана запись (автопривязка по времени) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardCalendarLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:visibility="gone"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/surfaceElevated">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_calendar"
+                        app:tint="@color/textMuted"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="@null"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Событие"
+                            android:textSize="10sp"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.1"
+                            android:textColor="@color/textMuted"/>
+
+                        <TextView
+                            android:id="@+id/tvCalendarLinkTitle"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/textPrimary"
+                            android:layout_marginTop="2dp"/>
+
+                        <TextView
+                            android:id="@+id/tvCalendarLinkTime"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text=""
+                            android:textSize="12sp"
+                            android:textColor="@color/textMuted"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Клиент, к которому привязана запись (Pro-фича) -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardClientLink"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                app:cardCornerRadius="14dp"
+                app:cardElevation="0dp"
+                app:cardBackgroundColor="@color/surfaceElevated"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?attr/selectableItemBackground">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="16dp"
+                    android:paddingVertical="12dp">
+
+                    <ImageView
+                        android:layout_width="20dp"
+                        android:layout_height="20dp"
+                        android:src="@drawable/ic_person"
+                        app:tint="@color/textMuted"
+                        android:layout_marginEnd="12dp"
+                        android:contentDescription="@null"/>
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Клиент"
+                            android:textSize="10sp"
+                            android:textAllCaps="true"
+                            android:letterSpacing="0.1"
+                            android:textColor="@color/textMuted"/>
+
+                        <TextView
+                            android:id="@+id/tvClientLinkName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Не привязан"
+                            android:textSize="14sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/textPrimary"
+                            android:layout_marginTop="2dp"/>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Изменить"
+                        android:textSize="12sp"
+                        android:textColor="@color/accent"/>
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Протокол совещания: участники, решения, задачи (Gemma, шаблон «Встреча») -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnProtocol"
+                android:layout_width="match_parent"
+                android:layout_height="52dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Протокол совещания"
+                android:textColor="#1A140A"
+                android:textStyle="bold"
+                android:backgroundTint="@color/primary"
+                app:icon="@drawable/ic_sparkle"
+                app:iconTint="#1A140A"
+                app:iconSize="18dp"
+                app:cornerRadius="12dp"/>
+
+            <!-- Кнопка Q&A по записи — Pro-фича, локальная Gemma -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnAskQuestion"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Спросить о записи"
+                android:textColor="@color/primary"
+                app:icon="@drawable/ic_sparkle"
+                app:iconTint="@color/primary"
+                app:iconSize="18dp"
+                app:strokeColor="@color/primary"
+                app:cornerRadius="12dp"/>
+
+            <!-- Кнопка экспорта — Pro-фича, SRT/PDF/Word -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnExportFormats"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Экспортировать (SRT, PDF, Word)"
+                android:textColor="@color/primary"
+                app:strokeColor="@color/primary"
+                app:cornerRadius="12dp"/>
+
+            <!-- Защита записи: текст и аудио шифруются ключом из Keystore -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnProtectEntry"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Защитить запись"
+                android:textColor="@color/primary"
+                app:icon="@drawable/ic_shield_lock"
+                app:iconTint="@color/primary"
+                app:iconSize="18dp"
+                app:strokeColor="@color/primary"
+                app:cornerRadius="12dp"
+                android:visibility="gone"/>
+
+            <!-- Кнопка именования говорящих — Pro-фича, видна после диаризации -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnNameSpeakers"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Именовать говорящих"
+                android:textColor="@color/primary"
+                app:icon="@drawable/ic_sparkle"
+                app:iconTint="@color/primary"
+                app:iconSize="18dp"
+                app:strokeColor="@color/primary"
+                app:cornerRadius="12dp"
+                android:visibility="gone"/>
+
+            <!-- Кнопка диаризации — видна только если есть аудио и диаризация ещё не делалась.
+                 Высота 56dp + иконка + чуть более крупный текст: чтобы легко попадать пальцем. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnDiarize"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Разделить по голосам"
+                android:textSize="15sp"
+                android:textColor="@color/primary"
+                app:icon="@drawable/ic_person"
+                app:iconTint="@color/primary"
+                app:iconSize="20dp"
+                app:iconGravity="textStart"
+                app:iconPadding="10dp"
+                app:strokeColor="@color/primary"
+                app:strokeWidth="1.5dp"
+                app:cornerRadius="14dp"
+                android:visibility="gone"/>
+
+            <!-- Пока идёт разделение по голосам: можно остановить, ничего не сохранится. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnCancelDiarize"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Отменить разделение"
+                android:textColor="@color/accentRed"
+                android:visibility="gone"/>
+
+            <!-- Кнопка тайм-кодов — по нажатию каждая фраза становится кликабельной:
+                 тап перематывает плеер на её начало. Видна только если есть аудио. -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnSyncAudio"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="8dp"
+                android:text="Тайм-коды: тыкать и слушать"
+                android:textColor="@color/primary"
+                app:icon="@drawable/ic_play"
+                app:iconTint="@color/primary"
+                app:iconSize="18dp"
+                app:strokeColor="@color/primary"
+                app:cornerRadius="12dp"
+                android:visibility="gone"/>
+            </LinearLayout>
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/divider"/>
+
+    <!-- Action bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:padding="16dp"
+        android:gravity="center">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDetailEdit"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="8dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:layout_marginEnd="8dp"
+            android:text="Изменить"
+            android:textColor="@color/textPrimary"
+            app:strokeColor="@color/divider"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDetailCopy"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="8dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:layout_marginEnd="8dp"
+            android:text="Копировать"
+            android:textColor="@color/textPrimary"
+            app:strokeColor="@color/divider"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnDetailSave"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            app:iconPadding="4dp"
+            android:layout_marginStart="8dp"
+            android:text="Поделиться"
+            android:textColor="@color/textPrimary"
+            android:backgroundTint="@color/primary"
+            app:icon="@drawable/ic_share"
+            app:iconTint="@color/textPrimary"
+            app:iconSize="16dp"
+            app:cornerRadius="12dp"/>
+
+    </LinearLayout>
+
+</LinearLayout>

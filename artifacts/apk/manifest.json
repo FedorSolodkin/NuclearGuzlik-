@@ -1,0 +1,13 @@
+{
+  "file": "VoiceMind-hackathon.apk",
+  "package": "ru.voicemind.app.hackathon",
+  "version": "4.0.7-hackathon",
+  "min_sdk": 26,
+  "abi": [
+    "arm64-v8a"
+  ],
+  "bytes": 20322471,
+  "sha256": "123ac3b7cb46198510044d2750770990caf21a1cfdba05b2166859d7b56d2d01",
+  "signature": "APK Signature Scheme v2; local debug key",
+  "models_included": false
+}

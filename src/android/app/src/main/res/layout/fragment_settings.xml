@@ -1,0 +1,725 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/surface"
+    android:fillViewport="false">
+
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:paddingHorizontal="24dp"
+    android:paddingTop="12dp"
+    android:paddingBottom="40dp">
+
+    <!-- Drag handle -->
+    <View
+        android:layout_width="40dp"
+        android:layout_height="4dp"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginBottom="24dp"
+        android:background="@drawable/bg_drag_handle"/>
+
+    <!-- Title -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Настройки"
+        android:textSize="28sp"
+        android:fontFamily="@font/instrument_serif"
+        android:textColor="@color/textPrimary"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- ── Transcription ──────────────────────────────────── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="РАСШИФРОВКА"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.14"
+        android:textStyle="bold"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Язык речи"
+        android:textSize="15sp"
+        android:textColor="@color/textPrimary"
+        android:layout_marginBottom="10dp"/>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleAsrLanguage"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLangAuto"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Авто"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLangRu"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Русский"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnLangEn"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="English"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"/>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:id="@+id/tvAsrLanguageHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"
+        android:layout_marginBottom="20dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Качество распознавания"
+        android:textSize="15sp"
+        android:textColor="@color/textPrimary"
+        android:layout_marginBottom="10dp"/>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleWhisperModel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnModelTiny"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Быстро"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnModelSmall"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Точно"
+            android:textSize="12sp"
+            app:cornerRadius="12dp"/>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:id="@+id/tvModelHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="10dp"/>
+
+    <!-- Кнопка скачать недостающий вариант -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnDownloadModel"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Скачать"
+        android:textSize="13sp"
+        app:cornerRadius="12dp"
+        android:visibility="gone"
+        android:layout_marginBottom="8dp"/>
+
+    <ProgressBar
+        android:id="@+id/progressDownload"
+        style="@android:style/Widget.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="6dp"
+        android:max="100"
+        android:progress="0"
+        android:progressTint="@color/accent"
+        android:progressBackgroundTint="@color/surface"
+        android:visibility="gone"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:id="@+id/tvDownloadStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="32dp"
+        android:visibility="gone"/>
+
+    <TextView
+        android:id="@+id/tvChangeHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Изменение применится к следующей записи"
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- ── Ускорение через GPU (Vulkan) ───────────────────── -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ускорение GPU"
+                android:textSize="15sp"
+                android:textColor="@color/textPrimary"/>
+
+            <TextView
+                android:id="@+id/tvGpuBackendStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ускорение: процессор"
+                android:textSize="12sp"
+                android:textColor="@color/textMuted"
+                android:layout_marginTop="2dp"/>
+
+        </LinearLayout>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchWhisperGpu"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Ускоряет распознавание и ИИ-анализ на видеочипе телефона. При первом запуске приложение само проверит, что быстрее. Отключите, если телефон греется или приложение не запускается."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"
+        android:layout_marginBottom="16dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="4dp">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Повышенная точность"
+            android:textSize="15sp"
+            android:textColor="@color/textPrimary"/>
+
+        <com.google.android.material.materialswitch.MaterialSwitch
+            android:id="@+id/switchWhisperBeam"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"/>
+
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Перебирает несколько вариантов фразы (beam search). Лучше на неразборчивой речи, расшифровка дольше примерно в полтора раза."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/surface"
+        android:alpha="0.15"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- ── YouGile: отправка протоколов в таск-трекер ─────── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="YOUGILE"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.14"
+        android:textStyle="bold"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:id="@+id/tvYouGileStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Не подключён"
+        android:textSize="15sp"
+        android:textColor="@color/textPrimary"/>
+
+    <TextView
+        android:id="@+id/tvYouGileColumn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:textColor="@color/textMuted"
+        android:layout_marginTop="2dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnYouGileConnect"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:layout_marginEnd="6dp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:text="Подключить"
+            android:textColor="@color/textPrimary"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnYouGileColumn"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:layout_marginStart="6dp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            android:textSize="13sp"
+            android:text="Колонка"
+            android:textColor="@color/textPrimary"
+            app:cornerRadius="12dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Протокол совещания можно отправить в YouGile задачей или сообщением в существующую задачу. Только по кнопке — без неё записи остаются на телефоне."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"
+        android:layout_marginTop="6dp"
+        android:layout_marginBottom="20dp"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/surface"
+        android:alpha="0.15"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- ── Микрофон ───────────────────────────────────────── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="МИКРОФОН"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.14"
+        android:textStyle="bold"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="12dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Где обычно записываете?"
+        android:textSize="15sp"
+        android:textColor="@color/textPrimary"
+        android:layout_marginBottom="8dp"/>
+
+    <com.google.android.material.button.MaterialButtonToggleGroup
+        android:id="@+id/toggleMicMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:singleSelection="true"
+        app:selectionRequired="true"
+        android:layout_marginBottom="8dp">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMicAuto"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Авто"
+            android:textSize="12sp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMicQuiet"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Тихо"
+            android:textSize="12sp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMicNormal"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Обычно"
+            android:textSize="12sp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            app:cornerRadius="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnMicNoisy"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="44dp"
+            android:text="Шумно"
+            android:textSize="12sp"
+            android:paddingHorizontal="4dp"
+            android:maxLines="1"
+            app:cornerRadius="12dp"/>
+
+    </com.google.android.material.button.MaterialButtonToggleGroup>
+
+    <TextView
+        android:id="@+id/tvMicModeHint"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"
+        android:layout_marginBottom="20dp"/>
+
+    <!-- ── Мой словарь: имена и редкие слова для подсказки Whisper ── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Мой словарь"
+        android:textSize="15sp"
+        android:textColor="@color/textPrimary"
+        android:layout_marginBottom="4dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Имена, фамилии, названия компаний и редкие термины, которые часто звучат в ваших записях. Через запятую. Распознавание будет писать их правильно."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"
+        android:layout_marginBottom="8dp"/>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilDictionary"
+        style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Например: Олег Смирнов, Сбер, Кубернетес"
+        app:boxCornerRadiusTopStart="12dp"
+        app:boxCornerRadiusTopEnd="12dp"
+        app:boxCornerRadiusBottomStart="12dp"
+        app:boxCornerRadiusBottomEnd="12dp"
+        app:counterEnabled="true"
+        app:counterMaxLength="300"
+        android:layout_marginBottom="20dp">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/etDictionary"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textMultiLine|textCapWords"
+            android:minLines="2"
+            android:maxLength="300"
+            android:textSize="14sp"/>
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <!-- ── Календарь и встречи: подключение Google/Яндекс + список встреч ──
+         вынесено в отдельный экран ToolsActivity (раньше было тут + вкладка "Сегодня"). -->
+    <LinearLayout
+        android:id="@+id/rowTools"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:paddingVertical="8dp"
+        android:background="?attr/selectableItemBackground"
+        android:clickable="true"
+        android:focusable="true"
+        android:layout_marginBottom="24dp">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Календарь и встречи"
+                android:textSize="15sp"
+                android:textColor="@color/textPrimary"/>
+
+            <TextView
+                android:id="@+id/tvToolsStatusRow"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Не подключён"
+                android:textSize="12sp"
+                android:textColor="@color/textMuted"
+                android:layout_marginTop="2dp"/>
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="→"
+            android:textSize="18sp"
+            android:textColor="@color/textMuted"/>
+    </LinearLayout>
+
+    <!-- Divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/surface"
+        android:alpha="0.15"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- ── Data ────────────────────────────────────────── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ДАННЫЕ"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.14"
+        android:textStyle="bold"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnExportAll"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сохранить резервную копию"
+        android:textSize="13sp"
+        app:cornerRadius="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnRestoreBackup"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Восстановить из копии"
+        android:textSize="13sp"
+        app:cornerRadius="12dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:text="Все записи с аудио, клиенты и голоса в одном файле, зашифрованном паролем. Пригодится при смене телефона."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnWipeAll"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Удалить все данные"
+        android:textColor="@color/accentRed"
+        android:textSize="13sp"
+        app:cornerRadius="12dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:text="Записи, аудио, клиенты, голоса, словарь и подключения календаря и YouGile. Скачанные компоненты и настройки останутся."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnImportModel"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Установить из файла"
+        android:textSize="13sp"
+        app:cornerRadius="12dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:text="Для работы без интернета: скопируйте файл на телефон (с компьютера или другого устройства) и выберите его. Приложение проверит, что файл подходит."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="@color/surface"
+        android:alpha="0.15"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- ── Support ─────────────────────────────────────── -->
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="ПОДДЕРЖКА"
+        android:textSize="10sp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.14"
+        android:textStyle="bold"
+        android:textColor="@color/textMuted"
+        android:layout_marginBottom="12dp"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnReportProblem"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Сообщить о проблеме"
+        android:textSize="13sp"
+        app:cornerRadius="12dp"/>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="8dp"
+        android:text="Соберёт сведения о телефоне и технический журнал (без записей и текста) и откроет «Поделиться». Отправьте файл нам и опишите, что случилось — контакты в Telegram-канале @IVoiceMind."
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"
+        android:lineSpacingMultiplier="1.35"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnPrivacy"
+        style="@style/Widget.Material3.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Политика конфиденциальности"
+        android:textSize="13sp"/>
+
+    <TextView
+        android:id="@+id/tvAppVersion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:textSize="11sp"
+        android:textColor="@color/textMuted"/>
+
+    <!-- «Тест скорости ИИ» — только в debug-сборках (SettingsSheet прячет в release). -->
+    <LinearLayout
+        android:id="@+id/groupSpeedLab"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/surface"
+            android:alpha="0.15"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="24dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="ДЛЯ ТЕСТА"
+            android:textSize="10sp"
+            android:textAllCaps="true"
+            android:letterSpacing="0.14"
+            android:textStyle="bold"
+            android:textColor="@color/textMuted"
+            android:layout_marginBottom="12dp"/>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSpeedLab"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Тест скорости ИИ"
+            android:textSize="13sp"
+            app:cornerRadius="12dp"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:text="Замеряет, как быстро работает ИИ на этом телефоне (15–20 минут, все доступные Gemma подряд), и даёт файл для отправки. Телефон поставьте на зарядку. Файл отправляется только вручную, через «Поделиться»."
+            android:textSize="11sp"
+            android:textColor="@color/textMuted"
+            android:lineSpacingMultiplier="1.35"/>
+    </LinearLayout>
+
+</LinearLayout>
+</androidx.core.widget.NestedScrollView>

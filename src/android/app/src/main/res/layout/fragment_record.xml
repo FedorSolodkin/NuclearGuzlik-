@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:background="@color/background">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="20dp"
+        android:paddingTop="24dp"
+        android:paddingBottom="32dp">
+
+        <!-- Status row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="32dp">
+
+            <TextView
+                android:id="@+id/tvModelBadge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_pill_secondary"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="5dp"
+                android:text=""
+                android:textSize="11sp"
+                android:letterSpacing="0.04"
+                android:textColor="@color/textMuted"
+                android:visibility="gone"/>
+
+            <TextView
+                android:id="@+id/tvTopicChip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:background="@drawable/bg_pill_secondary"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:text=""
+                android:textSize="11sp"
+                android:letterSpacing="0.03"
+                android:textColor="@color/primary"
+                android:visibility="gone"/>
+
+            <View android:layout_width="0dp" android:layout_height="1dp" android:layout_weight="1"/>
+
+            <TextView
+                android:id="@+id/tvVoskStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="12sp"
+                android:textColor="@color/textMuted"/>
+        </LinearLayout>
+
+        <!-- Mic button area -->
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center">
+
+            <FrameLayout
+                android:layout_width="180dp"
+                android:layout_height="180dp"
+                android:layout_gravity="center_horizontal">
+
+                <View
+                    android:id="@+id/pulseRing"
+                    android:layout_width="180dp"
+                    android:layout_height="180dp"
+                    android:layout_gravity="center"
+                    android:background="@drawable/bg_record_button"
+                    android:alpha="0"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnVosk"
+                    android:layout_width="130dp"
+                    android:layout_height="130dp"
+                    android:layout_gravity="center"
+                    android:insetTop="0dp"
+                    android:insetBottom="0dp"
+                    app:icon="@drawable/ic_mic"
+                    app:iconSize="52dp"
+                    app:iconPadding="0dp"
+                    app:iconGravity="textStart"
+                    app:iconTint="@color/surface"
+                    android:padding="0dp"
+                    app:cornerRadius="65dp"
+                    android:text=""
+                    android:contentDescription="Начать или остановить запись"
+                    android:backgroundTint="@null"
+                    android:background="@drawable/bg_record_button"
+                    app:elevation="0dp"/>
+            </FrameLayout>
+        </FrameLayout>
+
+        <!-- Amplitude progress bar (legacy) -->
+        <ProgressBar
+            android:id="@+id/progressAmplitude"
+            style="@android:style/Widget.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="6dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginHorizontal="40dp"
+            android:max="100"
+            android:progress="0"
+            android:progressTint="@color/accent"
+            android:progressBackgroundTint="@color/surface"
+            android:visibility="gone"/>
+
+        <!-- Live waveform -->
+        <com.example.voicemind.WaveformView
+            android:id="@+id/waveform"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginHorizontal="32dp"
+            android:visibility="gone"/>
+
+        <!-- Recording timer -->
+        <TextView
+            android:id="@+id/tvRecordTimer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="20dp"
+            android:text="00:00"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:textColor="@color/accent"
+            android:fontFamily="monospace"
+            android:visibility="gone"/>
+
+        <!-- Cancel processing button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelProcessing"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="8dp"
+            android:text="Отменить обработку"
+            android:textSize="13sp"
+            android:textColor="@color/textMuted"
+            app:cornerRadius="12dp"
+            android:visibility="gone"/>
+
+        <!-- Hint -->
+        <TextView
+            android:id="@+id/tvRecordHint"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:layout_marginBottom="36dp"
+            android:text="нажмите чтобы начать"
+            android:textSize="13sp"
+            android:letterSpacing="0.06"
+            android:textAllCaps="true"
+            android:textColor="@color/textMuted"/>
+
+        <!-- Mic status -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:background="@drawable/bg_pill_secondary"
+            android:paddingStart="16dp"
+            android:paddingEnd="6dp"
+            android:paddingVertical="8dp"
+            android:layout_marginBottom="20dp">
+
+            <View
+                android:id="@+id/dotBtStatus"
+                android:layout_width="8dp"
+                android:layout_height="8dp"
+                android:layout_marginEnd="10dp"
+                android:background="@drawable/bg_calendar_dot"/>
+
+            <TextView
+                android:id="@+id/tvBtStatus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="микрофон телефона"
+                android:textSize="13sp"
+                android:textColor="@color/textSecondary"/>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnMicSource"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="авто"
+                android:textSize="11sp"
+                android:minWidth="0dp"
+                android:paddingHorizontal="10dp"
+                app:cornerRadius="10dp"/>
+
+        </LinearLayout>
+
+        <!-- Transcript card -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardResult"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Расшифровка"
+                        android:textSize="10sp"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.14"
+                        android:textStyle="bold"
+                        android:textColor="@color/textMuted"/>
+
+                    <TextView
+                        android:id="@+id/tvResultMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/accent"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvResult"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="15sp"
+                    android:textColor="@color/textPrimary"
+                    android:lineSpacingMultiplier="1.55"/>
+
+                <!-- Кнопка улучшить текст через LLM -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnImproveText"
+                    style="@style/Widget.Material3.Button.OutlinedButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="14dp"
+                    android:text="Выделить главное"
+                    android:textSize="12sp"
+                    app:icon="@drawable/ic_sparkle"
+                    app:iconTint="@color/primary"
+                    app:iconSize="16dp"
+                    app:cornerRadius="12dp"
+                    android:visibility="gone"/>
+
+                <!-- Индикатор загрузки LLM: показывается только при первом вызове,
+                     когда модель ещё не в памяти (30-60 сек на средних устройствах).
+                     Без визуального прогресса пользователь думает, что приложение
+                     зависло. -->
+                <LinearLayout
+                    android:id="@+id/llmLoadingIndicator"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginTop="12dp"
+                    android:visibility="gone">
+
+                    <TextView
+                        android:id="@+id/tvLlmLoadingText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Подготавливаю ИИ-помощника…"
+                        android:textSize="12sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"/>
+
+                    <ProgressBar
+                        android:id="@+id/pbLlmLoading"
+                        style="?android:attr/progressBarStyleHorizontal"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="6dp"
+                        android:indeterminate="true"
+                        android:indeterminateTint="?attr/colorPrimary"/>
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="4dp"
+                        android:text="Обычно 20–60 секунд, только при первом запуске."
+                        android:textSize="11sp"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:alpha="0.7"/>
+                </LinearLayout>
+
+                <!-- Copy/Share transcript buttons -->
+                <LinearLayout
+                    android:id="@+id/layoutTranscriptActions"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCopyTranscript"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Копировать"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="0dp"
+                        android:layout_marginEnd="16dp"
+                        app:cornerRadius="8dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnShareTranscript"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Поделиться"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="0dp"
+                        app:cornerRadius="8dp"/>
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Key ideas card — shown after analysis -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardAnalysis"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            app:cardCornerRadius="20dp"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/surface"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="20dp">
+
+                <LinearLayout
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="12dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="1"
+                        android:layout_height="wrap_content"
+                        android:text="Ключевые мысли"
+                        android:textSize="10sp"
+                        android:textAllCaps="true"
+                        android:letterSpacing="0.14"
+                        android:textStyle="bold"
+                        android:textColor="@color/textMuted"/>
+
+                    <TextView
+                        android:id="@+id/tvAnalysisMeta"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="11sp"
+                        android:textColor="@color/accent"/>
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvKeyIdeas"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:textColor="@color/textPrimary"
+                    android:lineSpacingMultiplier="1.6"/>
+
+                <TextView
+                    android:id="@+id/tvAnalysisTags"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:textSize="12sp"
+                    android:textColor="@color/textMuted"
+                    android:visibility="gone"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:layout_marginTop="12dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnCopyAnalysis"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Копировать"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="0dp"
+                        android:layout_marginEnd="16dp"
+                        app:cornerRadius="8dp"/>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnShareAnalysis"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Сохранить TXT"
+                        android:textSize="12sp"
+                        android:paddingHorizontal="0dp"
+                        app:cornerRadius="8dp"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>

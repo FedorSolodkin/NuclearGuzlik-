@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    Только cacheDir/exports/ доступен внешним приложениям через FileProvider.
+    Всё остальное (записи, модели, JSON-хранилища, prefs) остаётся приватным.
+-->
+<paths>
+    <cache-path name="exports" path="exports/"/>
+</paths>

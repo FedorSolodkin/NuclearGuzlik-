@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+    allowBackup="false" уже блокирует auto-backup, но правила описываем явно —
+    на случай если manifest merger подкинет allowBackup="true" из библиотек
+    (например, старые версии AndroidX).
+
+    Причины запрета:
+    - Аудиозаписи и транскрипты — приватные данные пользователя
+    - OAuth-токены (Google Calendar, Yandex) — критично секретные
+    - Purchase state (Pro) — можно подделать через ручной restore
+    - Speaker embeddings — биометрические данные
+-->
+<full-backup-content>
+    <exclude domain="root" path="."/>
+    <exclude domain="file" path="."/>
+    <exclude domain="database" path="."/>
+    <exclude domain="sharedpref" path="."/>
+    <exclude domain="external" path="."/>
+</full-backup-content>
