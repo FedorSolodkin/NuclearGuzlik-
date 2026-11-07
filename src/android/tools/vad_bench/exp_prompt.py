@@ -19,7 +19,7 @@ from pathlib import Path
 
 import numpy as np
 
-DATA = Path.home() / "voicemind-bench" / "data"
+DATA = Path.home() / "guzlikvoice-bench" / "data"
 STYLE = ("Ну, в общем, я думаю, что это важно. То есть, на самом деле, если подумать... "
          "Значит, вот как это работает. Расскажите, пожалуйста, поподробнее. "
          "Конечно, я согласен. А вы как считаете? Ладно, спасибо большое!")

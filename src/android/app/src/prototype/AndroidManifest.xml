@@ -3,5 +3,5 @@
     xmlns:tools="http://schemas.android.com/tools">
     <!-- Demonstrator per ТЗ: core runs offline; install verified models from local files. -->
     <uses-permission android:name="android.permission.INTERNET" tools:node="remove" />
-    <application android:label="VoiceMind — устройство" tools:replace="android:label" />
+    <application android:label="GuzlikVoice — устройство" tools:replace="android:label" />
 </manifest>

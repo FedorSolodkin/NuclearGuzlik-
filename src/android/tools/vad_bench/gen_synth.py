@@ -166,7 +166,7 @@ def make_session(rng, near_pool, far_pool, noises, speakers, noise_level, target
 
 def main():
     ap = argparse.ArgumentParser()
-    ap.add_argument("--root", default=os.path.expanduser("~/voicemind-bench"))
+    ap.add_argument("--root", default=os.path.expanduser("~/guzlikvoice-bench"))
     ap.add_argument("--seeds", type=int, default=2, help="сессий на каждое сочетание условий")
     args = ap.parse_args()
     root = Path(args.root)

@@ -1,11 +1,11 @@
 #!/usr/bin/env bash
-# Пилотная сборка VoiceMind 4.0: release, подписана ключом из keystore.properties,
+# Пилотная сборка GuzlikVoice 4.0: release, подписана ключом из keystore.properties,
 # без входа (сервер не нужен), только Gemma: облегчённая (по умолчанию) и обычная.
 #
 #   ./scripts/build-pilot.sh                 # APK в app/build/outputs/apk/store/release/
 #   ./scripts/build-pilot.sh ../site         # + положить на сайт: site/download/
 #
-# Во втором случае в site/download/ появятся VoiceMind-<версия>.apk и latest.json
+# Во втором случае в site/download/ появятся GuzlikVoice-<версия>.apk и latest.json
 # (версия, размер, SHA-256) — страница загрузок сайта читает его сама. Дальше:
 # закоммитить и запушить сайт (файл < 100 МБ, GitHub Pages его принимает).
 set -euo pipefail
@@ -17,8 +17,8 @@ if [[ ! -f keystore.properties ]]; then
 fi
 
 ./gradlew --console=plain assembleStoreRelease \
-    -PvoicemindAuthRequired=false \
-    -PvoicemindLlmModels=gemma2-2b-v90k,gemma2-2b
+    -PguzlikvoiceAuthRequired=false \
+    -PguzlikvoiceLlmModels=gemma2-2b-v90k,gemma2-2b
 
 apk=$(ls -t app/build/outputs/apk/store/release/*.apk | head -1)
 echo "APK: $apk"
@@ -26,10 +26,10 @@ echo "APK: $apk"
 site="${1:-}"
 [[ -z "$site" ]] && exit 0
 
-version=$(basename "$apk" | sed -E 's/^VoiceMind-v([^-]+(-pilot)?)-.*$/\1/')
-name="VoiceMind-$version.apk"
+version=$(basename "$apk" | sed -E 's/^GuzlikVoice-v([^-]+(-pilot)?)-.*$/\1/')
+name="GuzlikVoice-$version.apk"
 mkdir -p "$site/download"
-rm -f "$site"/download/VoiceMind-*.apk
+rm -f "$site"/download/GuzlikVoice-*.apk
 cp "$apk" "$site/download/$name"
 size=$(wc -c < "$site/download/$name" | tr -d ' ')
 sha=$(shasum -a 256 "$site/download/$name" | cut -d' ' -f1)

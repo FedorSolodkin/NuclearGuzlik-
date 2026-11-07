@@ -26,8 +26,8 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="VoiceMind"
-                android:textSize="32sp"
+                android:text="GuzlikVoice"
+                android:textSize="28sp"
                 android:fontFamily="@font/instrument_serif"
                 android:letterSpacing="0"
                 android:textColor="@color/textPrimary"/>
@@ -44,6 +44,7 @@
         <!-- Tools button: календарь (подключение + встречи), раньше было вкладкой "Сегодня" -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/btnTools"
+        android:visibility="gone"
             style="@style/Widget.Material3.Button.TextButton"
             android:layout_width="40dp"
             android:layout_height="40dp"

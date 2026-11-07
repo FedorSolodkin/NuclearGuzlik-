@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">VoiceMind</string>
+    <string name="app_name">GuzlikVoice</string>
     <string name="tab_record">Запись</string>
     <string name="tab_history">История</string>
     <string name="status_loading">Подготовка…</string>

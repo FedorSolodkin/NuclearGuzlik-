@@ -4,7 +4,7 @@
 Silero VAD перед Whisper, чтобы терять меньше речи и не кормить Whisper шумом.
 Стенд прогоняет записи через **тот же конвейер, что приложение**, на компьютере.
 
-## Что такое «чувствительность» в VoiceMind
+## Что такое «чувствительность» в GuzlikVoice
 
 Микрофон пишет всё (`VOICE_RECOGNITION`, без автоусиления). При расшифровке каждый
 кусок записи (40–58 с) проходит Silero VAD внутри whisper.cpp: Whisper получает
@@ -15,16 +15,16 @@ Silero VAD перед Whisper, чтобы терять меньше речи и 
 
 ```bash
 # 1. Модели — те же файлы, что в приложении (проверить SHA256 по ModelIntegrity.kt)
-mkdir -p ~/voicemind-bench/models   # ggml-whisper-podlodka-turbo-q4_0.bin, ggml-silero-v6.2.0.bin
+mkdir -p ~/guzlikvoice-bench/models   # ggml-whisper-podlodka-turbo-q4_0.bin, ggml-silero-v6.2.0.bin
 
 # 2. Сборка (whisper.cpp из submodule с нашими патчами, CPU хоста)
-cmake -S tools/vad_bench -B ~/voicemind-bench/build -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=ON
-cmake --build ~/voicemind-bench/build -j --target vmbench
+cmake -S tools/vad_bench -B ~/guzlikvoice-bench/build -DCMAKE_BUILD_TYPE=Release -DGGML_NATIVE=ON
+cmake --build ~/guzlikvoice-bench/build -j --target vmbench
 
-# 3. Данные: Golos (crowd + farfield validation, HF bond005/…) → ~/voicemind-bench/data/golos,
+# 3. Данные: Golos (crowd + farfield validation, HF bond005/…) → ~/guzlikvoice-bench/data/golos,
 #    шумы MS-SNSD → data/noise/{tune,eval}; затем
-python3 -m venv ~/voicemind-bench/.venv && ~/voicemind-bench/.venv/bin/pip install numpy scipy pyarrow num2words
-~/voicemind-bench/.venv/bin/python gen_synth.py
+python3 -m venv ~/guzlikvoice-bench/.venv && ~/guzlikvoice-bench/.venv/bin/pip install numpy scipy pyarrow num2words
+~/guzlikvoice-bench/.venv/bin/python gen_synth.py
 
 # 4. Эксперименты
 python exp_frames.py synth/tune baseline        # кадровые метрики, без Whisper (секунды)

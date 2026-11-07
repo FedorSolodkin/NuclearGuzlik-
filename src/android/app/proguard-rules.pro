@@ -1,4 +1,4 @@
-# ── R8 rules for VoiceMind release build ───────────────────────────────────────
+# ── R8 rules for GuzlikVoice release build ───────────────────────────────────────
 
 # Метаданные Kotlin и generic signatures нужны Gson и reflection в data-классах.
 -keepattributes Signature, *Annotation*, EnclosingMethod, InnerClasses, SourceFile, LineNumberTable
@@ -10,19 +10,19 @@
 #  • модели, которые Gson (де)сериализует по именам полей — иначе файлы на диске
 #    и старые данные перестанут читаться;
 #  • классы из layout XML (WaveformView) — их держит AAPT-правило автоматически.
--keep class com.example.voicemind.DailyRecord { *; }
--keep class com.example.voicemind.DailyRecord$Entry { *; }
--keep class com.example.voicemind.WhisperHelper$Segment { *; }
--keep class com.example.voicemind.WhisperHelper$Word { *; }
--keep class com.example.voicemind.Client { *; }
--keep class com.example.voicemind.VoiceProfile { *; }
--keep class com.example.voicemind.CalendarEvent { *; }
--keep class com.example.voicemind.CalendarEventCache$Cache { *; }
--keep class com.example.voicemind.SpeakerCentroidStorage$Snapshot { *; }
--keep class com.example.voicemind.SpeakerCentroidStorage$Snapshot$* { *; }
+-keep class com.guzlik.voice.DailyRecord { *; }
+-keep class com.guzlik.voice.DailyRecord$Entry { *; }
+-keep class com.guzlik.voice.WhisperHelper$Segment { *; }
+-keep class com.guzlik.voice.WhisperHelper$Word { *; }
+-keep class com.guzlik.voice.Client { *; }
+-keep class com.guzlik.voice.VoiceProfile { *; }
+-keep class com.guzlik.voice.CalendarEvent { *; }
+-keep class com.guzlik.voice.CalendarEventCache$Cache { *; }
+-keep class com.guzlik.voice.SpeakerCentroidStorage$Snapshot { *; }
+-keep class com.guzlik.voice.SpeakerCentroidStorage$Snapshot$* { *; }
 
 # Нативный слой вызывает обратно Kotlin по имени метода (llama_jni.cpp → onPiece).
--keep interface com.example.voicemind.LlmHelper$PieceListener { *; }
+-keep interface com.guzlik.voice.LlmHelper$PieceListener { *; }
 
 # ── Логи ───────────────────────────────────────────────────────────────────────
 # В release вырезаем подробные логи целиком (с вычислением аргументов):

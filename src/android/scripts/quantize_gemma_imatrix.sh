@@ -49,7 +49,7 @@ fi
 
 mkdir -p "$OUTPUT_DIR"
 IMATRIX="$OUTPUT_DIR/imatrix.dat"
-OUTPUT_Q4="$OUTPUT_DIR/gemma-2-2b-q4_k_m-voicemind.gguf"
+OUTPUT_Q4="$OUTPUT_DIR/gemma-2-2b-q4_k_m-guzlikvoice.gguf"
 
 echo "▶ Step 1/2: computing importance matrix from $CORPUS"
 # -c 2048 — окно контекста, совпадает с нашим llama_jni.cpp

@@ -37,7 +37,7 @@ __pycache__/
 /tools/device_test/out/
 
 # Wearable firmware build outputs / local SDK configuration
-/firmware/voicemind/.pio/
-/firmware/voicemind/sdkconfig.esp32dev
-/firmware/voicemind/sdkconfig.esp32dev.old
-/firmware/voicemind/build/
+/firmware/guzlikvoice/.pio/
+/firmware/guzlikvoice/sdkconfig.esp32dev
+/firmware/guzlikvoice/sdkconfig.esp32dev.old
+/firmware/guzlikvoice/build/

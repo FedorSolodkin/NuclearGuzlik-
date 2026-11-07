@@ -6,18 +6,18 @@ plugins {
     alias(libs.plugins.ksp)
 }
 
-// Явное значение проверки входа (-PvoicemindAuthRequired=true|false); null — по типу сборки.
-val authRequiredOverride: Boolean? = (project.findProperty("voicemindAuthRequired") as String?)
+// Явное значение проверки входа (-PguzlikvoiceAuthRequired=true|false); null — по типу сборки.
+val authRequiredOverride: Boolean? = (project.findProperty("guzlikvoiceAuthRequired") as String?)
     ?.trim()?.lowercase()?.let {
         when (it) {
             "true" -> true
             "false" -> false
-            else -> throw GradleException("voicemindAuthRequired: ожидается true или false, а не «$it»")
+            else -> throw GradleException("guzlikvoiceAuthRequired: ожидается true или false, а не «$it»")
         }
     }
 
 android {
-    namespace = "com.example.voicemind"
+    namespace = "com.guzlik.voice"
     compileSdk = 36
     ndkVersion = "25.1.8937393"
 
@@ -36,31 +36,31 @@ android {
         //   googleOauthClientId=1234567890-xxxxx.apps.googleusercontent.com
         // Сервер подписки и публичный ключ лицензий (см. server/README.md).
         // Без ключа приложение работает со старым сервером в режиме /subscription/status.
-        val apiUrl = (project.findProperty("voicemindApiUrl") as String?) ?: "https://api.voice-mind.ru"
-        val licenseKey = (project.findProperty("voicemindLicensePublicKey") as String?).orEmpty()
+        val apiUrl = (project.findProperty("guzlikvoiceApiUrl") as String?) ?: ""
+        val licenseKey = (project.findProperty("guzlikvoiceLicensePublicKey") as String?).orEmpty()
         buildConfigField("String", "API_BASE_URL", "\"$apiUrl\"")
         buildConfigField("String", "LICENSE_PUBLIC_KEY", "\"$licenseKey\"")
 
         // Проверка входа и подписки. По умолчанию: в release включена, в debug выключена.
-        // Пилотная сборка без сервера: -PvoicemindAuthRequired=false (работает и для release).
+        // Пилотная сборка без сервера: -PguzlikvoiceAuthRequired=false (работает и для release).
         buildConfigField("boolean", "AUTH_REQUIRED", (authRequiredOverride ?: true).toString())
         buildConfigField("boolean", "OFFLINE_PROTOTYPE", "false")
 
         // Какие модели ИИ-анализа можно выбрать в настройках: id через запятую
-        // (-PvoicemindLlmModels=gemma2-2b — сборка «только Gemma»). Пусто — все.
+        // (-PguzlikvoiceLlmModels=gemma2-2b — сборка «только Gemma»). Пусто — все.
         // Проверка файлов и удаление уже скачанных работают для всех моделей.
         // Опечатка в id молча вернула бы все модели — поэтому сверяем со списком.
         val knownLlmIds = setOf("gemma2-2b", "gemma2-2b-v90k", "gemma2-2b-q4_0", "vm-qwen06-ft")   // = LlmModels.ALL[*].id
-        val llmModels = (project.findProperty("voicemindLlmModels") as String?).orEmpty()
+        val llmModels = (project.findProperty("guzlikvoiceLlmModels") as String?).orEmpty()
         val unknownLlm = llmModels.split(',').map { it.trim() }.filter { it.isNotEmpty() && it !in knownLlmIds }
         if (unknownLlm.isNotEmpty()) {
-            throw GradleException("voicemindLlmModels: неизвестные модели $unknownLlm, есть $knownLlmIds")
+            throw GradleException("guzlikvoiceLlmModels: неизвестные модели $unknownLlm, есть $knownLlmIds")
         }
         buildConfigField("String", "LLM_MODELS", "\"$llmModels\"")
 
-        // Свой сервер моделей (server/, Caddy /models/): -PvoicemindModelsUrl=https://api.voice-mind.ru/models/
+        // Свой сервер моделей (server/, Caddy /models/): -PguzlikvoiceModelsUrl=<url>
         // Задан — модели качаются сначала оттуда, потом с зеркала на GitHub, потом из оригиналов.
-        val modelsUrl = (project.findProperty("voicemindModelsUrl") as String?).orEmpty().trim()
+        val modelsUrl = (project.findProperty("guzlikvoiceModelsUrl") as String?).orEmpty().trim()
             .let { if (it.isEmpty() || it.endsWith("/")) it else "$it/" }
         buildConfigField("String", "MODELS_BASE_URL", "\"$modelsUrl\"")
 
@@ -112,10 +112,10 @@ android {
     }
 
     // Подписи читаем из keystore.properties в корне проекта (файл в .gitignore):
-    //   storeFile=/путь/к/voicemind-release.p12      ← новый ключ (flavor store)
+    //   storeFile=/путь/к/guzlikvoice-release.p12      ← новый ключ (flavor store)
     //   storeType=pkcs12                                 (для .p12; для .jks не нужен)
     //   storePassword=...
-    //   keyAlias=voicemind
+    //   keyAlias=guzlikvoice
     //   keyPassword=...
     //   legacyStoreFile=/путь/к/debug.keystore        ← ключ, которым подписаны v3.9 и раньше
     //   legacyStorePassword=android                     (flavor legacy, мостовая 3.10)
@@ -153,18 +153,18 @@ android {
         // Основное приложение: новый пакет и новый ключ (с v4.0).
         create("store") {
             dimension = "channel"
-            applicationId = "ru.voicemind.app"
+            applicationId = "ru.guzlik.voice"
             versionCode = 47
             versionName = "4.0.7"
             buildConfigField("boolean", "LEGACY_BRIDGE", "false")
             signingConfigs.findByName("release")?.let { signingConfig = it }
         }
-        // Мостовая версия для тех, у кого стоит com.example.voicemind (≤3.9):
+        // Мостовая версия для тех, у кого стоит com.guzlik.voice (≤3.9):
         // ставится поверх старой, даёт выгрузить все записи архивом и
         // предлагает перейти на новое приложение.
         create("legacy") {
             dimension = "channel"
-            applicationId = "com.example.voicemind"
+            applicationId = "com.guzlik.voice"
             versionCode = 14
             versionName = "3.10"
             // Мостовое окно «перейдите на 4.0» включаем, когда выйдет 4.0
@@ -183,17 +183,17 @@ android {
             // Отладочные сборки ставятся рядом с рабочим приложением, не поверх него.
             applicationIdSuffix = ".dev"
             versionNameSuffix = "-dev"
-            // Сервер подписки для отладки не нужен (-PvoicemindAuthRequired=true — проверить вход).
+            // Сервер подписки для отладки не нужен (-PguzlikvoiceAuthRequired=true — проверить вход).
             buildConfigField("boolean", "AUTH_REQUIRED", (authRequiredOverride ?: false).toString())
             isMinifyEnabled = false
             // Для телефона хватает arm64; x86_64 (эмуляторы, Chromebook) — только в release,
             // иначе нативная часть собирается вдвое дольше.
             ndk { abiFilters += listOf("arm64-v8a") }
-            // Локальный сервер для отладки: -PvoicemindDebugApiUrl=http://127.0.0.1:8000
-            (project.findProperty("voicemindDebugApiUrl") as String?)?.let {
+            // Локальный сервер для отладки: -PguzlikvoiceDebugApiUrl=http://127.0.0.1:8000
+            (project.findProperty("guzlikvoiceDebugApiUrl") as String?)?.let {
                 buildConfigField("String", "API_BASE_URL", "\"$it\"")
             }
-            (project.findProperty("voicemindDebugLicensePublicKey") as String?)?.let {
+            (project.findProperty("guzlikvoiceDebugLicensePublicKey") as String?)?.let {
                 buildConfigField("String", "LICENSE_PUBLIC_KEY", "\"$it\"")
             }
         }
@@ -237,24 +237,24 @@ android {
             it.systemProperty("robolectric.dependency.repo.url", "https://maven-central.storage-download.googleapis.com/maven2")
             // Private opt-in fixtures live outside Gradle's declared inputs and
             // can change between runs. Never reuse a stale evaluation result.
-            if (System.getenv("VOICEMIND_LOCAL_EVIDENCE") != null ||
-                System.getenv("VOICEMIND_ACOUSTIC_EVIDENCE") != null ||
-                System.getenv("VOICEMIND_DIAR_BENCHMARK") != null) {
+            if (System.getenv("GUZLIKVOICE_LOCAL_EVIDENCE") != null ||
+                System.getenv("GUZLIKVOICE_ACOUSTIC_EVIDENCE") != null ||
+                System.getenv("GUZLIKVOICE_DIAR_BENCHMARK") != null) {
                 it.outputs.upToDateWhen { false }
             }
         }
     }
-    testBuildType = (project.findProperty("voicemindTestBuildType") as String?)?.also {
-        require(it in setOf("debug", "prototype", "hackathon")) { "voicemindTestBuildType: debug, prototype или hackathon" }
+    testBuildType = (project.findProperty("guzlikvoiceTestBuildType") as String?)?.also {
+        require(it in setOf("debug", "prototype", "hackathon")) { "guzlikvoiceTestBuildType: debug, prototype или hackathon" }
     } ?: "debug"
     sourceSets.getByName("androidTest").assets.srcDir("src/test/resources/wearable")
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
     }
-    // Встроенные модели: -PvoicemindBundle=<папка с подпапкой models/>. Файлы кладутся в APK без сжатия
+    // Встроенные модели: -PguzlikvoiceBundle=<папка с подпапкой models/>. Файлы кладутся в APK без сжатия
     // (иначе сборка и первый запуск долгие), при первом запуске копируются в папку приложения (BundledModels).
-    (project.findProperty("voicemindBundle") as String?)?.takeIf { it.isNotBlank() }?.let { dir ->
+    (project.findProperty("guzlikvoiceBundle") as String?)?.takeIf { it.isNotBlank() }?.let { dir ->
         sourceSets.getByName("main").assets.srcDir(dir)
     }
     androidResources {
@@ -279,7 +279,7 @@ android {
         val variant = this
         outputs.all {
             val output = this as com.android.build.gradle.internal.api.BaseVariantOutputImpl
-            output.outputFileName = "VoiceMind-v${variant.versionName}-${variant.flavorName}-${variant.buildType.name}.apk"
+            output.outputFileName = "GuzlikVoice-v${variant.versionName}-${variant.flavorName}-${variant.buildType.name}.apk"
         }
     }
 }
@@ -326,11 +326,11 @@ dependencies {
 
 // Release основного приложения без своего сервера и ключа лицензий собирать нельзя:
 // такая сборка не сможет войти в аккаунт (см. server/README.md). Пилотной сборке
-// без входа (-PvoicemindAuthRequired=false) сервер не нужен.
+// без входа (-PguzlikvoiceAuthRequired=false) сервер не нужен.
 tasks.matching { it.name in setOf("assembleStoreRelease", "bundleStoreRelease") }.configureEach {
     doFirst {
         if (authRequiredOverride == false) return@doFirst
-        val missing = listOf("voicemindApiUrl", "voicemindLicensePublicKey")
+        val missing = listOf("guzlikvoiceApiUrl", "guzlikvoiceLicensePublicKey")
             .filter { (project.findProperty(it) as String?).isNullOrBlank() }
         if (missing.isNotEmpty()) {
             throw GradleException("Для store release задайте в ~/.gradle/gradle.properties: ${missing.joinToString()}")

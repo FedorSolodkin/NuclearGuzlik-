@@ -24,7 +24,7 @@ def score(reference, hypothesis):
             events.setdefault(start, []).append((side, speaker, 1))
             events.setdefault(end, []).append((side, speaker, -1))
     if max(map(len, ids)) > 8:
-        raise ValueError('VoiceMind evaluation supports at most 8 speakers per side')
+        raise ValueError('GuzlikVoice evaluation supports at most 8 speakers per side')
     ref_ids, hyp_ids = map(sorted, ids)
     ref_index = {s: i for i, s in enumerate(ref_ids)}
     hyp_index = {s: i for i, s in enumerate(hyp_ids)}

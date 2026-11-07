@@ -14,5 +14,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "VoiceMind"
+rootProject.name = "GuzlikVoice"
 include(":app")

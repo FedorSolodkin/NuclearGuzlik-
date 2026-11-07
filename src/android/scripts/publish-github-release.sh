@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Публикует пилотный APK GitHub-релизом в публичном репозитории (по умолчанию
-# dext01/VoiceMind): скачать можно без входа в GitHub.
+# dext01/GuzlikVoice): скачать можно без входа в GitHub.
 #
 #   GITHUB_TOKEN=<классический токен с public_repo> \
 #       ./scripts/publish-github-release.sh [путь/к/APK] [owner/repo]
@@ -13,12 +13,12 @@ cd "$(dirname "$0")/.."
 
 : "${GITHUB_TOKEN:?Задайте GITHUB_TOKEN}"
 apk="${1:-$(ls -t app/build/outputs/apk/store/release/*.apk | head -1)}"
-REPO="${2:-dext01/VoiceMind}"
+REPO="${2:-dext01/GuzlikVoice}"
 [[ -f "$apk" ]] || { echo "Нет APK: $apk" >&2; exit 1; }
 
-version=$(basename "$apk" | sed -E 's/^VoiceMind-v([^-]+(-pilot)?)-.*$/\1/')
+version=$(basename "$apk" | sed -E 's/^GuzlikVoice-v([^-]+(-pilot)?)-.*$/\1/')
 tag="v${version}"
-name="VoiceMind-${version}.apk"
+name="GuzlikVoice-${version}.apk"
 notes_file="docs/releases/${tag}.md"
 [[ -f "$notes_file" ]] || { echo "Нет заметок к релизу: $notes_file" >&2; exit 1; }
 sha=$(shasum -a 256 "$apk" | cut -d' ' -f1)
@@ -26,7 +26,7 @@ sha=$(shasum -a 256 "$apk" | cut -d' ' -f1)
 api() { curl -fsS -H "Authorization: Bearer $GITHUB_TOKEN" -H "Accept: application/vnd.github+json" "$@"; }
 
 body=$(python3 -I -c 'import json,sys; print(json.dumps({
-    "tag_name": sys.argv[1], "name": "VoiceMind " + sys.argv[2],
+    "tag_name": sys.argv[1], "name": "GuzlikVoice " + sys.argv[2],
     "body": open(sys.argv[3], encoding="utf-8").read().replace("{{SHA256}}", sys.argv[4]),
     "prerelease": "pilot" in sys.argv[2]}))' "$tag" "$version" "$notes_file" "$sha")
 

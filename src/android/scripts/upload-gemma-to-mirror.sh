@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 # Кладёт Gemma 2 2B Q4_K_M в зеркало моделей (GitHub Release models-v1 репозитория
-# dext01/voicemind-models). Без неё приложение качает 1,7 ГБ с Hugging Face,
+# dext01/guzlikvoice-models). Без неё приложение качает 1,7 ГБ с Hugging Face,
 # а из России это бывает медленно или недоступно.
 #
-#   GITHUB_TOKEN=<токен с правом contents:write на dext01/voicemind-models> \
+#   GITHUB_TOKEN=<токен с правом contents:write на dext01/guzlikvoice-models> \
 #       ./scripts/upload-gemma-to-mirror.sh [путь/к/gemma-2-2b-it-Q4_K_M.gguf]
 #
 # Облегчённая Gemma (словарь 90 тыс. токенов, LlmModels.GEMMA_TRIM): передайте путь к
@@ -14,7 +14,7 @@
 # SHA-256 — та же сумма, что проверяет приложение (LlmModels.GEMMA).
 set -euo pipefail
 
-REPO=dext01/voicemind-models
+REPO=dext01/guzlikvoice-models
 TAG=models-v1
 NAME=gemma-2-2b-it-Q4_K_M.gguf
 SHA=e0aee85060f168f0f2d8473d7ea41ce2f3230c1bc1374847505ea599288a7787
@@ -34,7 +34,7 @@ fi
 if [[ -z "$file" ]]; then
     # Постоянное место: прерванное скачивание (Ctrl+C, обрыв сети) при
     # следующем запуске продолжится с того же байта, а не начнётся заново.
-    dir="$HOME/Downloads/voicemind-gemma"
+    dir="$HOME/Downloads/guzlikvoice-gemma"
     mkdir -p "$dir"
     file="$dir/$NAME"
     echo "Скачиваю $NAME с Hugging Face (1,7 ГБ) в $dir — можно прервать и запустить снова…"

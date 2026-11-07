@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.22.1)
-project(voicemind)
+project(guzlikvoice)
 
 # ── Vulkan-Headers + SPIR-V-Headers ──────────────────────────────────────────
 # NDK 25 sysroot имеет только vulkan.h (C), а ggml-vulkan.cpp у whisper/llama
@@ -30,7 +30,7 @@ endif()
 # (.gitmodules). Наши правки лежат в patches/<имя>/*.patch и накладываются здесь
 # при конфигурации: уже наложенный патч пропускается, конфликтующий — ошибка.
 find_package(Git REQUIRED)
-function(voicemind_apply_patches name)
+function(guzlikvoice_apply_patches name)
     set(dir "${CMAKE_CURRENT_SOURCE_DIR}/src/main/cpp/${name}")
     if (NOT EXISTS "${dir}/CMakeLists.txt")
         message(FATAL_ERROR "${name} не скачан. Выполните: git submodule update --init --depth 1")
@@ -48,11 +48,11 @@ function(voicemind_apply_patches name)
         if (NOT rc EQUAL 0)
             message(FATAL_ERROR "Не удалось наложить ${patch} на ${name}: ${err}")
         endif()
-        message(STATUS "voicemind: applied ${patch}")
+        message(STATUS "guzlikvoice: applied ${patch}")
     endforeach()
 endfunction()
-voicemind_apply_patches(whisper.cpp)
-voicemind_apply_patches(llama.cpp)
+guzlikvoice_apply_patches(whisper.cpp)
+guzlikvoice_apply_patches(llama.cpp)
 
 # ── Whisper ──────────────────────────────────────────────────────────────────
 set(WHISPER_BUILD_TESTS    OFF CACHE BOOL "" FORCE)
@@ -81,14 +81,14 @@ if (TARGET ggml-vulkan)
         "-Wl,--unresolved-symbols=ignore-all"
         "-Wl,--allow-shlib-undefined"
     )
-    message(STATUS "voicemind: relaxed unresolved-symbol policy for ggml-vulkan target")
+    message(STATUS "guzlikvoice: relaxed unresolved-symbol policy for ggml-vulkan target")
 else()
-    message(WARNING "voicemind: ggml-vulkan target not found after whisper.cpp add_subdirectory")
+    message(WARNING "guzlikvoice: ggml-vulkan target not found after whisper.cpp add_subdirectory")
 endif()
 
-add_library(voicemind-jni SHARED src/main/cpp/whisper_jni.cpp)
+add_library(guzlikvoice-jni SHARED src/main/cpp/whisper_jni.cpp)
 
-target_include_directories(voicemind-jni PRIVATE
+target_include_directories(guzlikvoice-jni PRIVATE
     src/main/cpp/whisper.cpp/include
     src/main/cpp/whisper.cpp
 )
@@ -96,7 +96,7 @@ target_include_directories(voicemind-jni PRIVATE
 # ggml — ради ggml_backend_load_all_from_path (бэкенды грузятся через dlopen).
 # vulkan здесь не линкуем: libggml-vulkan.so подгружается динамически, и если на
 # устройстве Vulkan нет/слишком старый — просто не загрузится, JNI не упадёт.
-target_link_libraries(voicemind-jni whisper ggml android log)
+target_link_libraries(guzlikvoice-jni whisper ggml android log)
 
 # ── llama.cpp ────────────────────────────────────────────────────────────────
 # NB: llama.cpp видит уже созданную цель ggml (из whisper.cpp) и использует её —
@@ -110,11 +110,11 @@ set(GGML_VULKAN          ON  CACHE BOOL "" FORCE)
 
 add_subdirectory(src/main/cpp/llama.cpp llama_build)
 
-add_library(voicemind-llm SHARED src/main/cpp/llama_jni.cpp)
+add_library(guzlikvoice-llm SHARED src/main/cpp/llama_jni.cpp)
 
-target_include_directories(voicemind-llm PRIVATE
+target_include_directories(guzlikvoice-llm PRIVATE
     src/main/cpp/llama.cpp/include
     src/main/cpp/llama.cpp
 )
 
-target_link_libraries(voicemind-llm llama ggml android log)
+target_link_libraries(guzlikvoice-llm llama ggml android log)

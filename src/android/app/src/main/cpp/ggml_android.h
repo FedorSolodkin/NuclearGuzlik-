@@ -22,13 +22,13 @@ inline ggml_backend_dev_t& usable_gpu() {
 }
 
 // Вердикт о GPU общий на процесс. static-переменные inline-функций из этого
-// заголовка у libvoicemind-jni.so и libvoicemind-llm.so СВОИ (каждая .so — своя
+// заголовка у libguzlikvoice-jni.so и libguzlikvoice-llm.so СВОИ (каждая .so — своя
 // копия), а ggml-vulkan проверяемо бросает "Unsupported device" только на ПЕРВОМ
 // обращении к устройству: второй JNI-модуль получал уже закэшированное
 // полуинициализированное устройство, считал GPU рабочим, и llama.cpp падал в
 // SIGSEGV при загрузке модели (Adreno 618, Redmi Note 10 Pro). Поэтому итог
 // первой проверки кладём в переменную окружения процесса — её видят оба модуля.
-inline constexpr const char* kGpuVerdictEnv = "VOICEMIND_GPU_VERDICT";
+inline constexpr const char* kGpuVerdictEnv = "GUZLIKVOICE_GPU_VERDICT";
 
 // Бэкенды ggml собраны как отдельные .so (GGML_BACKEND_DL) и грузятся из
 // nativeLibraryDir. Реестр бэкендов один на процесс (libggml общая для whisper

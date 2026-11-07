@@ -31,7 +31,7 @@
             android:id="@+id/tvSpeakerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.VoiceMind.Body.Large"
+            style="@style/TextAppearance.GuzlikVoice.Body.Large"
             android:textSize="15sp"
             android:textStyle="bold"/>
 
@@ -39,7 +39,7 @@
             android:id="@+id/tvSpeakerSub"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.VoiceMind.Body.Small"
+            style="@style/TextAppearance.GuzlikVoice.Body.Small"
             android:layout_marginTop="2dp"/>
     </LinearLayout>
 

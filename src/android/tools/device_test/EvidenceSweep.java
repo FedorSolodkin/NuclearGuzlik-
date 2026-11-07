@@ -1,4 +1,4 @@
-import com.example.voicemind.*;
+import com.guzlik.voice.*;
 import com.google.gson.*;
 import kotlin.Unit;
 import java.nio.file.*;

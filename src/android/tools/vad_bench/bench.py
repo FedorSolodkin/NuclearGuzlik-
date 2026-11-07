@@ -33,7 +33,7 @@ from typing import Callable, Optional
 
 import numpy as np
 
-ROOT = Path(os.environ.get("VMBENCH_ROOT", Path.home() / "voicemind-bench"))
+ROOT = Path(os.environ.get("VMBENCH_ROOT", Path.home() / "guzlikvoice-bench"))
 SR = 16000
 FRAME = 512
 CHUNK_MAX = 58 * SR

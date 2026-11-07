@@ -115,7 +115,7 @@
             android:visibility="gone"/>
 
         <!-- Live waveform -->
-        <com.example.voicemind.WaveformView
+        <com.guzlik.voice.WaveformView
             android:id="@+id/waveform"
             android:layout_width="match_parent"
             android:layout_height="40dp"

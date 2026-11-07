@@ -273,7 +273,7 @@ static std::string generate(const std::string& prompt, int maxNewTokens, const c
 extern "C" {
 
 JNIEXPORT jboolean JNICALL
-Java_com_example_voicemind_LlmHelper_nativeInit(
+Java_com_guzlik_voice_LlmHelper_nativeInit(
         JNIEnv* env, jobject /*thiz*/, jstring modelPath, jboolean useGpu, jstring nativeLibDir) {
     const char* libDir = env->GetStringUTFChars(nativeLibDir, nullptr);
     vm::load_backends_once(libDir);
@@ -304,19 +304,19 @@ Java_com_example_voicemind_LlmHelper_nativeInit(
 }
 
 JNIEXPORT jboolean JNICALL
-Java_com_example_voicemind_LlmHelper_nativeIsGpuActive(JNIEnv*, jobject) {
+Java_com_guzlik_voice_LlmHelper_nativeIsGpuActive(JNIEnv*, jobject) {
     return g_gpu ? JNI_TRUE : JNI_FALSE;
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_voicemind_LlmHelper_nativeCancel(JNIEnv*, jobject) {
+Java_com_guzlik_voice_LlmHelper_nativeCancel(JNIEnv*, jobject) {
     g_cancel.store(true);
 }
 
 // Chat inference. roles[]/contents[] — параллельные массивы ("user"/"assistant").
 // listener (nullable) получает кусочки ответа (UTF-8 байты) по мере генерации.
 JNIEXPORT jbyteArray JNICALL
-Java_com_example_voicemind_LlmHelper_nativeInferChat(
+Java_com_guzlik_voice_LlmHelper_nativeInferChat(
         JNIEnv* env, jobject /*thiz*/,
         jobjectArray rolesArr, jobjectArray contentsArr,
         jint maxNewTokens, jstring grammarStr, jobject listener) {
@@ -403,7 +403,7 @@ Java_com_example_voicemind_LlmHelper_nativeInferChat(
 // Первый байт ответа — причина остановки (StopReason), дальше — текст UTF-8:
 // так причина не перепутается с соседней генерацией из другого потока.
 JNIEXPORT jbyteArray JNICALL
-Java_com_example_voicemind_LlmHelper_nativeInferRaw(
+Java_com_guzlik_voice_LlmHelper_nativeInferRaw(
         JNIEnv* env, jobject /*thiz*/, jbyteArray promptBytes, jint maxNewTokens, jfloat repeatPenalty) {
     std::string prompt;
     jsize bl = env->GetArrayLength(promptBytes);
@@ -440,7 +440,7 @@ Java_com_example_voicemind_LlmHelper_nativeInferRaw(
 
 // Число токенов текста (без спец-токенов) — для подгонки ввода под контекст.
 JNIEXPORT jint JNICALL
-Java_com_example_voicemind_LlmHelper_nativeTokenCount(JNIEnv* env, jobject, jbyteArray text) {
+Java_com_guzlik_voice_LlmHelper_nativeTokenCount(JNIEnv* env, jobject, jbyteArray text) {
     jsize bl = env->GetArrayLength(text);
     std::string s(bl, '\0');
     if (bl > 0) env->GetByteArrayRegion(text, 0, bl, (jbyte*)&s[0]);
@@ -499,7 +499,7 @@ static void bench_locked(JNIEnv* env, jint nPrompt, jint nGen, jint nThreads, ji
 }
 
 JNIEXPORT jfloatArray JNICALL
-Java_com_example_voicemind_LlmHelper_nativeBench(JNIEnv* env, jobject, jint nPrompt, jint nGen) {
+Java_com_guzlik_voice_LlmHelper_nativeBench(JNIEnv* env, jobject, jint nPrompt, jint nGen) {
     std::lock_guard<std::mutex> lock(g_mutex);
     float res[2];
     bench_locked(env, nPrompt, nGen, 0, 0, res);
@@ -509,7 +509,7 @@ Java_com_example_voicemind_LlmHelper_nativeBench(JNIEnv* env, jobject, jint nPro
 }
 
 JNIEXPORT jfloatArray JNICALL
-Java_com_example_voicemind_LlmHelper_nativeBenchThreads(JNIEnv* env, jobject, jint nPrompt, jint nGen,
+Java_com_guzlik_voice_LlmHelper_nativeBenchThreads(JNIEnv* env, jobject, jint nPrompt, jint nGen,
                                                         jint nThreads, jint nThreadsBatch) {
     std::lock_guard<std::mutex> lock(g_mutex);
     float res[2];
@@ -521,7 +521,7 @@ Java_com_example_voicemind_LlmHelper_nativeBenchThreads(JNIEnv* env, jobject, ji
 
 // Статистика последнего вызова: {токенов в промпте, взято из кэша, секунд на промпт, токенов ответа, секунд на ответ}.
 JNIEXPORT jfloatArray JNICALL
-Java_com_example_voicemind_LlmHelper_nativeLastStats(JNIEnv* env, jobject) {
+Java_com_guzlik_voice_LlmHelper_nativeLastStats(JNIEnv* env, jobject) {
     std::lock_guard<std::mutex> lock(g_mutex);
     float res[5] = {(float)g_stat_prompt, (float)g_stat_reused, (float)g_stat_prefill_sec, (float)g_stat_gen, (float)g_stat_gen_sec};
     jfloatArray out = env->NewFloatArray(5);
@@ -531,7 +531,7 @@ Java_com_example_voicemind_LlmHelper_nativeLastStats(JNIEnv* env, jobject) {
 
 // Сбросить кэш запроса, чтобы замер не пользовался результатами прошлого вызова.
 JNIEXPORT void JNICALL
-Java_com_example_voicemind_LlmHelper_nativeResetCache(JNIEnv*, jobject) {
+Java_com_guzlik_voice_LlmHelper_nativeResetCache(JNIEnv*, jobject) {
     std::lock_guard<std::mutex> lock(g_mutex);
     if (g_ctx) llama_memory_clear(llama_get_memory(g_ctx), false);
     g_cached.clear();
@@ -539,7 +539,7 @@ Java_com_example_voicemind_LlmHelper_nativeResetCache(JNIEnv*, jobject) {
 
 // Включить/выключить новый выбор слова для JSON-ответа (по умолчанию включён).
 JNIEXPORT void JNICALL
-Java_com_example_voicemind_LlmHelper_nativeSetLazyGrammar(JNIEnv*, jobject, jboolean enabled) {
+Java_com_guzlik_voice_LlmHelper_nativeSetLazyGrammar(JNIEnv*, jobject, jboolean enabled) {
     std::lock_guard<std::mutex> lock(g_mutex);
     g_lazy_grammar = enabled == JNI_TRUE;
     LOGI("Lazy grammar: %d", g_lazy_grammar ? 1 : 0);
@@ -547,7 +547,7 @@ Java_com_example_voicemind_LlmHelper_nativeSetLazyGrammar(JNIEnv*, jobject, jboo
 
 // Задать потоки: gen — для генерации, batch — для разбора промпта; 0 — автоматически.
 JNIEXPORT void JNICALL
-Java_com_example_voicemind_LlmHelper_nativeSetThreads(JNIEnv*, jobject, jint gen, jint batch) {
+Java_com_guzlik_voice_LlmHelper_nativeSetThreads(JNIEnv*, jobject, jint gen, jint batch) {
     std::lock_guard<std::mutex> lock(g_mutex);
     g_threads_gen = gen > 0 ? gen : 0;
     g_threads_batch = batch > 0 ? batch : 0;
@@ -560,13 +560,13 @@ Java_com_example_voicemind_LlmHelper_nativeSetThreads(JNIEnv*, jobject, jint gen
 
 // Какие ARM-расширения видит движок (DOTPROD, MATMUL_INT8, FP16 ...) и какие бэкенды загружены.
 JNIEXPORT jstring JNICALL
-Java_com_example_voicemind_LlmHelper_nativeSystemInfo(JNIEnv* env, jobject) {
+Java_com_guzlik_voice_LlmHelper_nativeSystemInfo(JNIEnv* env, jobject) {
     const char* info = llama_print_system_info();
     return env->NewStringUTF(info ? info : "");
 }
 
 JNIEXPORT void JNICALL
-Java_com_example_voicemind_LlmHelper_nativeFree(JNIEnv* /*env*/, jobject /*thiz*/) {
+Java_com_guzlik_voice_LlmHelper_nativeFree(JNIEnv* /*env*/, jobject /*thiz*/) {
     g_cancel.store(true);
     std::lock_guard<std::mutex> lock(g_mutex);
     unload_model();

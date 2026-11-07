@@ -47,7 +47,7 @@
             android:id="@+id/tvSummaryText"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            style="@style/TextAppearance.VoiceMind.Body.Large"
+            style="@style/TextAppearance.GuzlikVoice.Body.Large"
             android:lineSpacingMultiplier="1.4"/>
 
         <LinearLayout

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Прогон тестов VoiceMind на подключённом телефоне.
+"""Прогон тестов GuzlikVoice на подключённом телефоне.
 
     python3 tools/device_test/run.py prepare        # собрать эталонные данные (один раз)
     python3 tools/device_test/run.py migration      # перенос данных 3.9 → Room на копии
@@ -8,11 +8,11 @@
     python3 tools/device_test/run.py mirror         # скачивание с зеркала кодом приложения
     python3 tools/device_test/run.py report         # отчёт по последним результатам
 
-Тесты движков идут на отладочной сборке (com.example.voicemind.dev, ставится рядом
+Тесты движков идут на отладочной сборке (com.guzlik.voice.dev, ставится рядом
 с рабочим приложением): у неё есть run-as, а тесты не трогают настоящие записи.
 Сборка тестов: ./gradlew assembleLegacyDebug assembleLegacyDebugAndroidTest.
 
-Эталоны: tools/vad_bench (synth/eval2) и Golos из ~/voicemind-bench/data.
+Эталоны: tools/vad_bench (synth/eval2) и Golos из ~/guzlikvoice-bench/data.
 Результаты: tools/device_test/out/ (в git не попадают).
 """
 import argparse
@@ -27,10 +27,10 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 import adbui as u  # noqa: E402
 
-PKG = "com.example.voicemind.dev"
+PKG = "com.guzlik.voice.dev"
 TEST_RUNNER = f"{PKG}.test/androidx.test.runner.AndroidJUnitRunner"
-BENCH = Path.home() / "voicemind-bench" / "data"
-CACHE = Path.home() / ".cache" / "voicemind-device-test"
+BENCH = Path.home() / "guzlikvoice-bench" / "data"
+CACHE = Path.home() / ".cache" / "guzlikvoice-device-test"
 OUT = HERE / "out"
 REMOTE_EVAL = f"/sdcard/Android/data/{PKG}/files/eval"
 
@@ -107,7 +107,7 @@ def push_eval(kind, only=None):
 
 
 def instrument(test, extra=()):
-    args = ["shell", "am", "instrument", "-w", "-e", "class", f"com.example.voicemind.{test}"]
+    args = ["shell", "am", "instrument", "-w", "-e", "class", f"com.guzlik.voice.{test}"]
     for k, v in extra:
         args += ["-e", k, v]
     t0 = time.time()
