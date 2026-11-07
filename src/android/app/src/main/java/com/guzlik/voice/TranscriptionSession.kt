@@ -42,6 +42,7 @@ class TranscriptionSession(
         // чтобы не гонять почти пустое третье окно. Разрез ищем в [40, 58] с.
         private const val CHUNK_MAX_SEC = 58
         private const val CHUNK_MIN_SEC = 40
+        private const val LANG_RECHECK_EVERY = 4
         // Окно для поиска паузы: 200 мс, шаг 20 мс.
         private const val QUIET_WIN_MS  = 200
         private const val QUIET_HOP_MS  = 20
@@ -93,6 +94,8 @@ class TranscriptionSession(
      * переводилась. Только из executor-потока.
      */
     private var lastLanguage: String? = null
+    private var agreeStreak = 0
+    private var chunksSinceDetect = 0
 
     private val maxSamples = CHUNK_MAX_SEC * sampleRate
     private val minSamples = CHUNK_MIN_SEC * sampleRate
@@ -335,6 +338,19 @@ class TranscriptionSession(
      */
     private fun chunkLanguage(chunk: ShortArray): String {
         val prior = lastLanguage ?: AppPrefs.LANG_RU
+        // Определение языка стоит ~2–3 с на кусок. Если два куска подряд дали один язык,
+        // следующие три куска его не перепроверяют (смена языка всё равно ловится на каждом четвёртом).
+        if (lastLanguage != null && agreeStreak >= 2 && chunksSinceDetect < LANG_RECHECK_EVERY - 1) {
+            chunksSinceDetect++
+            return prior
+        }
+        chunksSinceDetect = 0
+        val detected = chunkLanguageDetect(chunk, prior)
+        agreeStreak = if (detected == prior && lastLanguage != null) agreeStreak + 1 else 1
+        return detected
+    }
+
+    private fun chunkLanguageDetect(chunk: ShortArray, prior: String): String {
         val first = whisper.detectLanguage(chunk) ?: return prior
         if (first == prior) return first
         // Короткая запись (голосовое на пару фраз) — перепроверять не по чему.
