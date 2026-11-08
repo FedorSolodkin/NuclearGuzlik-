@@ -5,6 +5,7 @@ import android.util.Log
 import com.k2fsa.sherpa.onnx.FeatureConfig
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig
+import com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer
 import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
 import com.k2fsa.sherpa.onnx.SileroVadModelConfig
@@ -14,11 +15,11 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Быстрый распознаватель: GigaAM v3 (NeMo CTC, с пунктуацией и регистром) через sherpa-onnx.
+ * Быстрый распознаватель: GigaAM v3 (NeMo RNNT, с пунктуацией и регистром) через sherpa-onnx.
  * Только русский. Режется по речи на куски до [MAX_CHUNK_MS], каждый кусок распознаётся
  * целиком; слова собираются из токенов с временем (время куска + время токена).
  *
- * Файлы модели: filesDir/gigaam/model.int8.onnx и tokens.txt (в APK не входят).
+ * Файлы RNNT в filesDir/gigaam; конкурсная APK содержит их целиком.
  */
 class GigaAmEngine(private val context: Context) : AsrEngine {
 
@@ -33,11 +34,18 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
         private const val MIN_CHUNK_MS = 8_000L        // короче — склеиваем соседние речевые куски, если пауза небольшая
         private const val JOIN_GAP_MS = 700L
         private const val PAD_MS = 400L
-        private const val LAST_WORD_MS = 300L
+        val BUNDLE_FILES = setOf("gigaam/encoder.int8.onnx", "gigaam/decoder.onnx",
+            "gigaam/joiner.onnx", "gigaam/tokens.txt")
 
         fun modelFile(ctx: Context) = File(File(ctx.filesDir, DIR), MODEL_FILE)
-        fun isInstalled(ctx: Context) = modelFile(ctx).let { it.isFile && it.length() > MIN_MODEL_BYTES } &&
-            File(File(ctx.filesDir, DIR), TOKENS_FILE).isFile
+        private fun transducerInstalled(dir: File) =
+            File(dir, "encoder.int8.onnx").let { it.isFile && it.length() > MIN_MODEL_BYTES } &&
+                listOf("decoder.onnx", "joiner.onnx", TOKENS_FILE).all { File(dir, it).let { f -> f.isFile && f.length() > 0 } }
+        fun isInstalled(ctx: Context): Boolean {
+            val dir = File(ctx.filesDir, DIR)
+            return transducerInstalled(dir) || (modelFile(ctx).let { it.isFile && it.length() > MIN_MODEL_BYTES } &&
+                File(dir, TOKENS_FILE).isFile)
+        }
     }
 
     @Volatile override var isReady = false
@@ -58,19 +66,24 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
                     return@Thread
                 }
                 val dir = File(context.filesDir, DIR)
+                val transducer = transducerInstalled(dir)
                 val cfg = OfflineRecognizerConfig(
                     featConfig = FeatureConfig(sampleRate = SR, featureDim = 64),
                     modelConfig = OfflineModelConfig(
-                        nemo = OfflineNemoEncDecCtcModelConfig(model = File(dir, MODEL_FILE).absolutePath),
+                        transducer = if (transducer) OfflineTransducerModelConfig(
+                            encoder = File(dir, "encoder.int8.onnx").absolutePath,
+                            decoder = File(dir, "decoder.onnx").absolutePath,
+                            joiner = File(dir, "joiner.onnx").absolutePath) else OfflineTransducerModelConfig(),
+                        nemo = OfflineNemoEncDecCtcModelConfig(model = if (transducer) "" else File(dir, MODEL_FILE).absolutePath),
                         tokens = File(dir, TOKENS_FILE).absolutePath,
                         numThreads = 4,
                         provider = "cpu",
-                        modelType = "nemo_ctc",
+                        modelType = if (transducer) "nemo_transducer" else "nemo_ctc",
                     ),
                     decodingMethod = "greedy_search",
                 )
                 recognizer = OfflineRecognizer(config = cfg)
-                loadedModelName = "gigaam-v3-ctc-punct-int8"
+                loadedModelName = if (transducer) "gigaam-v3-transducer-punct-int8" else "gigaam-v3-ctc-punct-int8"
                 isReady = true
                 onReady()
             } catch (e: Throwable) {
@@ -108,7 +121,7 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
                 } finally { stream.release() }
             }
             if (BuildConfig.DEBUG) Log.d(TAG, "chunk $startMs-$endMs: ${seg.text.take(160)} | t0=${seg.timestamps.firstOrNull()}")
-            buildSegment(seg.tokens, seg.timestamps, startMs, endMs)?.let { out += it }
+            TokenWordTiming.build(seg.text, seg.tokens, seg.timestamps, startMs, endMs)?.let { out += it }
         }
         Log.i(TAG, "decoded ${pcm.size / SR} s audio in ${System.currentTimeMillis() - t0} ms, chunks=${chunks.size}")
         return out
@@ -195,41 +208,6 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
             start = bestMs
         }
         if (e > start) out += start to e
-    }
-
-    /** Токены (SentencePiece, "▁" — начало слова) → фраза со словами. Пунктуация липнет к предыдущему слову. */
-    private fun buildSegment(tokens: Array<String>, ts: FloatArray, chunkStartMs: Long, chunkEndMs: Long): WhisperHelper.Segment? {
-        if (tokens.isEmpty()) return null
-        class W(val sb: StringBuilder, val start: Long)
-        val words = ArrayList<W>()
-        for (i in tokens.indices) {
-            val raw = tokens[i]
-            val tMs = chunkStartMs + (ts.getOrElse(i) { 0f } * 1000f).toLong()
-            val startsWord = raw.startsWith("▁")
-            val piece = raw.replace("▁", "")
-            if (piece.isEmpty() && !startsWord) continue
-            if (startsWord || words.isEmpty()) words += W(StringBuilder(piece), tMs)
-            else words.last().sb.append(piece)
-        }
-        // Модель ставит «—» перед репликой; стоящее в начале куска тире ломает разбор реплик, убираем.
-        while (words.isNotEmpty() && words.first().sb.none { it.isLetterOrDigit() }) words.removeAt(0)
-        words.firstOrNull()?.let { w ->
-            val i = w.sb.indexOfFirst { it.isLetterOrDigit() }
-            if (i > 0) w.sb.delete(0, i)
-        }
-        val result = ArrayList<WhisperHelper.Word>(words.size)
-        for (i in words.indices) {
-            val w = words[i]
-            val text = w.sb.toString().trim()
-            if (text.isEmpty()) continue
-            val next = if (i + 1 < words.size) words[i + 1].start else (w.start + LAST_WORD_MS)
-            val end = next.coerceAtLeast(w.start + 40).coerceAtMost(w.start + 2_000L).coerceAtMost(chunkEndMs.coerceAtLeast(w.start + 40))
-            result += WhisperHelper.Word(text, w.start, end, 1f)
-        }
-        if (result.isEmpty()) return null
-        val text = result.joinToString(" ") { it.text }
-        if (BuildConfig.DEBUG) Log.d(TAG, "built: ${text.take(60)} words=${result.take(3).map { it.text }}")
-        return WhisperHelper.Segment(text, result.first().startMs, result.last().endMs, result)
     }
 
     private class CancellationException : RuntimeException()

@@ -150,8 +150,8 @@ object AppPrefs {
     }
 
     /**
-     * Быстрый ASR (GigaAM v3 через sherpa-onnx) вместо Whisper. По умолчанию выключен;
-     * в конкурсной сборке включается только флагом сборки -PguzlikvoiceFastAsr=true.
+     * Быстрый ASR (GigaAM v3 через sherpa-onnx) вместо Whisper. По умолчанию включён;
+     * для сравнительных замеров Whisper: -PguzlikvoiceFastAsr=false.
      * Для замеров: наличие файла filesDir/use_gigaam включает его без пересборки (не в конкурсной сборке).
      */
     fun isFastAsr(ctx: Context): Boolean {

@@ -71,9 +71,11 @@ class HallucinationFilterTest {
         assertFalse(HallucinationFilter.isGarbage("Я сделал субтитры к видео для клиента."))
     }
 
-    @Test fun veryShortSegmentsAreGarbage() {
+    @Test fun punctuationIsGarbageButShortAnswersArePreserved() {
         assertTrue(HallucinationFilter.isGarbage("."))
-        assertTrue(HallucinationFilter.isGarbage(" А. "))
+        assertFalse(HallucinationFilter.isGarbage(" А? "))
+        assertFalse(HallucinationFilter.isGarbage("Я."))
+        assertFalse(HallucinationFilter.isGarbage("5"))
         assertFalse(HallucinationFilter.isGarbage("Да."))
         assertFalse(HallucinationFilter.isGarbage("12"))
     }

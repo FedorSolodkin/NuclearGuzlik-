@@ -24,7 +24,7 @@ def main():
     expected = {m['file']: m for m in spec['models']}
     if args.bundle:
         folder = args.bundle / 'models'
-        actual = {f.name for f in folder.iterdir() if f.is_file()}
+        actual = {f.relative_to(folder).as_posix() for f in folder.rglob('*') if f.is_file()}
         if actual != expected.keys():
             raise SystemExit(f'Model set mismatch: expected {sorted(expected)}, got {sorted(actual)}')
         for name, model in expected.items():
@@ -57,7 +57,7 @@ def main():
                         raise SystemExit(f'Bad auxiliary model: {name}')
             if not archive.read('assets/GEMMA-NOTICE.txt').strip():
                 raise SystemExit('Missing Gemma notice')
-    print('Verified: only exact Whisper podlodka, Gemma ru90k and required diarization/VAD assets')
+    print('Verified: only exact GigaAM RNNT, Gemma ru90k and required diarization/VAD assets')
 
 
 if __name__ == '__main__':

@@ -286,7 +286,7 @@ class TranscriptionSession(
         val base = diarization
         if (base != null && base.centroids.size > 1 && !cancelled) {
             val clips = BoundaryWordTiming.plan(segs, base.turns, fullPcm.size * 1000L / 16_000)
-            if (clips.isNotEmpty()) whisper.withWordTimingSession(cancelToken) { refine ->
+            if (clips.isNotEmpty()) whisper.withWordTimingSession(cancelToken, observedLanguages.singleOrNull()) { refine ->
                 for (clip in clips) {
                     if (cancelled) return@withWordTimingSession
                     val anchors = refine(fullPcm.copyOfRange((clip.startMs * 16).toInt(),
@@ -336,6 +336,9 @@ class TranscriptionSession(
      * куска: на дальнем микрофоне определитель уверенно ошибался (p(en)=0.997 на
      * русской речи), и весь кусок уходил в перевод на английский.
      */
+    // Session-local evidence only: another recording must not supply a stale language.
+    private val observedLanguages = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+
     private fun chunkLanguage(chunk: ShortArray): String {
         val prior = lastLanguage ?: AppPrefs.LANG_RU
         // Определение языка стоит ~2–3 с на кусок. Если два куска подряд дали один язык,
@@ -372,6 +375,7 @@ class TranscriptionSession(
             val audio = PcmNormalizer.normalize(chunk)
             // Речи слишком мало, чтобы решить, — язык прошлого чанка (или русский).
             val lang = chunkLanguage(audio)
+            observedLanguages.add(lang)
             val languageChanged = lastLanguage != null && lastLanguage != lang
             if (lang != lastLanguage) Log.i(TAG, "Chunk @${startSample / sampleRate}s language: $lang")
             lastLanguage = lang

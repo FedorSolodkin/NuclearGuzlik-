@@ -15,7 +15,8 @@ object AutoDiarization {
     fun start(ctx: Context, audioFile: File?, timestamp: Long, segments: List<WhisperHelper.Segment>) {
         if (timestamp == 0L || segments.isEmpty() || audioFile == null || !audioFile.isFile) return
         try {
-            DiarizationJobRunner.start(ctx.applicationContext, audioFile, timestamp, null, segments, null, false)
+            DiarizationJobRunner.start(ctx.applicationContext, audioFile, timestamp, null, segments,
+                WhisperHelper.active?.takeIf { it.isReady }, false)
         } catch (e: Throwable) {
             Log.w(TAG, "auto diarization not started: ${e.message}")
         }

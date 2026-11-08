@@ -169,6 +169,10 @@ class SetupActivity : AppCompatActivity() {
 
     private fun checkWhisper() {
         if (whisperExists()) { checkVad(); return }
+        if (AppPrefs.isFastAsr(this)) {
+            showRetry("Нужна полная APK со встроенной моделью GigaAM") { installBundled() }
+            return
+        }
         startAutoDownload(
             name      = "распознавания речи",
             fileName  = WHISPER_NAME,
@@ -497,6 +501,7 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun whisperExists(): Boolean {
+        if (AppPrefs.isFastAsr(this)) return GigaAmEngine.isInstalled(this)
         data class Candidate(val name: String, val minBytes: Long)
         // Первым — новая (v3.5) podlodka-turbo; следом — legacy-модели ggerganov,
         // чтобы юзеры с уже скачанным ggml-small.bin из v3.4 не качали заново.

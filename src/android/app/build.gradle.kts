@@ -23,13 +23,15 @@ val contestBuild = (project.findProperty("guzlikvoiceContest") as String?)?.let 
 if (contestBuild) {
     val bundle = (project.findProperty("guzlikvoiceBundle") as String?)
         ?: throw GradleException("Конкурсная сборка требует -PguzlikvoiceBundle=<папка со всеми models/>")
-    val expected = mapOf("ggml-whisper-podlodka-turbo-q4_0.bin" to 473_992_235L,
+    val expected = mapOf("gigaam/encoder.int8.onnx" to 224_570_820L,
+        "gigaam/decoder.onnx" to 4_600_132L, "gigaam/joiner.onnx" to 2_712_896L,
+        "gigaam/tokens.txt" to 13_354L,
         "gemma-2-2b-it-Q4_K_M-ru90k.gguf" to 1_391_349_280L,
         "speaker_model.onnx" to 26_535_549L, "pyannote_segmentation.onnx" to 5_986_908L,
         "silero_vad.onnx" to 2_327_524L)
     val folder = file("$bundle/models")
-    val actual = folder.listFiles()?.filter { it.isFile }?.map { it.name }?.toSet().orEmpty()
-    if (actual != expected.keys || folder.listFiles().orEmpty().any { it.isFile && it.length() != expected[it.name] })
+    val actual = folder.walkTopDown().filter { it.isFile }.map { it.relativeTo(folder).invariantSeparatorsPath }.toSet()
+    if (actual != expected.keys || folder.walkTopDown().any { it.isFile && it.length() != expected[it.relativeTo(folder).invariantSeparatorsPath] })
         throw GradleException("Конкурсная models/: нужны ровно $expected; найдены $actual")
 }
 
@@ -64,7 +66,7 @@ android {
         buildConfigField("boolean", "OFFLINE_PROTOTYPE", "false")
         buildConfigField("boolean", "CONTEST_BUILD", contestBuild.toString())
         // Быстрый ASR (GigaAM) по умолчанию: -PguzlikvoiceFastAsr=true. Без флага — Whisper.
-        buildConfigField("boolean", "FAST_ASR", ((project.findProperty("guzlikvoiceFastAsr") as String?) == "true").toString())
+        buildConfigField("boolean", "FAST_ASR", ((project.findProperty("guzlikvoiceFastAsr") as String?)?.toBooleanStrictOrNull() ?: true).toString())
 
         // Какие модели ИИ-анализа можно выбрать в настройках: id через запятую
         // (-PguzlikvoiceLlmModels=gemma2-2b — сборка «только Gemma»). Пусто — все.

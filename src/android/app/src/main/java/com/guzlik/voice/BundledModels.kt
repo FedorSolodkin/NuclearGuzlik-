@@ -20,7 +20,13 @@ object BundledModels {
     }
 
     fun assetNames(ctx: Context): List<String> =
-        try { ctx.assets.list(DIR)?.toList().orEmpty() } catch (_: Exception) { emptyList() }
+        try {
+            fun files(path: String): List<String> = ctx.assets.list("$DIR/$path").orEmpty().flatMap { child ->
+                val name = if (path.isEmpty()) child else "$path/$child"
+                if (ctx.assets.list("$DIR/$name").orEmpty().isEmpty()) listOf(name) else files(name)
+            }
+            files("")
+        } catch (_: Exception) { emptyList() }
 
     /** Размер файла в APK; -1, если он сжат и размер без чтения неизвестен. */
     private fun assetSize(ctx: Context, name: String): Long =
@@ -42,7 +48,7 @@ object BundledModels {
     @Synchronized
     fun install(ctx: Context, onProgress: (done: Long, total: Long, name: String) -> Unit): Result {
         if (BuildConfig.CONTEST_BUILD) {
-            val expected = setOf(WhisperCppEngine.PODLODKA_TURBO_FILE, LlmModels.GEMMA_TRIM.fileName,
+            val expected = GigaAmEngine.BUNDLE_FILES + setOf(LlmModels.GEMMA_TRIM.fileName,
                 SpeakerEmbedder.MODEL_NAME, PyannoteSegmenter.MODEL_NAME, SileroVAD.MODEL_NAME)
             if (assetNames(ctx).toSet() != expected)
                 return Result.Failed("В APK нет полного набора моделей. Установите полную конкурсную APK")
@@ -59,6 +65,7 @@ object BundledModels {
         for (name in names) {
             val target = File(ctx.filesDir, name)
             val tmp = File(ctx.filesDir, "$name.part")
+            target.parentFile?.mkdirs()
             try {
                 tmp.delete()
                 ctx.assets.open("$DIR/$name").use { input ->
