@@ -50,14 +50,14 @@ Native CPU-варианты выбираются по возможностям �
 
 Модели можно положить внутрь APK при сборке (`-PguzlikvoiceBundle`, см. src/README.md): при первом
 запуске приложение копирует их из APK в свою папку без интернета (`BundledModels`, экран «Подготовка
-к работе»). Две сборки: LIGHT (распознавание, голоса, VAD, Qwen 0,6B, около 0,9 ГБ) и HEAVY (то же с
-облегчённой Gemma 2 2B, около 1,9 ГБ).
+к работе»). Конкурсная APK 4.0.8 одна: внутри точный Whisper podlodka, Gemma 2 2B ru90k и модели диаризации/VAD (около 1,9 ГБ), см.
+[CONTEST_APK.md](CONTEST_APK.md). Сборки LIGHT/HEAVY с Qwen 0,6B относятся к разработке и в конкурсную сборку не входят.
 
 ## Зависимости
 
 whisper.cpp (GGML), llama.cpp, ONNX Runtime (pyannote segmentation 3.0, WeSpeaker ResNet34), Silero VAD,
 Room, Kotlin/Android SDK 36, NDK 25.1. Модели: Whisper podlodka-turbo q4_0, Gemma 2 2B Q4_K_M (ru90k),
-Qwen3 0.6B; контрольные суммы в config/contest-models.json.
+Qwen3 0.6B (только в сборках разработки); контрольные суммы в config/contest-models.json.
 
 ## Безопасность и приватность
 
