@@ -43,6 +43,8 @@ object HallucinationFilter {
     fun isGarbage(text: String): Boolean {
         val t = text.trim()
         if (t.isEmpty()) return true
+        // Сегмент без слов или из одной буквы («.», «А», «...») — выдумка на тишине, не реплика.
+        if (t.count { it.isLetterOrDigit() } < 2) return true
         if (ONLY_BRACKETS.matches(t)) return true
         if (OUTRO_ONLY.matches(t) || stripCredits(t).isEmpty()) return true
         if (BRACKET_RUN.containsMatchIn(t) && BRACKET_RUN.replace(t, "").isBlank()) return true
