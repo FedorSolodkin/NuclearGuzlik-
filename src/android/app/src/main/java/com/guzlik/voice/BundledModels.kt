@@ -42,7 +42,7 @@ object BundledModels {
     @Synchronized
     fun install(ctx: Context, onProgress: (done: Long, total: Long, name: String) -> Unit): Result {
         if (BuildConfig.CONTEST_BUILD) {
-            val expected = setOf(GigaAmEngine.BUNDLED_MODEL_FILE, GigaAmEngine.BUNDLED_TOKENS_FILE, LlmModels.GEMMA_TRIM.fileName,
+            val expected = GigaAmEngine.BUNDLE_FILES + setOf(LlmModels.GEMMA_TRIM.fileName,
                 SpeakerEmbedder.MODEL_NAME, PyannoteSegmenter.MODEL_NAME, SileroVAD.MODEL_NAME)
             if (assetNames(ctx).toSet() != expected)
                 return Result.Failed("В APK нет полного набора моделей. Установите полную конкурсную APK")

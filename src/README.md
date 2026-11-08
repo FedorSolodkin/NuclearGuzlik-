@@ -17,8 +17,8 @@ echo "sdk.dir=/путь/к/Android/sdk" > local.properties
 
 ### Распознавание речи: GigaAM v3 и Whisper
 
-Конкурсная сборка (`-PguzlikvoiceContest=true`) распознаёт речь только GigaAM v3 CTC с пунктуацией
-(sherpa-onnx; файлы `gigaam_v3_ctc_punct.int8.onnx` и `gigaam_v3_tokens.txt` лежат в APK, Whisper в неё не входит).
+Конкурсная сборка (`-PguzlikvoiceContest=true`) распознаёт речь только GigaAM v3 RNNT с пунктуацией
+(sherpa-onnx; файлы `gigaam_v3_encoder.int8.onnx`, `gigaam_v3_decoder.onnx`, `gigaam_v3_joiner.onnx`, `gigaam_v3_rnnt_tokens.txt` лежат в APK, Whisper в неё не входит).
 Без `libsherpa-onnx-jni.so` конкурсная сборка останавливается с подсказкой. Обычная сборка по умолчанию использует Whisper;
 GigaAM включается там флагом `-PguzlikvoiceFastAsr=true` (модель при этом надо положить в `filesDir`).
 

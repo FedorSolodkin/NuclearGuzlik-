@@ -48,6 +48,12 @@ class AsrComparisonDeviceTest {
                         useVad = true, language = AppPrefs.LANG_RU, cancelToken = WhisperHelper.newCancelToken()))
                     val elapsed = android.os.SystemClock.elapsedRealtime() - started
                     assertTrue("Empty recognition: $id/$model", segments.isNotEmpty())
+                    if (model == "giga") {
+                        assertEquals("gigaam-v3-transducer-punct-int8", engine.loadedModelName)
+                        val words = segments.flatMap { it.words.orEmpty() }
+                        assertTrue("Missing native word times: $id", words.size > segments.size)
+                        assertTrue(words.all { it.startMs >= 0 && it.endMs > it.startMs && it.endMs <= pcm.size / 16L })
+                    }
                     File(out, "$id.$model.json").writeText(gson.toJson(mapOf(
                         "case" to id, "model" to engine.loadedModelName, "audio_ms" to pcm.size / 16L,
                         "init_ms" to initMs, "asr_ms" to elapsed,
