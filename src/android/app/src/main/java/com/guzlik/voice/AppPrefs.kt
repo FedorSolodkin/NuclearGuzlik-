@@ -151,12 +151,11 @@ object AppPrefs {
 
     /**
      * Быстрый ASR (GigaAM v3 через sherpa-onnx) вместо Whisper. По умолчанию выключен;
-     * в конкурсной сборке включается только флагом сборки -PguzlikvoiceFastAsr=true.
+     * в конкурсной сборке (guzlikvoiceContest=true) включён всегда: единственный ASR там GigaAM.
      * Для замеров: наличие файла filesDir/use_gigaam включает его без пересборки (не в конкурсной сборке).
      */
     fun isFastAsr(ctx: Context): Boolean {
-        if (BuildConfig.FAST_ASR) return true
-        if (BuildConfig.CONTEST_BUILD) return false
+        if (BuildConfig.FAST_ASR || BuildConfig.CONTEST_BUILD) return true
         if (java.io.File(ctx.filesDir, "use_gigaam").exists()) return true
         return ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getBoolean("fast_asr", false)
     }

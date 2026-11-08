@@ -24,6 +24,8 @@ object ModelIntegrity {
         WhisperCppEngine.PODLODKA_TURBO_Q5_0_FILE to "7e58e89ea5ff49edf330649caa4d7a0895a3d3254fecd9c1cf63b27dd8fcf53d",
         WhisperCppEngine.SMALL_FILE               to "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb",
         WhisperCppEngine.TINY_FILE                to "be07e048e1e599ad46341c8d2a135645097a538221678b7acdd1b1919c6e1b21",
+        GigaAmEngine.BUNDLED_MODEL_FILE           to "d5fea8df94263c285e54b21e5774b707c707192d3bdbeffd7b1eb07fb6743b35",
+        GigaAmEngine.BUNDLED_TOKENS_FILE          to "142de7570b3de5b3035ce111a89c228e80e6085273731d944093ddf24fa539cd",
     ) + LlmModels.ALL.associate { it.fileName to it.sha256 }
 
     /** URL → SHA256 для моделей, у которых есть несколько зеркал с разными файлами. */

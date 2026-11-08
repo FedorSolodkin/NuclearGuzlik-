@@ -497,6 +497,8 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun whisperExists(): Boolean {
+        // Быстрый ASR (GigaAM; в конкурсной сборке единственный): «ASR готов» = модель GigaAM на месте.
+        if (AppPrefs.isFastAsr(this)) return GigaAmEngine.isInstalled(this)
         data class Candidate(val name: String, val minBytes: Long)
         // Первым — новая (v3.5) podlodka-turbo; следом — legacy-модели ggerganov,
         // чтобы юзеры с уже скачанным ggml-small.bin из v3.4 не качали заново.
