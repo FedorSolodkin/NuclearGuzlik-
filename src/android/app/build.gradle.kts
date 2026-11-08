@@ -182,8 +182,8 @@ android {
         create("store") {
             dimension = "channel"
             applicationId = "ru.guzlik.voice"
-            versionCode = if (contestBuild) 48 else 47
-            versionName = if (contestBuild) "4.0.8-contest" else "4.0.7"
+            versionCode = if (contestBuild) 49 else 47
+            versionName = if (contestBuild) "4.0.9-contest" else "4.0.7"
             buildConfigField("boolean", "LEGACY_BRIDGE", "false")
             signingConfigs.findByName("release")?.let { signingConfig = it }
         }

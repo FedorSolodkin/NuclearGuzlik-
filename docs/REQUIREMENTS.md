@@ -66,7 +66,7 @@
 
 | Материал | Где |
 |---|---|
-| 1. APK | [релиз](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8), `artifacts/apk/` |
+| 1. APK | [релиз](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.9), `artifacts/apk/` |
 | 2. Исходный код | `src/android/` |
 | 3. Инструкция | [INSTALL.md](INSTALL.md), [README](../README.md) |
 | 4. Архитектура и модели | [ARCHITECTURE.md](ARCHITECTURE.md), [CONTEST_APK.md](CONTEST_APK.md) |

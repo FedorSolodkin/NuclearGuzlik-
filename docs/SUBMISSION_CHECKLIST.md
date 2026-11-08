@@ -6,7 +6,7 @@
 
 | № | Материал | Статус | Где / что осталось |
 |---|---|---|---|
-| 1 | APK | **ждёт финальной сборки** | В `artifacts/apk/manifest.json` стоит `status: "pending final build"`, размер, SHA-256 и ссылка пустые. Заполнить после сборки и проверки (пришлёт чат «нам»), затем обновить релиз, `SHA256SUMS` и размер в README |
+| 1 | APK | **не опубликован** | Версия 4.0.9: размер 1 688 339 012 байт, SHA-256 `2eed2a75…c9ef` занесены в `manifest.json` и `SHA256SUMS`. Релиз `guzlikvoice-contest-v4.0.9` пока черновик без файла (на 8 ноября): нужно загрузить APK, проверить SHA-256 и опубликовать, иначе ссылка в README не откроется |
 | 2 | Исходный код | готово | `src/android/`, сборка: `src/README.md`, `docs/CONTEST_APK.md` |
 | 3 | Инструкция установки и использования | готово | `README.md`, `docs/INSTALL.md` |
 | 4 | Архитектура и модели | готово | `docs/ARCHITECTURE.md`, `docs/CONTEST_APK.md`, `config/contest-models.json`; лицензии: `docs/LICENSES.md` (добавляет чат «нам») |

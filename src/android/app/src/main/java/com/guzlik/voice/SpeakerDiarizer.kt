@@ -414,21 +414,30 @@ object SpeakerDiarizer {
             RobustSpeakerClustering.clusterSupported(sample, sample.map { times[it] ?: LongArray(0) }, fixedK, ::checkCancelled,
                 sample.map{spans[it].orEmpty()})
         }
+        // Второй проход: разделить слитые порогом голоса и очистить центроиды.
+        val refined = SpeakerRefinement.refine(embeddings, labels, embeddings.map { spans[it].orEmpty() }, fixedK, ::checkCancelled)
+        if (refined.toSet().size != labels.toSet().size)
+            Log.i(TAG, "SpeakerRefinement: ${labels.toSet().size} → ${refined.toSet().size} voices")
+        val labels2 = refined
         val tFusion = System.nanoTime()
-        val k = (labels.maxOrNull() ?: 0) + 1
-        val centroids = (0 until k).map { group -> averageAndNormalize(embeddings.filterIndexed { i, _ -> labels[i] == group }) }
+        val k = (labels2.maxOrNull() ?: 0) + 1
+        val centroids = (0 until k).map { group -> averageAndNormalize(embeddings.filterIndexed { i, _ -> labels2[i] == group }) }
         val reliable = embeddings.indices.map { i ->
-            val c = centroids[labels[i]]
+            val c = centroids[labels2[i]]
             embeddings[i].indices.sumOf { d -> embeddings[i][d].toDouble()*c[d] } >= 0.55
         }
-        val baseTurns = SpeakerActivityFusion.fuse(snapshot.windows, snapshot.regions.filter { reliable[it.embedding] }.map { r ->
-            SpeakerActivityFusion.Evidence(r.startMs, r.endMs, labels[r.embedding], r.window)
+        // Слабый регион приписывается ближайшему центру, а не отбрасывается: речь не теряет владельца.
+        val baseTurns = SpeakerActivityFusion.fuse(snapshot.windows, snapshot.regions.mapNotNull { r ->
+            if (reliable[r.embedding]) SpeakerActivityFusion.Evidence(r.startMs, r.endMs, labels2[r.embedding], r.window)
+            else SpeakerRefinement.attachUnreliable(embeddings[r.embedding], centroids)?.let {
+                SpeakerActivityFusion.Evidence(r.startMs, r.endMs, it, r.window)
+            }
         }, ::checkCancelled)
         val turns = snapshot.boundaryRefinement?.takeIf {it.completed}?.let {
             SpeakerBoundaryRefiner.refine(baseTurns,it.observations,centroids,::checkCancelled)
         } ?: baseTurns
         if(turns.isEmpty())return AcousticResult(assignUnresolved(segments),emptyList(),LongArray(0),emptyList())
-        val previews=SpeakerPreviews.select(snapshot,labels,centroids,turns)
+        val previews=SpeakerPreviews.select(snapshot,labels2,centroids,turns)
         val tWords = System.nanoTime()
         val timeline = SpeakerTimeline(turns)
         checkCancelled()
