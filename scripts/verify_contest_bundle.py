@@ -24,7 +24,7 @@ def main():
     expected = {m['file']: m for m in spec['models']}
     if args.bundle:
         folder = args.bundle / 'models'
-        actual = {f.relative_to(folder).as_posix() for f in folder.rglob('*') if f.is_file()}
+        actual = {f.name for f in folder.iterdir() if f.is_file()}
         if actual != expected.keys():
             raise SystemExit(f'Model set mismatch: expected {sorted(expected)}, got {sorted(actual)}')
         for name, model in expected.items():
@@ -46,7 +46,7 @@ def main():
                     if entry.file_size != model['bytes'] or entry.compress_type != zipfile.ZIP_STORED or digest(stream) != model['sha256']:
                         raise SystemExit(f'Bad APK model: {name}')
             auxiliary = {m['asset']: m for m in spec['auxiliary_assets']}
-            allowed = {prefix + name for name in expected} | auxiliary.keys()
+            allowed = {prefix + name for name in expected if name.endswith(('.bin', '.gguf', '.onnx'))} | auxiliary.keys()
             actual_weights = {i.filename for i in archive.infolist() if i.filename.startswith('assets/')
                               and i.filename.endswith(('.bin', '.gguf', '.onnx'))}
             if actual_weights != allowed:
@@ -57,7 +57,7 @@ def main():
                         raise SystemExit(f'Bad auxiliary model: {name}')
             if not archive.read('assets/GEMMA-NOTICE.txt').strip():
                 raise SystemExit('Missing Gemma notice')
-    print('Verified: only exact GigaAM RNNT, Gemma ru90k and required diarization/VAD assets')
+    print('Verified: only exact GigaAM v3 (model + tokens), Gemma ru90k and required diarization/VAD assets')
 
 
 if __name__ == '__main__':

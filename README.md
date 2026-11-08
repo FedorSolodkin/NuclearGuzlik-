@@ -49,7 +49,7 @@ Whisper podlodka-turbo (q4_0), Gemma 2 2B (ru90k), WeSpeaker, pyannote segmentat
 
 Автономная работа подтверждена на Xiaomi (Android 13) в авиарежиме; 239 юнит-тестов проходят. Конкурсная APK прогнана в авиарежиме на эмуляторе (4 ГБ, CPU) на 35 файлах:
 WER 5,6% на синтетике и 19,7% на трёх живых записях, RTF 0,92 по сумме; DER на синтетике в среднем 34,8% (число говорящих часто занижается).
-**Известный дефект:** на 5 файлах из 35 «Экспорт JSON» отказал («Нулевая длительность реплики»). Подробности и условия: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md),
+**Известный дефект (исправлен в коде, APK пересобирается):** на 5 файлах из 35 «Экспорт JSON» отказал («Нулевая длительность реплики»). Исправление слито в `main` (реплика нулевой длины получает минимальные 100 мс, текст сохраняется, два теста); повторный прогон r003 и d001 на новой APK выполняется после пересборки. Подробности и условия: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md),
 [artifacts/test-results/results.csv](artifacts/test-results/results.csv). Скриншоты: [artifacts/demo/screens](artifacts/demo/screens). Видео демонстрации: [artifacts/demo](artifacts/demo/README.md).
 Ограничения: [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 

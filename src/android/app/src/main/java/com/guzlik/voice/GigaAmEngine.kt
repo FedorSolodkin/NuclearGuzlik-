@@ -5,7 +5,6 @@ import android.util.Log
 import com.k2fsa.sherpa.onnx.FeatureConfig
 import com.k2fsa.sherpa.onnx.OfflineModelConfig
 import com.k2fsa.sherpa.onnx.OfflineNemoEncDecCtcModelConfig
-import com.k2fsa.sherpa.onnx.OfflineTransducerModelConfig
 import com.k2fsa.sherpa.onnx.OfflineRecognizer
 import com.k2fsa.sherpa.onnx.OfflineRecognizerConfig
 import com.k2fsa.sherpa.onnx.SileroVadModelConfig
@@ -15,11 +14,11 @@ import java.io.File
 import java.util.concurrent.ConcurrentHashMap
 
 /**
- * Быстрый распознаватель: GigaAM v3 (NeMo RNNT, с пунктуацией и регистром) через sherpa-onnx.
+ * Быстрый распознаватель: GigaAM v3 (NeMo CTC, с пунктуацией и регистром) через sherpa-onnx.
  * Только русский. Режется по речи на куски до [MAX_CHUNK_MS], каждый кусок распознаётся
  * целиком; слова собираются из токенов с временем (время куска + время токена).
  *
- * Файлы RNNT в filesDir/gigaam; конкурсная APK содержит их целиком.
+ * Файлы модели: filesDir/gigaam/model.int8.onnx и tokens.txt (в APK не входят).
  */
 class GigaAmEngine(private val context: Context) : AsrEngine {
 
@@ -33,19 +32,26 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
         private const val MAX_CHUNK_MS = 22_000L
         private const val MIN_CHUNK_MS = 8_000L        // короче — склеиваем соседние речевые куски, если пауза небольшая
         private const val JOIN_GAP_MS = 700L
-        private const val PAD_MS = 400L
-        val BUNDLE_FILES = setOf("gigaam/encoder.int8.onnx", "gigaam/decoder.onnx",
-            "gigaam/joiner.onnx", "gigaam/tokens.txt")
+        private const val PAD_MS = 300L
+        private const val LAST_WORD_MS = 300L
 
-        fun modelFile(ctx: Context) = File(File(ctx.filesDir, DIR), MODEL_FILE)
-        private fun transducerInstalled(dir: File) =
-            File(dir, "encoder.int8.onnx").let { it.isFile && it.length() > MIN_MODEL_BYTES } &&
-                listOf("decoder.onnx", "joiner.onnx", TOKENS_FILE).all { File(dir, it).let { f -> f.isFile && f.length() > 0 } }
-        fun isInstalled(ctx: Context): Boolean {
+        // Встроенные в APK файлы (BundledModels копирует их в filesDir под плоскими именами).
+        const val BUNDLED_MODEL_FILE = "gigaam_v3_ctc_punct.int8.onnx"
+        const val BUNDLED_TOKENS_FILE = "gigaam_v3_tokens.txt"
+        const val BUNDLED_MODEL_BYTES = 224_893_661L
+        const val BUNDLED_TOKENS_BYTES = 2_007L
+
+        /** Плоские имена (APK) приоритетнее папки filesDir/gigaam/ (ручная раскладка для замеров). */
+        private fun pair(ctx: Context): Pair<File, File> {
+            val flat = File(ctx.filesDir, BUNDLED_MODEL_FILE) to File(ctx.filesDir, BUNDLED_TOKENS_FILE)
+            if (flat.first.isFile && flat.second.isFile) return flat
             val dir = File(ctx.filesDir, DIR)
-            return transducerInstalled(dir) || (modelFile(ctx).let { it.isFile && it.length() > MIN_MODEL_BYTES } &&
-                File(dir, TOKENS_FILE).isFile)
+            return File(dir, MODEL_FILE) to File(dir, TOKENS_FILE)
         }
+        fun modelFile(ctx: Context) = pair(ctx).first
+        fun tokensFile(ctx: Context) = pair(ctx).second
+        fun isInstalled(ctx: Context) = modelFile(ctx).let { it.isFile && it.length() > MIN_MODEL_BYTES } &&
+            tokensFile(ctx).isFile
     }
 
     @Volatile override var isReady = false
@@ -65,25 +71,19 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
                     onError("Модель GigaAM не найдена (filesDir/$DIR/$MODEL_FILE)")
                     return@Thread
                 }
-                val dir = File(context.filesDir, DIR)
-                val transducer = transducerInstalled(dir)
                 val cfg = OfflineRecognizerConfig(
                     featConfig = FeatureConfig(sampleRate = SR, featureDim = 64),
                     modelConfig = OfflineModelConfig(
-                        transducer = if (transducer) OfflineTransducerModelConfig(
-                            encoder = File(dir, "encoder.int8.onnx").absolutePath,
-                            decoder = File(dir, "decoder.onnx").absolutePath,
-                            joiner = File(dir, "joiner.onnx").absolutePath) else OfflineTransducerModelConfig(),
-                        nemo = OfflineNemoEncDecCtcModelConfig(model = if (transducer) "" else File(dir, MODEL_FILE).absolutePath),
-                        tokens = File(dir, TOKENS_FILE).absolutePath,
+                        nemo = OfflineNemoEncDecCtcModelConfig(model = modelFile(context).absolutePath),
+                        tokens = tokensFile(context).absolutePath,
                         numThreads = 4,
                         provider = "cpu",
-                        modelType = if (transducer) "nemo_transducer" else "nemo_ctc",
+                        modelType = "nemo_ctc",
                     ),
                     decodingMethod = "greedy_search",
                 )
                 recognizer = OfflineRecognizer(config = cfg)
-                loadedModelName = if (transducer) "gigaam-v3-transducer-punct-int8" else "gigaam-v3-ctc-punct-int8"
+                loadedModelName = "gigaam-v3-ctc-punct-int8"
                 isReady = true
                 onReady()
             } catch (e: Throwable) {
@@ -173,14 +173,17 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
             }
         }
         try {
-            val step = 512 * 60
+            // Строго окнами по 512 отсчётов: при подаче большими блоками sherpa-VAD сдвигает начало речи
+            // (r004: 1566 мс вместо 126 мс) и не режет длинную речь — первые слова реплики терялись.
+            val win = 512
+            val buf = FloatArray(win)
             var pos = 0
-            while (pos < pcm.size) {
-                if (isCancelled(cancelToken)) return null
-                val end = minOf(pcm.size, pos + step)
-                vad.acceptWaveform(FloatArray(end - pos) { pcm[pos + it] / 32768f })
-                drain()
-                pos = end
+            while (pos + win <= pcm.size) {
+                if (pos % (win * 100) == 0 && isCancelled(cancelToken)) return null
+                for (i in 0 until win) buf[i] = pcm[pos + i] / 32768f
+                vad.acceptWaveform(buf)
+                if (!vad.empty()) drain()
+                pos += win
             }
             vad.flush(); drain()
         } finally { vad.release() }
@@ -210,6 +213,7 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
         if (e > start) out += start to e
     }
 
+    /** Токены (SentencePiece, "▁" — начало слова) → фраза со словами. Пунктуация липнет к предыдущему слову. */
     private class CancellationException : RuntimeException()
 
     private fun isCancelled(token: Long) = token != 0L && token in cancelled

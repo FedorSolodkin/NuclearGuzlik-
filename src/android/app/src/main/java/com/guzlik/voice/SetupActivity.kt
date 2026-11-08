@@ -169,10 +169,6 @@ class SetupActivity : AppCompatActivity() {
 
     private fun checkWhisper() {
         if (whisperExists()) { checkVad(); return }
-        if (AppPrefs.isFastAsr(this)) {
-            showRetry("Нужна полная APK со встроенной моделью GigaAM") { installBundled() }
-            return
-        }
         startAutoDownload(
             name      = "распознавания речи",
             fileName  = WHISPER_NAME,
@@ -501,6 +497,7 @@ class SetupActivity : AppCompatActivity() {
     }
 
     private fun whisperExists(): Boolean {
+        // Быстрый ASR (GigaAM; в конкурсной сборке единственный): «ASR готов» = модель GigaAM на месте.
         if (AppPrefs.isFastAsr(this)) return GigaAmEngine.isInstalled(this)
         data class Candidate(val name: String, val minBytes: Long)
         // Первым — новая (v3.5) podlodka-turbo; следом — legacy-модели ggerganov,

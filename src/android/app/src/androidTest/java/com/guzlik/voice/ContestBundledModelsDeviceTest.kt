@@ -40,7 +40,7 @@ class ContestBundledModelsDeviceTest {
         var llm: LlmHelper? = null
         fun now() = android.os.SystemClock.elapsedRealtime()
         try {
-            val expected = setOf(WhisperCppEngine.PODLODKA_TURBO_FILE, LlmModels.GEMMA_TRIM.fileName,
+            val expected = setOf(GigaAmEngine.BUNDLED_MODEL_FILE, GigaAmEngine.BUNDLED_TOKENS_FILE, LlmModels.GEMMA_TRIM.fileName,
                 SpeakerEmbedder.MODEL_NAME, PyannoteSegmenter.MODEL_NAME, SileroVAD.MODEL_NAME)
             assertEquals(expected, BundledModels.assetNames(clean).toSet())
             assertEquals(expected, BundledModels.pending(clean).toSet())
@@ -64,7 +64,8 @@ class ContestBundledModelsDeviceTest {
             val asr = WhisperHelper(clean).also { whisper = it }
             asr.init({ ready.countDown() }, { failure = it; ready.countDown() })
             assertTrue(ready.await(90, TimeUnit.SECONDS)); assertNull(failure)
-            assertEquals(WhisperCppEngine.PODLODKA_TURBO_FILE, asr.loadedModelName)
+            assertTrue(AppPrefs.isFastAsr(clean))
+            assertEquals("gigaam-v3-ctc-punct-int8", asr.loadedModelName)
             val audio = AudioDecoder.decode(source)
             val transcriptionStart = now()
             var segments = asr.transcribeSegments(audio, language = AppPrefs.LANG_RU)
