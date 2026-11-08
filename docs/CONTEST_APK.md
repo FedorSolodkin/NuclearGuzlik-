@@ -1,7 +1,7 @@
-# Автономная конкурсная APK 4.0.8
+# Автономная конкурсная APK 4.0.9
 
-Единственная APK для установки: **GuzlikVoice-4.0.8-contest-offline.apk** в
-[релизе guzlikvoice-contest-v4.0.8](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8).
+Единственная APK для установки: **GuzlikVoice-4.0.9-contest-offline.apk** в
+[релизе guzlikvoice-contest-v4.0.9](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.9).
 Размер около 1,92 ГБ, Android 8+, ARM64, пакет `ru.guzlik.voice.hackathon`.
 Подпись совместима с предыдущей конкурсной APK: обновление сохраняет записи.
 
@@ -40,7 +40,7 @@ cd src/android
   -PguzlikvoiceTestBuildType=hackathon :app:cleanPackageStoreHackathon \
   :app:testStoreHackathonUnitTest :app:assembleStoreHackathon
 cd ../..
-python3 scripts/verify_contest_bundle.py --apk /absolute/path/to/GuzlikVoice-4.0.8-contest-offline.apk
+python3 scripts/verify_contest_bundle.py --apk /absolute/path/to/GuzlikVoice-4.0.9-contest-offline.apk
 ```
 
 Флаг `guzlikvoiceContest=true` обязателен: он закрепляет модели и запрещает сборку

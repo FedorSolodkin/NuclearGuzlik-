@@ -4,7 +4,7 @@
 
 | № | Материал | Статус | Где / что осталось |
 |---|---|---|---|
-| 1 | APK | готово | [релиз guzlikvoice-contest-v4.0.8](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8): размер 1 931 089 574 байт и SHA-256 `5a24e7e8…c1729` совпадают с `artifacts/apk/manifest.json` и `SHA256SUMS` (проверено 7 ноября) |
+| 1 | APK | готово | [релиз guzlikvoice-contest-v4.0.9](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.9): размер 1 688 339 012 байт и SHA-256 `2eed2a75…c9ef` совпадают с `artifacts/apk/manifest.json` и `SHA256SUMS` (проверено 8 ноября) |
 | 2 | Исходный код | готово | `src/android/`, сборка: `src/README.md`, `docs/CONTEST_APK.md` |
 | 3 | Инструкция установки и использования | готово | `README.md`, `docs/INSTALL.md` |
 | 4 | Архитектура и модели | готово | `docs/ARCHITECTURE.md`, `docs/CONTEST_APK.md`, `config/contest-models.json` |

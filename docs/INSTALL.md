@@ -1,6 +1,6 @@
 # Установка и автономная проверка
 
-1. Скачайте `GuzlikVoice-4.0.8-contest-offline.apk` из [релиза](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.8)
+1. Скачайте `GuzlikVoice-4.0.9-contest-offline.apk` из [релиза](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.9)
    (размер около 1,92 ГБ, контрольные суммы в `artifacts/apk/SHA256SUMS`). Требуется Android 8+, ARM64.
 2. Для чистой установки желательно 5 ГБ свободного места: APK, извлечённые модели и запас для обработки.
 3. Откройте приложение и дождитесь экрана «Подготовка к работе»: модели извлекаются из APK, интернет не нужен.
