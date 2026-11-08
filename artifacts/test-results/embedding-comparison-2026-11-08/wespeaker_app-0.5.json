@@ -1,0 +1,591 @@
+{
+  "runtime": "macOS CPU, 2 threads, separate process per model; not Android and not the production Kotlin pipeline",
+  "sherpa_version": "2.0.1",
+  "threshold": 0.5,
+  "num_clusters": -1,
+  "window_shift_ratio": 0.1,
+  "min_duration_on": 0.3,
+  "min_duration_off": 0.5,
+  "embedding_bytes": 26535790,
+  "embedding_sha256": "355dfcb79f91dc5dd6d9f9e2c5669c8068203fd75cf146322ee09555fcdd2d7a",
+  "segmentation_sha256": "220ad67ca923bef2fa91f2390c786097bf305bceb5e261d4af67b38e938e1079",
+  "results": [
+    {
+      "model": "wespeaker_app",
+      "case": "ru_meeting_2spk",
+      "audio_ms": 33795.375,
+      "processing_seconds": 3.8268604170298204,
+      "load_seconds": 0.04843962495215237,
+      "peak_rss_bytes": 177111040,
+      "metrics": {
+        "der": 0.02905255995917673,
+        "reference_ms": 29395.0,
+        "missed_ms": 114.0,
+        "false_alarm_ms": 740.0,
+        "confusion_ms": 0.0,
+        "reference_speakers": 2,
+        "hypothesis_speakers": 2,
+        "mapping": {
+          "1": "speaker_1",
+          "0": "speaker_2"
+        },
+        "collar_ms": 0,
+        "overlap_included": true
+      },
+      "hypothesis": [
+        [
+          773,
+          4807,
+          1
+        ],
+        [
+          5296,
+          9093,
+          0
+        ],
+        [
+          9329,
+          12502,
+          1
+        ],
+        [
+          12873,
+          17851,
+          0
+        ],
+        [
+          17902,
+          18374,
+          1
+        ],
+        [
+          18577,
+          23234,
+          0
+        ],
+        [
+          23622,
+          29005,
+          1
+        ],
+        [
+          29495,
+          31368,
+          0
+        ],
+        [
+          31638,
+          33292,
+          1
+        ]
+      ],
+      "reference": [
+        [
+          800,
+          4779,
+          "speaker_1"
+        ],
+        [
+          5279,
+          8973,
+          "speaker_2"
+        ],
+        [
+          9373,
+          12440,
+          "speaker_1"
+        ],
+        [
+          12890,
+          17750,
+          "speaker_2"
+        ],
+        [
+          17950,
+          18331,
+          "speaker_1"
+        ],
+        [
+          18681,
+          23172,
+          "speaker_2"
+        ],
+        [
+          23672,
+          29045,
+          "speaker_1"
+        ],
+        [
+          29445,
+          31372,
+          "speaker_2"
+        ],
+        [
+          31672,
+          33295,
+          "speaker_1"
+        ]
+      ]
+    },
+    {
+      "model": "wespeaker_app",
+      "case": "ru_meeting_3spk",
+      "audio_ms": 29062.8125,
+      "processing_seconds": 3.098043624893762,
+      "load_seconds": 0.04843962495215237,
+      "peak_rss_bytes": 177111040,
+      "metrics": {
+        "der": 0.29065409261274333,
+        "reference_ms": 24813.0,
+        "missed_ms": 281.0,
+        "false_alarm_ms": 1050.0,
+        "confusion_ms": 5881.0,
+        "reference_speakers": 3,
+        "hypothesis_speakers": 2,
+        "mapping": {
+          "1": "speaker_1",
+          "0": "speaker_2"
+        },
+        "collar_ms": 0,
+        "overlap_included": true
+      },
+      "hypothesis": [
+        [
+          892,
+          3423,
+          1
+        ],
+        [
+          3794,
+          6545,
+          0
+        ],
+        [
+          6781,
+          7456,
+          1
+        ],
+        [
+          7777,
+          12147,
+          0
+        ],
+        [
+          12400,
+          13835,
+          1
+        ],
+        [
+          13970,
+          15657,
+          0
+        ],
+        [
+          16079,
+          24010,
+          1
+        ],
+        [
+          24196,
+          25259,
+          0
+        ],
+        [
+          25495,
+          28634,
+          1
+        ]
+      ],
+      "reference": [
+        [
+          800,
+          3403,
+          "speaker_1"
+        ],
+        [
+          3803,
+          6583,
+          "speaker_2"
+        ],
+        [
+          6833,
+          7413,
+          "speaker_1"
+        ],
+        [
+          7813,
+          12148,
+          "speaker_2"
+        ],
+        [
+          12448,
+          13794,
+          "speaker_3"
+        ],
+        [
+          13994,
+          15592,
+          "speaker_2"
+        ],
+        [
+          16092,
+          20532,
+          "speaker_3"
+        ],
+        [
+          20882,
+          23835,
+          "speaker_1"
+        ],
+        [
+          23685,
+          23930,
+          "speaker_3"
+        ],
+        [
+          24230,
+          25168,
+          "speaker_2"
+        ],
+        [
+          25568,
+          28563,
+          "speaker_1"
+        ]
+      ]
+    },
+    {
+      "model": "wespeaker_app",
+      "case": "real_ru_2spk",
+      "audio_ms": 102326.4375,
+      "processing_seconds": 13.261486917035654,
+      "load_seconds": 0.04843962495215237,
+      "peak_rss_bytes": 177111040,
+      "metrics": {
+        "der": 0.11571523032841084,
+        "reference_ms": 90740.0,
+        "missed_ms": 9821.0,
+        "false_alarm_ms": 638.0,
+        "confusion_ms": 41.0,
+        "reference_speakers": 2,
+        "hypothesis_speakers": 2,
+        "mapping": {
+          "1": "speaker_1",
+          "0": "speaker_2"
+        },
+        "collar_ms": 0,
+        "overlap_included": true
+      },
+      "hypothesis": [
+        [
+          503,
+          2613,
+          1
+        ],
+        [
+          3625,
+          10544,
+          0
+        ],
+        [
+          11303,
+          15151,
+          1
+        ],
+        [
+          16147,
+          18273,
+          0
+        ],
+        [
+          18931,
+          21817,
+          1
+        ],
+        [
+          22542,
+          26137,
+          0
+        ],
+        [
+          25968,
+          27419,
+          1
+        ],
+        [
+          28162,
+          32498,
+          1
+        ],
+        [
+          33258,
+          39063,
+          0
+        ],
+        [
+          39805,
+          41932,
+          1
+        ],
+        [
+          43062,
+          47500,
+          0
+        ],
+        [
+          48327,
+          50268,
+          1
+        ],
+        [
+          51280,
+          52934,
+          0
+        ],
+        [
+          53660,
+          56208,
+          0
+        ],
+        [
+          57035,
+          60055,
+          1
+        ],
+        [
+          60882,
+          65692,
+          0
+        ],
+        [
+          65962,
+          68054,
+          1
+        ],
+        [
+          68240,
+          69944,
+          0
+        ],
+        [
+          70788,
+          73808,
+          1
+        ],
+        [
+          74804,
+          77605,
+          0
+        ],
+        [
+          78112,
+          80913,
+          1
+        ],
+        [
+          82330,
+          86144,
+          0
+        ],
+        [
+          85975,
+          88270,
+          1
+        ],
+        [
+          88996,
+          91662,
+          0
+        ],
+        [
+          92067,
+          94008,
+          1
+        ],
+        [
+          95172,
+          97197,
+          0
+        ],
+        [
+          97906,
+          100690,
+          1
+        ]
+      ],
+      "reference": [
+        [
+          500,
+          3110,
+          "speaker_1"
+        ],
+        [
+          3619,
+          10569,
+          "speaker_2"
+        ],
+        [
+          11319,
+          15639,
+          "speaker_1"
+        ],
+        [
+          16148,
+          18598,
+          "speaker_2"
+        ],
+        [
+          18946,
+          22246,
+          "speaker_1"
+        ],
+        [
+          22562,
+          26272,
+          "speaker_2"
+        ],
+        [
+          26031,
+          27961,
+          "speaker_1"
+        ],
+        [
+          28164,
+          32964,
+          "speaker_1"
+        ],
+        [
+          33256,
+          39066,
+          "speaker_2"
+        ],
+        [
+          39795,
+          42375,
+          "speaker_1"
+        ],
+        [
+          43083,
+          47693,
+          "speaker_2"
+        ],
+        [
+          48338,
+          50738,
+          "speaker_1"
+        ],
+        [
+          51263,
+          52973,
+          "speaker_2"
+        ],
+        [
+          53695,
+          56505,
+          "speaker_2"
+        ],
+        [
+          57064,
+          60454,
+          "speaker_1"
+        ],
+        [
+          60887,
+          65717,
+          "speaker_2"
+        ],
+        [
+          66007,
+          68557,
+          "speaker_1"
+        ],
+        [
+          68281,
+          70291,
+          "speaker_2"
+        ],
+        [
+          70845,
+          74265,
+          "speaker_1"
+        ],
+        [
+          74848,
+          77878,
+          "speaker_2"
+        ],
+        [
+          78168,
+          82008,
+          "speaker_1"
+        ],
+        [
+          82352,
+          86242,
+          "speaker_2"
+        ],
+        [
+          86023,
+          88693,
+          "speaker_1"
+        ],
+        [
+          89022,
+          91732,
+          "speaker_2"
+        ],
+        [
+          92112,
+          94602,
+          "speaker_1"
+        ],
+        [
+          95199,
+          97249,
+          "speaker_2"
+        ],
+        [
+          97956,
+          101826,
+          "speaker_1"
+        ]
+      ]
+    },
+    {
+      "model": "wespeaker_app",
+      "case": "single_turn_from_real_ru_2spk",
+      "audio_ms": 6950.0,
+      "processing_seconds": 0.014706332935020328,
+      "load_seconds": 0.04843962495215237,
+      "peak_rss_bytes": 177111040,
+      "metrics": {
+        "der": 0.004460431654676259,
+        "reference_ms": 6950.0,
+        "missed_ms": 31.0,
+        "false_alarm_ms": 0.0,
+        "confusion_ms": 0.0,
+        "reference_speakers": 1,
+        "hypothesis_speakers": 1,
+        "mapping": {
+          "1": "speaker_2"
+        },
+        "collar_ms": 0,
+        "overlap_included": true
+      },
+      "hypothesis": [
+        [
+          31,
+          6950,
+          1
+        ]
+      ],
+      "reference": [
+        [
+          0,
+          6950.0,
+          "speaker_2"
+        ]
+      ]
+    }
+  ]
+}

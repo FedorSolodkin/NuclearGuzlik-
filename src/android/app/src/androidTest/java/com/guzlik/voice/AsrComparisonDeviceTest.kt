@@ -45,7 +45,8 @@ class AsrComparisonDeviceTest {
                     val initMs = android.os.SystemClock.elapsedRealtime() - initStart
                     val started = android.os.SystemClock.elapsedRealtime()
                     val segments = HallucinationFilter.clean(engine.transcribeSegments(audio,
-                        useVad = true, language = AppPrefs.LANG_RU, cancelToken = WhisperHelper.newCancelToken()))
+                        useVad = true, language = AppPrefs.LANG_RU, cancelToken = WhisperHelper.newCancelToken()),
+                        removeWhisperArtifacts = engine is WhisperCppEngine)
                     val elapsed = android.os.SystemClock.elapsedRealtime() - started
                     assertTrue("Empty recognition: $id/$model", segments.isNotEmpty())
                     if (model == "giga") {

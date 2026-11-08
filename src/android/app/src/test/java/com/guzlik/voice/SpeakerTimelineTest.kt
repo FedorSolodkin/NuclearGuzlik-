@@ -9,6 +9,37 @@ class SpeakerTimelineTest {
         val timeline = SpeakerTimeline(listOf(r(543, 6358, 0)))
         assertArrayEquals(intArrayOf(0, 0), timeline.decideWords(listOf(280L to 520L, 520L to 950L)))
     }
+    @Test fun shortFinalUnvoicedTailUsesTheImmediatelyPrecedingVoice() {
+        val timeline = SpeakerTimeline(listOf(r(0, 540, 1)))
+        assertArrayEquals(intArrayOf(1, 1), timeline.decideWords(listOf(0L to 500L, 500L to 800L)))
+        assertArrayEquals(intArrayOf(1, 1), timeline.decideWords(listOf(0L to 500L, 580L to 800L)))
+    }
+    @Test fun finalTailRepairNeverBridgesAnotherVoiceOrLongSilence() {
+        val changed = SpeakerTimeline(listOf(r(0, 500, 0), r(540, 580, 1)))
+        assertArrayEquals(intArrayOf(0, -1), changed.decideWords(listOf(0L to 500L, 500L to 850L)))
+        val silence = SpeakerTimeline(listOf(r(0, 500, 0)))
+        assertArrayEquals(intArrayOf(0, -1), silence.decideWords(listOf(0L to 500L, 700L to 950L)))
+        assertArrayEquals(intArrayOf(0, -1), silence.decideWords(listOf(0L to 500L, 500L to 1000L)))
+    }
+    @Test fun shortWordAtANewTurnUsesItsUniqueAcousticOnsetAndFollowingWord() {
+        // Captured RNNT + pyannote boundary: 35 / 160 ms acoustic coverage.
+        // The preceding person has stopped; the new voice continues into the next word.
+        val timeline = SpeakerTimeline(listOf(r(23616, 29032, 1), r(29516, 31426, 0)))
+        assertArrayEquals(intArrayOf(1, 0, 0), timeline.decideWords(
+            listOf(28431L to 29071L, 29391L to 29551L, 29551L to 30071L)))
+    }
+    @Test fun onsetRepairRequiresUniqueContinuousEvidenceAndABoundedExtension() {
+        val words = listOf(0L to 500L, 600L to 900L, 900L to 1200L)
+        // Two sequential voices inside the short word must not be collapsed to its successor.
+        val mixed = SpeakerTimeline(listOf(r(0, 680, 1), r(820, 1200, 0)))
+        assertEquals(-1, mixed.decideWords(words)[1])
+        // A tiny onset at the very end of a long word is not sufficient evidence.
+        val distant = SpeakerTimeline(listOf(r(0, 500, 1), r(870, 1200, 0)))
+        assertEquals(-1, distant.decideWords(words)[1])
+        // Equal labels on two disconnected intervals must not bridge intervening silence.
+        val disconnected = SpeakerTimeline(listOf(r(0, 500, 1), r(700, 720, 0), r(900, 1200, 0)))
+        assertEquals(-1, disconnected.decideWords(words)[1])
+    }
     @Test fun shortLowCoverageWordWithinOneVoiceDoesNotCreateASeparateUnknownTurn() {
         val timeline = SpeakerTimeline(listOf(r(25398, 31460, 1), r(31816, 46528, 1)))
         assertArrayEquals(intArrayOf(1, 1, 1), timeline.decideWords(

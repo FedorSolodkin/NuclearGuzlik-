@@ -6,6 +6,15 @@ import org.junit.Assert.assertTrue
 import org.junit.Test
 
 class HallucinationFilterTest {
+    @Test fun rnntKeepsSpokenOutrosAndRepetitionWithNativeTiming() {
+        val texts = listOf("Спасибо за просмотр!", "Подписывайтесь на канал.", "да ".repeat(12).trim())
+        val segments = texts.map { text -> WhisperHelper.Segment(text, 0, 1000,
+            listOf(WhisperHelper.Word(text, 0, 1000, 1f))) }
+        val result = HallucinationFilter.clean(segments + seg("  "), removeWhisperArtifacts = false)
+        assertEquals(segments, result)
+        assertTrue(result.all { it.words != null })
+    }
+
 
     private fun seg(text: String) = WhisperHelper.Segment(text, 0, 1000)
 

@@ -79,7 +79,8 @@ class WhisperHelper(context: Context) {
     ): List<Segment> {
         val lang = language ?: resolveLanguage(pcm)
         return HallucinationFilter.clean(
-            engine.transcribeSegments(pcm, initialPrompt, carryPrompt, useVad, lang, cancelToken))
+            engine.transcribeSegments(pcm, initialPrompt, carryPrompt, useVad, lang, cancelToken),
+            removeWhisperArtifacts = engine is WhisperCppEngine)
     }
 
     /** "ru"/"en" из настроек; при «Авто» — определяет по [pcm] (null — речи мало). */
