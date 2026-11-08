@@ -76,8 +76,11 @@ class WhisperHelper(context: Context) {
         useVad: Boolean = true,
         language: String? = null,
         cancelToken: Long = 0L,
-    ): List<Segment> = HallucinationFilter.clean(
-        engine.transcribeSegments(pcm, initialPrompt, carryPrompt, useVad, language ?: resolveLanguage(pcm), cancelToken))
+    ): List<Segment> {
+        val lang = language ?: resolveLanguage(pcm)
+        return HallucinationFilter.clean(
+            engine.transcribeSegments(pcm, initialPrompt, carryPrompt, useVad, lang, cancelToken))
+    }
 
     /** "ru"/"en" из настроек; при «Авто» — определяет по [pcm] (null — речи мало). */
     fun detectLanguage(pcm: ShortArray): String? = when (AppPrefs.getAsrLanguage(appContext)) {
@@ -92,10 +95,10 @@ class WhisperHelper(context: Context) {
     fun abort(cancelToken: Long) = engine.abort(cancelToken)
 
     /** Local DTW pass. One temporary context for all clips; no transcript replacement. */
-    fun <T> withWordTimingSession(cancelToken: Long, block: ((ShortArray) -> List<Word>) -> T): T =
-        // Уточнение границ слов — DTW Whisper'а; у GigaAM своих таймингов достаточно.
+    fun <T> withWordTimingSession(cancelToken: Long, language: String? = null, block: ((ShortArray) -> List<Word>) -> T): T =
+        // GigaAM supplies token times; only Whisper needs a DTW context.
         (engine as? WhisperCppEngine)?.openWordTimingSession()?.use { session ->
-            block { pcm -> session.refine(pcm, resolveLanguage(pcm), cancelToken) }
+            block { pcm -> session.refine(pcm, language ?: resolveLanguage(pcm), cancelToken) }
         } ?: block { emptyList() }
 
     fun refineWordTiming(pcm: ShortArray, cancelToken: Long): List<Word> =

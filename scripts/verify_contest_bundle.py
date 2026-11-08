@@ -57,7 +57,7 @@ def main():
                         raise SystemExit(f'Bad auxiliary model: {name}')
             if not archive.read('assets/GEMMA-NOTICE.txt').strip():
                 raise SystemExit('Missing Gemma notice')
-    print('Verified: only exact GigaAM v3 (model + tokens), Gemma ru90k and required diarization/VAD assets')
+    print('Verified: only exact GigaAM v3 RNNT (encoder + decoder + joiner + tokens), Gemma ru90k and required diarization/VAD assets')
 
 
 if __name__ == '__main__':
