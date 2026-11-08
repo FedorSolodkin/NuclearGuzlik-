@@ -23,7 +23,7 @@ val contestBuild = (project.findProperty("guzlikvoiceContest") as String?)?.let 
 if (contestBuild) {
     val bundle = (project.findProperty("guzlikvoiceBundle") as String?)
         ?: throw GradleException("Конкурсная сборка требует -PguzlikvoiceBundle=<папка со всеми models/>")
-    val expected = mapOf("ggml-whisper-podlodka-turbo-q4_0.bin" to 473_992_235L,
+    val expected = mapOf("gigaam_v3_encoder.int8.onnx" to 224570820L, "gigaam_v3_decoder.onnx" to 4600132L, "gigaam_v3_joiner.onnx" to 2712896L, "gigaam_v3_rnnt_tokens.txt" to 13354L,
         "gemma-2-2b-it-Q4_K_M-ru90k.gguf" to 1_391_349_280L,
         "speaker_model.onnx" to 26_535_549L, "pyannote_segmentation.onnx" to 5_986_908L,
         "silero_vad.onnx" to 2_327_524L)
@@ -31,6 +31,11 @@ if (contestBuild) {
     val actual = folder.listFiles()?.filter { it.isFile }?.map { it.name }?.toSet().orEmpty()
     if (actual != expected.keys || folder.listFiles().orEmpty().any { it.isFile && it.length() != expected[it.name] })
         throw GradleException("Конкурсная models/: нужны ровно $expected; найдены $actual")
+    // GigaAM работает через libsherpa-onnx-jni.so (в git не лежит): без неё APK собралась бы, но не распознавала речь.
+    listOf("arm64-v8a", "x86_64").forEach { abi ->
+        if (!file("src/main/jniLibs/$abi/libsherpa-onnx-jni.so").isFile)
+            throw GradleException("Нет src/main/jniLibs/$abi/libsherpa-onnx-jni.so: выполните scripts/fetch_sherpa_jni.sh")
+    }
 }
 
 android {
@@ -281,7 +286,7 @@ android {
         sourceSets.getByName("main").assets.srcDir(dir)
     }
     androidResources {
-        noCompress += listOf("gguf", "onnx", "bin")
+        noCompress += listOf("gguf", "onnx", "bin", "txt")
     }
     buildFeatures {
         buildConfig = true

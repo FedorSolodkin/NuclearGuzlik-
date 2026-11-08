@@ -14,21 +14,22 @@
 3. В истории импортируйте аудиофайл и дождитесь расшифровки: разделение по голосам запускается
    автоматически. Затем нажмите «Экспорт JSON» в карточке записи. «Выделить главное» и вопросы используют Gemma.
 
-В APK встроены точный Whisper podlodka turbo q4_0 (473 992 235 байт), Gemma 2B ru90k
-(1 391 349 280 байт), WeSpeaker, pyannote и Silero VAD. Выбор быстрой ASR отключён,
-старое предпочтение быстрой модели игнорируется. Единственная доступная LLM — Gemma ru90k.
+В APK встроены GigaAM v3 RNNT с пунктуацией int8 (encoder 224 570 820, decoder 4 600 132, joiner 2 712 896, tokens 13 354 байта; CTC и Whisper не входят), Gemma 2B ru90k
+(1 391 349 280 байт), WeSpeaker, pyannote и Silero VAD. Единственная ASR — GigaAM; выбор модели распознавания скрыт. Единственная доступная LLM — Gemma ru90k.
 Выбор/импорт альтернативных моделей и лаборатория сравнения моделей скрыты.
 Модели диаризации/VAD необходимы для основной задачи; они остаются в APK.
 
-Небольшой нативный Silero VAD для Whisper также автоматически включён из assets приложения.
-Он не является альтернативной моделью транскрибации.
+Небольшой нативный Silero VAD для Whisper остаётся в assets приложения, но в этой сборке не используется
+(GigaAM режет речь через `silero_vad.onnx`). Он не является моделью транскрибации.
 
 Полный список и SHA-256: [config/contest-models.json](../config/contest-models.json).
 Gemma notice встроен в APK; копия: [GEMMA-NOTICE.txt](GEMMA-NOTICE.txt).
 
 ## Воспроизведение сборки
 
-Создайте каталог `bundle/models/` и положите ровно пять файлов из списка моделей.
+Создайте каталог `bundle/models/` и положите ровно восемь файлов из списка моделей (GigaAM `gigaam_v3_encoder.int8.onnx`, `gigaam_v3_decoder.onnx`, `gigaam_v3_joiner.onnx`, `gigaam_v3_rnnt_tokens.txt` берутся из пакета
+`sherpa-onnx-nemo-transducer-punct-giga-am-v3-russian-2025-12-16`, переименованные).
+Нативная библиотека GigaAM скачивается `scripts/fetch_sherpa_jni.sh` (нужен `gh`), сборка без неё остановится.
 Скопируйте `docs/GEMMA-NOTICE.txt` в `bundle/GEMMA-NOTICE.txt`.
 
 ```bash

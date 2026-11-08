@@ -722,8 +722,8 @@ class TranscriptionDetailSheet : BottomSheetDialogFragment() {
 
     /** «Сколько было человек?» — точное число сильно помогает кластеризации голосов. */
     private fun askSpeakerCount(alreadyLabeled: Boolean, onChosen: (Int?) -> Unit) {
-        val options = arrayOf("Не знаю — определить автоматически", "2 человека", "3 человека", "4 человека", "5 человек")
-        val values = arrayOf<Int?>(null, 2, 3, 4, 5)
+        val options = arrayOf("Не знаю — определить автоматически", "1 человек — монолог", "2 человека", "3 человека", "4 человека", "5 человек")
+        val values = arrayOf<Int?>(null, 1, 2, 3, 4, 5)
         var chosen = 0
         com.google.android.material.dialog.MaterialAlertDialogBuilder(requireContext())
             .setTitle("Сколько человек говорит в записи?")

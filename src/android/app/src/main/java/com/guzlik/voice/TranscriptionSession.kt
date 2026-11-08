@@ -42,6 +42,7 @@ class TranscriptionSession(
         // чтобы не гонять почти пустое третье окно. Разрез ищем в [40, 58] с.
         private const val CHUNK_MAX_SEC = 58
         private const val CHUNK_MIN_SEC = 40
+        private const val LANG_RECHECK_EVERY = 4
         // Окно для поиска паузы: 200 мс, шаг 20 мс.
         private const val QUIET_WIN_MS  = 200
         private const val QUIET_HOP_MS  = 20
@@ -93,6 +94,8 @@ class TranscriptionSession(
      * переводилась. Только из executor-потока.
      */
     private var lastLanguage: String? = null
+    private var agreeStreak = 0
+    private var chunksSinceDetect = 0
 
     private val maxSamples = CHUNK_MAX_SEC * sampleRate
     private val minSamples = CHUNK_MIN_SEC * sampleRate
@@ -283,7 +286,7 @@ class TranscriptionSession(
         val base = diarization
         if (base != null && base.centroids.size > 1 && !cancelled) {
             val clips = BoundaryWordTiming.plan(segs, base.turns, fullPcm.size * 1000L / 16_000)
-            if (clips.isNotEmpty()) whisper.withWordTimingSession(cancelToken) { refine ->
+            if (clips.isNotEmpty()) whisper.withWordTimingSession(cancelToken, observedLanguages.singleOrNull()) { refine ->
                 for (clip in clips) {
                     if (cancelled) return@withWordTimingSession
                     val anchors = refine(fullPcm.copyOfRange((clip.startMs * 16).toInt(),
@@ -333,8 +336,24 @@ class TranscriptionSession(
      * куска: на дальнем микрофоне определитель уверенно ошибался (p(en)=0.997 на
      * русской речи), и весь кусок уходил в перевод на английский.
      */
+    // Session-local evidence only: another recording must not supply a stale language.
+    private val observedLanguages = java.util.concurrent.ConcurrentHashMap.newKeySet<String>()
+
     private fun chunkLanguage(chunk: ShortArray): String {
         val prior = lastLanguage ?: AppPrefs.LANG_RU
+        // Определение языка стоит ~2–3 с на кусок. Если два куска подряд дали один язык,
+        // следующие три куска его не перепроверяют (смена языка всё равно ловится на каждом четвёртом).
+        if (lastLanguage != null && agreeStreak >= 2 && chunksSinceDetect < LANG_RECHECK_EVERY - 1) {
+            chunksSinceDetect++
+            return prior
+        }
+        chunksSinceDetect = 0
+        val detected = chunkLanguageDetect(chunk, prior)
+        agreeStreak = if (detected == prior && lastLanguage != null) agreeStreak + 1 else 1
+        return detected
+    }
+
+    private fun chunkLanguageDetect(chunk: ShortArray, prior: String): String {
         val first = whisper.detectLanguage(chunk) ?: return prior
         if (first == prior) return first
         // Короткая запись (голосовое на пару фраз) — перепроверять не по чему.
@@ -352,8 +371,11 @@ class TranscriptionSession(
                 Log.w(TAG, "Chunk @${startSample / sampleRate}s skipped: engine not ready")
                 return
             }
+            // Тихая запись: усиливаем копию куска для Whisper (исходное аудио остаётся для голосов).
+            val audio = PcmNormalizer.normalize(chunk)
             // Речи слишком мало, чтобы решить, — язык прошлого чанка (или русский).
-            val lang = chunkLanguage(chunk)
+            val lang = chunkLanguage(audio)
+            observedLanguages.add(lang)
             val languageChanged = lastLanguage != null && lastLanguage != lang
             if (lang != lastLanguage) Log.i(TAG, "Chunk @${startSample / sampleRate}s language: $lang")
             lastLanguage = lang
@@ -370,7 +392,7 @@ class TranscriptionSession(
                 (if (tail.isEmpty() || languageChanged || !HallucinationFilter.isSafePrompt(tail)) "" else tail) to false
             }
             val segments = try {
-                whisper.transcribeSegments(chunk, prompt, carryPrompt = carry, useVad = true, language = lang,
+                whisper.transcribeSegments(audio, prompt, carryPrompt = carry, useVad = true, language = lang,
                                            cancelToken = cancelToken)
             } catch (e: Exception) {
                 Log.e(TAG, "Whisper error in chunk @${startSample / sampleRate}s: ${e.message}", e)

@@ -10,8 +10,17 @@
 git clone --recurse-submodules git@github.com:FedorSolodkin/NuclearGuzlik-.git
 cd NuclearGuzlik-/src/android
 ./scripts/fetch-vulkan-headers.sh
+# Нативная библиотека GigaAM (sherpa-onnx v2.0.1, onnxruntime вшит). В git её нет, нужен установленный `gh`:
+../../scripts/fetch_sherpa_jni.sh   # кладёт libsherpa-onnx-jni.so в app/src/main/jniLibs/{arm64-v8a,x86_64}
 echo "sdk.dir=/путь/к/Android/sdk" > local.properties
 ```
+
+### Распознавание речи: GigaAM v3 и Whisper
+
+Конкурсная сборка (`-PguzlikvoiceContest=true`) распознаёт речь только GigaAM v3 RNNT с пунктуацией
+(sherpa-onnx; файлы `gigaam_v3_encoder.int8.onnx`, `gigaam_v3_decoder.onnx`, `gigaam_v3_joiner.onnx`, `gigaam_v3_rnnt_tokens.txt` лежат в APK, Whisper в неё не входит).
+Без `libsherpa-onnx-jni.so` конкурсная сборка останавливается с подсказкой. Обычная сборка по умолчанию использует Whisper;
+GigaAM включается там флагом `-PguzlikvoiceFastAsr=true` (модель при этом надо положить в `filesDir`).
 
 ### Сборки со встроенными моделями (для проверки без интернета)
 

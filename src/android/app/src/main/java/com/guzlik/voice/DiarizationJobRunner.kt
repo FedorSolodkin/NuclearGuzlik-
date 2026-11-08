@@ -145,6 +145,8 @@ object DiarizationJobRunner {
             lease.close()
             throw e
         }
+        // Import may release its last UI/model owner before this queued job starts.
+        val heldWhisper = whisper?.takeIf { it.retain() }
         val job = scope.launch(start = CoroutineStart.LAZY) {
             var notify = false
             try {
@@ -196,7 +198,9 @@ object DiarizationJobRunner {
                 systemPaused.remove(timestamp)
             }
             try { processingToken?.let { RecordingService.processingFinished(appCtx, it) } }
-            finally { lease.close() }
+            finally {
+                try { heldWhisper?.releaseUse() } finally { lease.close() }
+            }
         }
         job.start()
         if (lease.cancelled) cancel(timestamp)

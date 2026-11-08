@@ -20,6 +20,10 @@ object ModelIntegrity {
 
     /** Имя файла модели → ожидаемый SHA256. */
     private val SHA256_BY_FILE = mapOf(
+        "gigaam_v3_encoder.int8.onnx" to "369f35a71bf288d3b8e0391fabd8dba5f2314088d440bca474056b7b4b6e66bf",
+        "gigaam_v3_decoder.onnx" to "38fc7475443ea2a26f63211ca350f73ac50fff824ab7a3876ee2bd610c53bbc4",
+        "gigaam_v3_joiner.onnx" to "602ff7017a93311aad34df1437c8d7f49911353c13d6eae7a6ee7b041339465c",
+        "gigaam_v3_rnnt_tokens.txt" to "39abae20e692998290c574e606f11a9edef2902a1995463fcff63d1490cf22b7",
         WhisperCppEngine.PODLODKA_TURBO_FILE      to "172d761c921345082986689cb622f891184da29476b85e873bb272687a3c73a7",
         WhisperCppEngine.PODLODKA_TURBO_Q5_0_FILE to "7e58e89ea5ff49edf330649caa4d7a0895a3d3254fecd9c1cf63b27dd8fcf53d",
         WhisperCppEngine.SMALL_FILE               to "ae85e4a935d7a567bd102fe55afc16bb595bdb618e11b2fc7591bc08120411bb",
