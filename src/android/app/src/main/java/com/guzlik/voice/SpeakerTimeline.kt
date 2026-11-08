@@ -96,6 +96,17 @@ class SpeakerTimeline(regions: List<Region>) {
         return Decision(speaker, ranked, coverage, margin)
     }
 
+    private fun hasContinuousOnset(speaker: Int, startMs: Long, latestStartMs: Long, nextWordMs: Long): Boolean {
+        var lo = 0; var hi = runs.size
+        while (lo < hi) { val mid = (lo + hi) ushr 1; if (runs[mid].startMs < startMs) lo = mid + 1 else hi = mid }
+        var i = lo
+        while (i < runs.size && runs[i].startMs <= latestStartMs) {
+            val r = runs[i++]
+            if (r.speaker == speaker && r.endMs > nextWordMs) return true
+        }
+        return false
+    }
+
     /** Repair isolated short word edges only, using unchanged acoustic decisions
      * on adjacent words. Never bridge a change of speaker or an overlap. */
     fun decideWords(intervals: List<Pair<Long, Long>>): IntArray {
@@ -113,10 +124,25 @@ class SpeakerTimeline(regions: List<Region>) {
                         a - intervals[i - 1].second in 0..100 &&
                         intervals[i + 1].first - b in 0..100 &&
                         d.candidates == listOf(before) -> before
+                    // A short word at a new turn may have only its voiced end
+                    // detected. Extend its unique onset by at most two 80-ms
+                    // timestamp steps, only when that SAME region continues into
+                    // the next confidently assigned word. Silence/other voices
+                    // cannot supply this evidence.
+                    after != null && after >= 0 && d.candidates == listOf(after) &&
+                        intervals[i + 1].first - b in 0..100 &&
+                        hasContinuousOnset(after, a, minOf(b, a + 160), intervals[i + 1].first) -> after
                     // VAD can miss the unvoiced onset of the very first word.
                     i == 0 && after != null && after >= 0 &&
                         intervals[1].first - b in 0..100 && d.candidates.isEmpty() &&
                         runs.firstOrNull()?.let { it.speaker == after && it.startMs - b in 0..80 } == true -> after
+                    // The final word can lose its unvoiced ending in exactly
+                    // the same way. Require the last acoustic region to belong
+                    // to the preceding voice; never bridge a different speaker.
+                    i == intervals.lastIndex && before != null && before >= 0 &&
+                        a - intervals[i - 1].second in 0..100 &&
+                        (d.candidates.isEmpty() || d.candidates == listOf(before)) &&
+                        ends.lastOrNull()?.let { it.speaker == before && it.endMs in (a - 80)..b } == true -> before
                     else -> UNKNOWN
                 }
             }

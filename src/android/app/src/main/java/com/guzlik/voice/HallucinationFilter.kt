@@ -75,8 +75,9 @@ object HallucinationFilter {
     }
 
     /** Чистит сегменты: мусорные убирает, длинные повторы схлопывает. */
-    fun clean(segments: List<WhisperHelper.Segment>): List<WhisperHelper.Segment> =
-        segments.mapNotNull { seg ->
+    fun clean(segments: List<WhisperHelper.Segment>, removeWhisperArtifacts: Boolean = true): List<WhisperHelper.Segment> =
+        if (!removeWhisperArtifacts) segments.filter { it.text.isNotBlank() }
+        else segments.mapNotNull { seg ->
             if (isGarbage(seg.text)) return@mapNotNull null
             val collapsed = collapseRuns(stripCredits(seg.text))
             if (collapsed == seg.text.trim()) seg

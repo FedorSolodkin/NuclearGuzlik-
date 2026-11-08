@@ -1,0 +1,8 @@
+{
+  "original_sha256": "3955447b0499dc9e0a4541a895df08b03c69098eba4e56c02b5603e9f7f4fcbb",
+  "metadata_only_sha256": "355dfcb79f91dc5dd6d9f9e2c5669c8068203fd75cf146322ee09555fcdd2d7a",
+  "original_graph_sha256": "1614439adfc90dfc777dd866260c0de94096548d90acea8f50c9c5b2e4eb9ecf",
+  "patched_graph_sha256": "1614439adfc90dfc777dd866260c0de94096548d90acea8f50c9c5b2e4eb9ecf",
+  "sherpa_export_graph_sha256": "3247a23b25effa9659dde48ed38693dc45e1d89a6f2a922632909f69589ccda3",
+  "non_metadata_bytes_unchanged": true
+}

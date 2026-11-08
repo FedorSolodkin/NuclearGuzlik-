@@ -130,18 +130,8 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
         } else listOf(0L to totalMs)
         if (speech.isEmpty()) return emptyList()
 
-        // 1) расширяем на PAD_MS, 2) склеиваем через короткие паузы, пока кусок ≤ MAX_CHUNK_MS
-        val merged = ArrayList<Pair<Long, Long>>()
-        for ((s0, e0) in speech) {
-            val s = (s0 - PAD_MS).coerceAtLeast(0L)
-            val e = (e0 + PAD_MS).coerceAtMost(totalMs)
-            val last = merged.lastOrNull()
-            if (last != null && s - last.second <= JOIN_GAP_MS && e - last.first <= MAX_CHUNK_MS) {
-                merged[merged.size - 1] = last.first to e
-            } else if (last != null && last.second - last.first < MIN_CHUNK_MS && s - last.second <= JOIN_GAP_MS * 2 && e - last.first <= MAX_CHUNK_MS) {
-                merged[merged.size - 1] = last.first to e
-            } else merged += s to e
-        }
+        val merged = GigaAmChunkPlanner.padAndMerge(speech, totalMs, PAD_MS,
+            JOIN_GAP_MS, MIN_CHUNK_MS, MAX_CHUNK_MS)
         // 3) слишком длинные куски (речь без пауз) режем по месту самой тихой 100-мс клетки у границы
         val out = ArrayList<Pair<Long, Long>>()
         for ((s, e) in merged) splitLong(pcm, s, e, out)
@@ -222,5 +212,33 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
             recognizer?.release()
             recognizer = null
         }
+    }
+}
+
+/** Padding adds context, but must never make two ASR requests decode the same samples. */
+internal object GigaAmChunkPlanner {
+    fun padAndMerge(speech: List<Pair<Long, Long>>, totalMs: Long, padMs: Long,
+                    joinGapMs: Long, minChunkMs: Long, maxChunkMs: Long): List<Pair<Long, Long>> {
+        val merged = mutableListOf<Pair<Long, Long>>()
+        var speechEnd = 0L
+        for ((start, end) in speech) {
+            var s = (start - padMs).coerceAtLeast(0L)
+            val e = (end + padMs).coerceAtMost(totalMs)
+            val last = merged.lastOrNull()
+            val allowedGap = if (last != null && last.second - last.first < minChunkMs) joinGapMs * 2 else joinGapMs
+            if (last != null && s - last.second <= allowedGap && e - last.first <= maxChunkMs) {
+                merged[merged.lastIndex] = last.first to maxOf(last.second, e)
+            } else {
+                if (last != null && s < last.second) {
+                    // Split the ORIGINAL silence gap. Padded bounds may be clipped by file edges.
+                    val boundary = (speechEnd + start) / 2
+                    merged[merged.lastIndex] = last.first to boundary
+                    s = boundary
+                }
+                if (e > s) merged += s to e
+            }
+            speechEnd = end
+        }
+        return merged
     }
 }
