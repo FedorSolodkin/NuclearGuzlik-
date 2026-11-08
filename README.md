@@ -6,7 +6,7 @@ GuzlikVoice превращает аудиозапись в проверяему�
 Вся обработка выполняется на телефоне: GigaAM распознаёт русскую речь, диаризация восстанавливает говорящих,
 а Gemma отвечает на вопросы по записи. Интернет для работы не нужен.
 
-[Скачать APK 4.0.9](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.9) ·
+[Видео работы](https://drive.google.com/file/d/1QdFcU4_UfRCXNR9R1hNgWyATeJtJgbEA/view?usp=sharing) · [Скачать APK 4.0.9](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.9) ·
 [Архитектура](docs/ARCHITECTURE.md) · [Результаты](docs/TEST_RESULTS.md) · [Ограничения](docs/LIMITATIONS.md)
 
 ![Android](https://img.shields.io/badge/Android-8%2B-3DDC84?logo=android&logoColor=white)
@@ -112,7 +112,7 @@ GigaAM v3 сразу выдаёт знаки препинания и загла�
 
 **Прежняя сборка (Whisper).** 35 прогонов в авиарежиме на эмуляторе: WER 5,6% на синтетике и 19,7% на трёх живых записях, RTF 0,92, DER на синтетике в среднем 34,8%; экспорт отказал на 5 файлах (исправлено).
 Это результаты **не текущей** сборки: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md), [results.csv](artifacts/test-results/results.csv).
-Скриншоты (сняты на прежней сборке, интерфейс тот же): [artifacts/demo/screens](artifacts/demo/screens). Видео: [artifacts/demo](artifacts/demo/README.md).
+Скриншоты (сняты на прежней сборке, интерфейс тот же): [artifacts/demo/screens](artifacts/demo/screens). Видео работы: [Google Drive](https://drive.google.com/file/d/1QdFcU4_UfRCXNR9R1hNgWyATeJtJgbEA/view?usp=sharing).
 Ограничения: [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## Сборка
