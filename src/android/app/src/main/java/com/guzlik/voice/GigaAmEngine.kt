@@ -32,12 +32,26 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
         private const val MAX_CHUNK_MS = 22_000L
         private const val MIN_CHUNK_MS = 8_000L        // короче — склеиваем соседние речевые куски, если пауза небольшая
         private const val JOIN_GAP_MS = 700L
-        private const val PAD_MS = 400L
+        private const val PAD_MS = 300L
         private const val LAST_WORD_MS = 300L
 
-        fun modelFile(ctx: Context) = File(File(ctx.filesDir, DIR), MODEL_FILE)
+        // Встроенные в APK файлы (BundledModels копирует их в filesDir под плоскими именами).
+        const val BUNDLED_MODEL_FILE = "gigaam_v3_ctc_punct.int8.onnx"
+        const val BUNDLED_TOKENS_FILE = "gigaam_v3_tokens.txt"
+        const val BUNDLED_MODEL_BYTES = 224_893_661L
+        const val BUNDLED_TOKENS_BYTES = 2_007L
+
+        /** Плоские имена (APK) приоритетнее папки filesDir/gigaam/ (ручная раскладка для замеров). */
+        private fun pair(ctx: Context): Pair<File, File> {
+            val flat = File(ctx.filesDir, BUNDLED_MODEL_FILE) to File(ctx.filesDir, BUNDLED_TOKENS_FILE)
+            if (flat.first.isFile && flat.second.isFile) return flat
+            val dir = File(ctx.filesDir, DIR)
+            return File(dir, MODEL_FILE) to File(dir, TOKENS_FILE)
+        }
+        fun modelFile(ctx: Context) = pair(ctx).first
+        fun tokensFile(ctx: Context) = pair(ctx).second
         fun isInstalled(ctx: Context) = modelFile(ctx).let { it.isFile && it.length() > MIN_MODEL_BYTES } &&
-            File(File(ctx.filesDir, DIR), TOKENS_FILE).isFile
+            tokensFile(ctx).isFile
     }
 
     @Volatile override var isReady = false
@@ -57,12 +71,11 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
                     onError("Модель GigaAM не найдена (filesDir/$DIR/$MODEL_FILE)")
                     return@Thread
                 }
-                val dir = File(context.filesDir, DIR)
                 val cfg = OfflineRecognizerConfig(
                     featConfig = FeatureConfig(sampleRate = SR, featureDim = 64),
                     modelConfig = OfflineModelConfig(
-                        nemo = OfflineNemoEncDecCtcModelConfig(model = File(dir, MODEL_FILE).absolutePath),
-                        tokens = File(dir, TOKENS_FILE).absolutePath,
+                        nemo = OfflineNemoEncDecCtcModelConfig(model = modelFile(context).absolutePath),
+                        tokens = tokensFile(context).absolutePath,
                         numThreads = 4,
                         provider = "cpu",
                         modelType = "nemo_ctc",
@@ -160,14 +173,17 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
             }
         }
         try {
-            val step = 512 * 60
+            // Строго окнами по 512 отсчётов: при подаче большими блоками sherpa-VAD сдвигает начало речи
+            // (r004: 1566 мс вместо 126 мс) и не режет длинную речь — первые слова реплики терялись.
+            val win = 512
+            val buf = FloatArray(win)
             var pos = 0
-            while (pos < pcm.size) {
-                if (isCancelled(cancelToken)) return null
-                val end = minOf(pcm.size, pos + step)
-                vad.acceptWaveform(FloatArray(end - pos) { pcm[pos + it] / 32768f })
-                drain()
-                pos = end
+            while (pos + win <= pcm.size) {
+                if (pos % (win * 100) == 0 && isCancelled(cancelToken)) return null
+                for (i in 0 until win) buf[i] = pcm[pos + i] / 32768f
+                vad.acceptWaveform(buf)
+                if (!vad.empty()) drain()
+                pos += win
             }
             vad.flush(); drain()
         } finally { vad.release() }

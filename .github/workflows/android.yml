@@ -30,6 +30,11 @@ jobs:
           sdkmanager 'ndk;25.1.8937393' 'cmake;3.22.1' 'platforms;android-36'
           echo "$ANDROID_HOME/cmake/3.22.1/bin" >> "$GITHUB_PATH"
       - run: ./scripts/fetch-vulkan-headers.sh
+      - name: sherpa-onnx JNI (GigaAM)
+        working-directory: .
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: ./scripts/fetch_sherpa_jni.sh
       - name: Android unit tests
         run: ./gradlew --no-daemon testStoreDebugUnitTest
       - name: Build hackathon APK

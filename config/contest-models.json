@@ -1,5 +1,5 @@
 {
-  "asr": "accurate",
+  "asr": "gigaam-v3-ctc-punct-int8",
   "llm": "gemma2-2b-v90k",
   "models": [
     {
@@ -9,10 +9,16 @@
       "sha256": "96c22f048c16b1cf258cfa3bf8a22cb87f41a9be33eaaced4436d130a359f5f2"
     },
     {
-      "file": "ggml-whisper-podlodka-turbo-q4_0.bin",
-      "bytes": 473992235,
+      "file": "gigaam_v3_ctc_punct.int8.onnx",
+      "bytes": 224893661,
       "stored": true,
-      "sha256": "172d761c921345082986689cb622f891184da29476b85e873bb272687a3c73a7"
+      "sha256": "d5fea8df94263c285e54b21e5774b707c707192d3bdbeffd7b1eb07fb6743b35"
+    },
+    {
+      "file": "gigaam_v3_tokens.txt",
+      "bytes": 2007,
+      "stored": true,
+      "sha256": "142de7570b3de5b3035ce111a89c228e80e6085273731d944093ddf24fa539cd"
     },
     {
       "file": "pyannote_segmentation.onnx",
@@ -38,7 +44,7 @@
       "asset": "assets/ggml-silero-v6.2.0.bin",
       "bytes": 885098,
       "sha256": "2aa269b785eeb53a82983a20501ddf7c1d9c48e33ab63a41391ac6c9f7fb6987",
-      "purpose": "Whisper native VAD; not an alternate transcription model"
+      "purpose": "Whisper native VAD (unused in GigaAM contest build); not a transcription model"
     }
   ]
 }

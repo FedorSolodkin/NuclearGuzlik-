@@ -421,7 +421,7 @@ class SettingsSheet : BottomSheetDialogFragment() {
     private fun refreshUi(model: String) {
         val ready = isModelReady(model)
         if (BuildConfig.CONTEST_BUILD) {
-            tvHint.text = "Точная модель распознавания и Gemma встроены в приложение. Всё работает без интернета"
+            tvHint.text = "Модель распознавания (GigaAM) и Gemma встроены в приложение. Всё работает без интернета"
             btnDownload.visibility = View.GONE
             return
         }
@@ -459,8 +459,7 @@ class SettingsSheet : BottomSheetDialogFragment() {
 
     private fun isModelReady(model: String): Boolean {
         val ctx = context ?: return false
-        if (BuildConfig.CONTEST_BUILD) return File(ctx.filesDir, ACCURATE_NAME)
-            .let { it.isFile && it.length() > ACCURATE_MIN_SIZE }
+        if (BuildConfig.CONTEST_BUILD) return GigaAmEngine.isInstalled(ctx)
         // Для точной модели принимаем И новый q4_0, И legacy q5_0 — пользователю
         // v3.5 не показываем «Скачать», если у него уже есть 574 МБ q5_0.
         val candidates = when (model) {
