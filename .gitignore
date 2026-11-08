@@ -36,3 +36,6 @@ __pycache__/
 artifacts/demo/*.mp4
 artifacts/demo/*.mov
 artifacts/demo/*.mkv
+
+# sherpa-onnx JNI (скачивается скриптом scripts/fetch_sherpa_jni.sh, в git не кладём)
+src/android/app/src/main/jniLibs/
