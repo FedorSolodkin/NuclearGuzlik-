@@ -149,6 +149,18 @@ object AppPrefs {
             0.5f + (v - MIC_SENSITIVITY_DEFAULT) / (MIC_SENSITIVITY_MAX - MIC_SENSITIVITY_DEFAULT) * 0.2f
     }
 
+    /**
+     * Быстрый ASR (GigaAM v3 через sherpa-onnx) вместо Whisper. По умолчанию выключен;
+     * в конкурсной сборке включается только флагом сборки -PguzlikvoiceFastAsr=true.
+     * Для замеров: наличие файла filesDir/use_gigaam включает его без пересборки (не в конкурсной сборке).
+     */
+    fun isFastAsr(ctx: Context): Boolean {
+        if (BuildConfig.FAST_ASR) return true
+        if (BuildConfig.CONTEST_BUILD) return false
+        if (java.io.File(ctx.filesDir, "use_gigaam").exists()) return true
+        return ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getBoolean("fast_asr", false)
+    }
+
     /** Beam search в Whisper: точнее на неразборчивой речи, но медленнее. */
     fun isWhisperBeamSearch(ctx: Context): Boolean =
         ctx.getSharedPreferences(FILE, Context.MODE_PRIVATE).getBoolean(KEY_WHISPER_BEAM, false)

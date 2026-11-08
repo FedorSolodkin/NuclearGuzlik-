@@ -56,7 +56,8 @@ class WhisperHelper(context: Context) {
     }
 
     private val appContext = context.applicationContext
-    private val engine: AsrEngine = WhisperCppEngine(context)
+    private val engine: AsrEngine =
+        if (AppPrefs.isFastAsr(context)) GigaAmEngine(context) else WhisperCppEngine(context)
 
     val isReady: Boolean get() = engine.isReady
     val loadedModelName: String get() = engine.loadedModelName
@@ -92,9 +93,10 @@ class WhisperHelper(context: Context) {
 
     /** Local DTW pass. One temporary context for all clips; no transcript replacement. */
     fun <T> withWordTimingSession(cancelToken: Long, block: ((ShortArray) -> List<Word>) -> T): T =
-        (engine as WhisperCppEngine).openWordTimingSession().use { session ->
+        // Уточнение границ слов — DTW Whisper'а; у GigaAM своих таймингов достаточно.
+        (engine as? WhisperCppEngine)?.openWordTimingSession()?.use { session ->
             block { pcm -> session.refine(pcm, resolveLanguage(pcm), cancelToken) }
-        }
+        } ?: block { emptyList() }
 
     fun refineWordTiming(pcm: ShortArray, cancelToken: Long): List<Word> =
         withWordTimingSession(cancelToken) { refine -> refine(pcm) }
