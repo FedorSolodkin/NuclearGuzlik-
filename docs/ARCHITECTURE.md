@@ -11,7 +11,7 @@ Android-приложение превращает запись разговор�
 flowchart TD
     A[Локальный файл Android Storage Access Framework] --> B[MediaCodec / PCM 16 kHz mono на диске]
     B --> C[Silero VAD]
-    C --> D[whisper.cpp / Whisper podlodka turbo q4_0]
+    C --> D[GigaAM v3 RNNT int8 с пунктуацией / sherpa-onnx]
     B --> E[pyannote segmentation 3.0 / ONNX]
     E --> F[WeSpeaker ResNet34 / ONNX]
     F --> G[Кластеризация и уточнение границ]
@@ -24,10 +24,10 @@ flowchart TD
 
 ## Компоненты
 
-Whisper — дообученный на русской речи bond005/whisper-podlodka-turbo,
-GGML q4_0. Основная LLM — Gemma 2 2B Q4_K_M, при необходимости облегчённый
-словарь ru90k. Выбор альтернативной Qwen 0.6B остаётся экспериментальным;
-для защиты рекомендуется Gemma с вопросами по записи.
+Распознавание речи: GigaAM v3 (Сбер), RNNT-вариант (encoder, decoder, joiner), int8, с пунктуацией и заглавными, запускается через sherpa-onnx (ONNX Runtime).
+Речь режется Silero VAD на фрагменты не длиннее 22 секунд; планировщик фрагментов делит границу по середине паузы, чтобы одно и то же слово не распознавалось дважды.
+Пословные времена берутся из меток токенов. Только русский язык. Whisper в конкурсную APK не входит. LLM: Gemma 2 2B Q4_K_M в облегчённом
+словаре ru90k; отвечает на вопросы по записи и выделяет главное, в расшифровку и JSON не вмешивается.
 
 `AudioDecoder` и `FilePcm` используют файл PCM вместо загрузки всей длинной
 записи в RAM. `StoredAudioTranscriber` обрабатывает сохранённое аудио кусками.
@@ -39,7 +39,7 @@ GGML q4_0. Основная LLM — Gemma 2 2B Q4_K_M, при необходим
 `RecordStorage` / Room сохраняют текст и ASR-интервалы. Метки голосов сохраняет
 `SpeakerCentroidStorage`. `JsonTranscriptExporter` строит контракт по текущему
 тексту и акустическим временным якорям; ID зависит от индекса голоса, а не имени.
-Экспорт не запускает LLM и не отправляет текст или звук в сеть.
+Экспорт не запускает LLM и не отправляет текст или звук в сеть. Реплики нулевой длины не отменяют экспорт; JSON сохраняется в «Загрузки» автоматически после обработки.
 
 ## Основные технические решения
 
@@ -50,13 +50,13 @@ Native CPU-варианты выбираются по возможностям �
 
 Модели можно положить внутрь APK при сборке (`-PguzlikvoiceBundle`, см. src/README.md): при первом
 запуске приложение копирует их из APK в свою папку без интернета (`BundledModels`, экран «Подготовка
-к работе»). Конкурсная APK 4.0.9 одна: внутри GigaAM v3 RNNT — единственный ASR, Gemma 2 2B ru90k и модели диаризации/VAD (около 1,7 ГБ), см.
+к работе»). Конкурсная APK 4.0.9 одна: внутри GigaAM v3 RNNT, Gemma 2 2B ru90k и модели диаризации/VAD, см.
 [CONTEST_APK.md](CONTEST_APK.md). Сборки LIGHT/HEAVY с Qwen 0,6B относятся к разработке и в конкурсную сборку не входят.
 
 ## Зависимости
 
-whisper.cpp (GGML), llama.cpp, ONNX Runtime (pyannote segmentation 3.0, WeSpeaker ResNet34), Silero VAD,
-Room, Kotlin/Android SDK 36, NDK 25.1. Модели: Whisper podlodka-turbo q4_0, Gemma 2 2B Q4_K_M (ru90k),
+sherpa-onnx и ONNX Runtime (GigaAM v3, pyannote segmentation 3.0, WeSpeaker ResNet34, Silero VAD), llama.cpp (Gemma),
+Room, Kotlin/Android SDK 36, NDK 25.1. Модели: GigaAM v3 RNNT int8, Gemma 2 2B Q4_K_M (ru90k),
 Qwen3 0.6B (только в сборках разработки); контрольные суммы в config/contest-models.json.
 
 ## Безопасность и приватность

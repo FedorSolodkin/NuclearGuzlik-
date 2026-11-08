@@ -2,7 +2,8 @@
 
 Единственная APK для установки: **GuzlikVoice-4.0.9-contest-offline.apk** в
 [релизе guzlikvoice-contest-v4.0.9](https://github.com/FedorSolodkin/NuclearGuzlik-/releases/tag/guzlikvoice-contest-v4.0.9).
-Размер около 1,92 ГБ, Android 8+, ARM64, пакет `ru.guzlik.voice.hackathon`.
+Android 8+, ARM64, пакет `ru.guzlik.voice.hackathon`, около 1,69 ГБ. Размер и SHA-256: [artifacts/apk/manifest.json](../artifacts/apk/manifest.json);
+ранее выпущенная APK 4.0.8 с Whisper заменена.
 Подпись совместима с предыдущей конкурсной APK: обновление сохраняет записи.
 
 ## Установка
@@ -23,7 +24,7 @@
 (GigaAM режет речь через `silero_vad.onnx`). Он не является моделью транскрибации.
 
 Полный список и SHA-256: [config/contest-models.json](../config/contest-models.json).
-Gemma notice встроен в APK; копия: [GEMMA-NOTICE.txt](GEMMA-NOTICE.txt).
+Gemma notice встроен в APK; копия: [GEMMA-NOTICE.txt](GEMMA-NOTICE.txt). Лицензии моделей и библиотек: [LICENSES.md](LICENSES.md).
 
 ## Воспроизведение сборки
 
@@ -51,5 +52,5 @@ python3 scripts/verify_contest_bundle.py --apk /absolute/path/to/GuzlikVoice-4.0
 Контроль APK проверяет состав, SHA-256 моделей и отсутствие сжатия весов; подпись
 проверяется `apksigner`. Проверка на телефоне использует отдельную пустую папку моделей
 и реальные вычисления ASR/диаризации/JSON/Gemma в авиарежиме, сохраняя пользовательские записи.
-Результаты: `artifacts/test-results/contest-bundled-apk.json`.
-Это проверка работоспособности на одной записи; она не заменяет WER/DER/RTF на независимой выборке.
+Для текущей сборки (GigaAM RNNT): `artifacts/test-results/rnnt-only-phone-2026-11-08.md`, `rnnt-pipeline-2026-11-08.md`, `speed-memory-2026-11-08.md`.
+`contest-bundled-apk.json` относится к прежней сборке с Whisper. Это проверки работоспособности на малых записях; они не заменяют WER/DER/RTF на независимой выборке.
