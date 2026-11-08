@@ -33,7 +33,6 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
         private const val MIN_CHUNK_MS = 8_000L        // короче — склеиваем соседние речевые куски, если пауза небольшая
         private const val JOIN_GAP_MS = 700L
         private const val PAD_MS = 300L
-        private const val LAST_WORD_MS = 300L
 
         // Встроенные в APK файлы (BundledModels копирует их в filesDir под плоскими именами).
         const val BUNDLED_MODEL_FILE = "gigaam_v3_ctc_punct.int8.onnx"
@@ -213,7 +212,6 @@ class GigaAmEngine(private val context: Context) : AsrEngine {
         if (e > start) out += start to e
     }
 
-    /** Токены (SentencePiece, "▁" — начало слова) → фраза со словами. Пунктуация липнет к предыдущему слову. */
     private class CancellationException : RuntimeException()
 
     private fun isCancelled(token: Long) = token != 0L && token in cancelled

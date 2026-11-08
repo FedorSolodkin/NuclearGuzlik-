@@ -30,6 +30,12 @@ class RobustSpeakerClusteringTest {
         assertEquals(2,labels.toSet().size)
         assertNotEquals(labels[0],labels[1])
     }
+    @Test fun explicitMonologueKeepsOneVoiceDespiteChangingAcoustics() {
+        val observations = List(30) { i ->
+            if (i % 2 == 0) floatArrayOf(1f, 0f) else floatArrayOf(0f, 1f)
+        }
+        assertEquals(setOf(0), RobustSpeakerClustering.cluster(observations, fixedK = 1).toSet())
+    }
     @Test fun oneSpeakerAndEmptyInputAreStable() {
         assertEquals(0,RobustSpeakerClustering.cluster(emptyList()).size)
         assertEquals(setOf(0),RobustSpeakerClustering.cluster(List(20) { floatArrayOf(1f,0f) }).toSet())
