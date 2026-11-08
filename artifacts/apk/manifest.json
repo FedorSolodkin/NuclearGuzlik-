@@ -1,6 +1,8 @@
 {
+  "status": "pending final build",
+  "note": "Final APK (GigaAM v3 RNNT build) is not published yet; file size, SHA-256 and download URL will be filled in after it is built and verified.",
   "file": "GuzlikVoice-4.0.8-contest-offline.apk",
-  "download_url": "https://github.com/FedorSolodkin/NuclearGuzlik-/releases/download/guzlikvoice-contest-v4.0.8/GuzlikVoice-4.0.8-contest-offline.apk",
+  "download_url": null,
   "package": "ru.guzlik.voice.hackathon",
   "version": "4.0.8-contest-hackathon",
   "version_code": 48,
@@ -8,12 +10,17 @@
   "abi": [
     "arm64-v8a"
   ],
-  "bytes": 1931089574,
-  "sha256": "5a24e7e8696817887bef675713ccfa88ec565e5beb16f3e5bba380552c7a1729",
+  "bytes": null,
+  "sha256": null,
   "signature": "APK Signature Scheme v2; same local debug key as previous hackathon versions",
   "models_included": true,
-  "asr": "Whisper podlodka turbo q4_0 only",
+  "asr": "GigaAM v3 RNNT (transducer, punctuation, int8, sherpa-onnx) only; Whisper and CTC are not in the APK",
   "llm": "Gemma 2B ru90k only",
   "model_manifest": "config/contest-models.json",
-  "source_branch": "main"
+  "source_branch": "main",
+  "previous_whisper_build": {
+    "description": "Earlier contest APK with Whisper podlodka (superseded); all results.csv rows apk-* were measured on it",
+    "bytes": 1931089574,
+    "sha256": "5a24e7e8696817887bef675713ccfa88ec565e5beb16f3e5bba380552c7a1729"
+  }
 }
