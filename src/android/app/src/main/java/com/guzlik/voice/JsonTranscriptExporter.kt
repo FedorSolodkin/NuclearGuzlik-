@@ -16,6 +16,7 @@ object JsonTranscriptExporter {
     private val header = Regex("\\[(?:Говорящий ([^\\]]+)|Говорят одновременно)]")
     private val word = Regex("[\\p{L}\\p{N}]+")
     private data class Anchor(val key: String, val start: Long, val end: Long)
+    private const val MIN_TURN_MS = 100L
 
     fun export(text: String, segments: List<WhisperHelper.Segment>, labels: List<String>): String {
         require(labels.isNotEmpty()) { "Сначала выполните разделение по голосам" }
@@ -60,8 +61,10 @@ object JsonTranscriptExporter {
             }
             require(matched.isNotEmpty()) { "Нет временной привязки для реплики; распознайте запись заново" }
             val start = matched.minOf { it.start }
-            val end = matched.maxOf { it.end }
-            require(end > start) { "Нулевая длительность реплики; распознайте запись заново" }
+            val rawEnd = matched.maxOf { it.end }
+            // Whisper may give a one-word reply identical start and end; the start is a real acoustic time, only the
+            // duration is degenerate. Keep the text and widen the turn to a minimal span instead of cancelling the export.
+            val end = if (rawEnd > start) rawEnd else start + MIN_TURN_MS
             Turn(id, start, end, body)
         }
         return GsonBuilder().disableHtmlEscaping().setPrettyPrinting().create().toJson(Document(turns))

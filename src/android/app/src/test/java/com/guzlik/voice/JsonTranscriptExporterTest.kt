@@ -58,4 +58,20 @@ class JsonTranscriptExporterTest {
     @Test(expected = IllegalArgumentException::class) fun invalidTimesCannotLeakToSubmission() {
         turns("Да",listOf(segment("Да",-10,100)),listOf("А"))
     }
+
+    @Test fun zeroLengthWordKeepsTextAndGetsMinimalPositiveDuration() {
+        val result = turns("[Говорящий А]\nДа.\n[Говорящий Б]\nНу, привет.",
+            listOf(segment("Да.", 500, 500), segment("Ну, привет.", 900, 1300)), listOf("А", "Б"))
+        val first = result[0].asJsonObject
+        assertEquals(500L, first["start_ms"].asLong)
+        assertTrue(first["end_ms"].asLong > first["start_ms"].asLong)
+        assertEquals("Да.", first["text"].asString)
+        assertEquals(900L, result[1].asJsonObject["start_ms"].asLong)
+    }
+
+    @Test fun singleZeroLengthReplyDoesNotCancelTheWholeExport() {
+        val result = turns("Привет", listOf(segment("Привет", 0, 0)), listOf("А"))
+        assertEquals(1, result.size())
+        assertTrue(result[0].asJsonObject["end_ms"].asLong > 0L)
+    }
 }
