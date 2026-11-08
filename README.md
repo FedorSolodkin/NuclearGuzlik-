@@ -33,6 +33,23 @@ GuzlikVoice превращает аудиозапись в проверяему�
 
 Подробная инструкция для жюри: [docs/INSTALL.md](docs/INSTALL.md).
 
+## Скриншоты
+
+Снимки с телефона: обработка записи на устройстве, говорящие, локальный ИИ и экспорт.
+
+<table>
+  <tr>
+    <td align="center"><img src="artifacts/demo/screens/phone/01-record.jpg" width="230" alt="Запись и расшифровка"><br><sub>Запись и расшифровка</sub></td>
+    <td align="center"><img src="artifacts/demo/screens/phone/02-history.jpg" width="230" alt="История записей"><br><sub>История записей</sub></td>
+    <td align="center"><img src="artifacts/demo/screens/phone/03-transcript-speakers.jpg" width="230" alt="Реплики по говорящим"><br><sub>Реплики по говорящим</sub></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="artifacts/demo/screens/phone/04-ask-ai.jpg" width="230" alt="Вопрос к записи (локальная Gemma)"><br><sub>Вопрос к записи (Gemma)</sub></td>
+    <td align="center"><img src="artifacts/demo/screens/phone/05-record-functions.jpg" width="230" alt="Функции записи"><br><sub>Функции записи</sub></td>
+    <td align="center"><img src="artifacts/demo/screens/phone/06-export-json.jpg" width="230" alt="Экспорт JSON"><br><sub>Экспорт JSON</sub></td>
+  </tr>
+</table>
+
 ## Конвейер
 
 ```text
