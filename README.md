@@ -10,7 +10,7 @@ Android-приложение, которое локально превращае
 - `docs/` — архитектура, ограничения, протокол (формат JSON), проверки, установка
 - `artifacts/apk/` — APK; `artifacts/test-results/` — результаты тестов (`results.csv`); `artifacts/demo/` — видео
 - `test_data/` — четыре живые записи и эталоны к ним для проверки; `config/` — параметры сборки и список моделей
-- `scripts/`, `tools/` — оценка WER/RTF/DER и вспомогательные инструменты
+- `scripts/`, `src/android/tools/` — оценка WER/RTF/DER и вспомогательные инструменты
 
 ## Запуск для экспертов
 
@@ -35,11 +35,22 @@ Android-приложение, которое локально превращае
 Whisper podlodka-turbo (q4_0), Gemma 2 2B (ru90k), WeSpeaker, pyannote segmentation, Silero VAD. Быстрых и альтернативных
 моделей в выборе нет. Размеры и контрольные суммы: [config/contest-models.json](config/contest-models.json).
 
+## Требования задания: как закрыто
+
+| Уровень | Что сделано | Что не сделано или не измерено |
+|---|---|---|
+| Базовый | APK, импорт файла, локальные Whisper и Gemma, автоматическая диаризация, метки времени, просмотр, экспорт JSON | Экспорт JSON отказал на 5 из 35 файлов; число говорящих часто занижается (DER 34,8% на синтетике) |
+| Средний | VAD (паузы и неречь), прогресс в процентах, плеер с переходом к реплике, разметка участников при смене реплик | Отдельного шумоподавления и модели пунктуации нет (знаки даёт Whisper) |
+| Ultra Pro Max | Метки `overlap` и `unknown`, аудио на диске вместо RAM, динамический Vulkan, редактирование текста, повторное разделение голосов | Смесь одновременной речи не разделяется; повторное распознавание произвольного фрагмента не реализовано |
+
+Каждая строка с доказательствами: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md).
+
 ## Статус и проверки
 
-Автономная работа подтверждена на Xiaomi (Android 13) в авиарежиме на одной записи; 239 юнит-тестов проходят. Независимых замеров WER/DER
-и скорости на устройстве пока недостаточно: см. [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md) и
-[artifacts/test-results/results.csv](artifacts/test-results/results.csv). Видео демонстрации: [artifacts/demo](artifacts/demo/README.md).
+Автономная работа подтверждена на Xiaomi (Android 13) в авиарежиме; 239 юнит-тестов проходят. Конкурсная APK прогнана в авиарежиме на эмуляторе (4 ГБ, CPU) на 35 файлах:
+WER 5,6% на синтетике и 19,7% на трёх живых записях, RTF 0,92 по сумме; DER на синтетике в среднем 34,8% (число говорящих часто занижается).
+**Известный дефект:** на 5 файлах из 35 «Экспорт JSON» отказал («Нулевая длительность реплики»). Подробности и условия: [docs/TEST_RESULTS.md](docs/TEST_RESULTS.md),
+[artifacts/test-results/results.csv](artifacts/test-results/results.csv). Скриншоты: [artifacts/demo/screens](artifacts/demo/screens). Видео демонстрации: [artifacts/demo](artifacts/demo/README.md).
 Ограничения: [docs/LIMITATIONS.md](docs/LIMITATIONS.md).
 
 ## Сборка
@@ -47,4 +58,4 @@ Whisper podlodka-turbo (q4_0), Gemma 2 2B (ru90k), WeSpeaker, pyannote segmentat
 Из исходников: [src/README.md](src/README.md) и раздел «Воспроизведение сборки» в [docs/CONTEST_APK.md](docs/CONTEST_APK.md).
 
 [Архитектура](docs/ARCHITECTURE.md) · [Установка](docs/INSTALL.md) · [Ограничения](docs/LIMITATIONS.md) ·
-[Проверки](docs/TEST_RESULTS.md) · [Соответствие заданию](docs/REQUIREMENTS.md)
+[Проверки](docs/TEST_RESULTS.md) · [Соответствие заданию](docs/REQUIREMENTS.md) · [Защита](docs/PRESENTATION.md) · [Комплектность](docs/SUBMISSION_CHECKLIST.md)
