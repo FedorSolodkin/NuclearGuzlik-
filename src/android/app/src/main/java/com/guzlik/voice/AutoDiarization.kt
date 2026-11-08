@@ -15,9 +15,12 @@ object AutoDiarization {
     fun start(ctx: Context, audioFile: File?, timestamp: Long, segments: List<WhisperHelper.Segment>) {
         if (timestamp == 0L || segments.isEmpty() || audioFile == null || !audioFile.isFile) return
         try {
-            DiarizationJobRunner.start(ctx.applicationContext, audioFile, timestamp, null, segments, null, false)
+            DiarizationJobRunner.start(ctx.applicationContext, audioFile, timestamp, null, segments, null, false, autoExport = true)
         } catch (e: Throwable) {
             Log.w(TAG, "auto diarization not started: ${e.message}")
+            // Без разделения голосов JSON всё равно нужен: сохраняем сразу (один говорящий).
+            val appCtx = ctx.applicationContext
+            Thread { AutoExport.saveJson(appCtx, timestamp) }.start()
         }
     }
 }

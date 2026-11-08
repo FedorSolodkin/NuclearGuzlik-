@@ -105,10 +105,12 @@ class EntryExporter(private val fragment: Fragment) {
         val ctx = appCtx
         run("JSON export") {
             val labels = SpeakerCentroidStorage.get(ctx, timestamp)?.labels.orEmpty()
-            val json = JsonTranscriptExporter.export(transcript, segments.orEmpty(), labels)
+            val outcome = JsonTranscriptExporter.exportBestEffort(transcript, segments, labels)
+            if (outcome.mode != JsonTranscriptExporter.Mode.STRICT)
+                Log.w(TAG, "strict JSON export failed (${outcome.reason}); saved as ${outcome.mode}")
             val name = ExportFileNames.forRecord("guzlikvoice", timestamp, "json")
-            val file = newExportFile(ctx, name).apply { writeText(json, Charsets.UTF_8) }
-            Ready(file, "application/json", name, "JSON")
+            val file = newExportFile(ctx, name).apply { writeText(outcome.json, Charsets.UTF_8) }
+            Ready(file, "application/json", name, if (outcome.mode == JsonTranscriptExporter.Mode.STRICT) "JSON" else "JSON (упрощённо)")
         }
     }
 

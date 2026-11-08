@@ -125,6 +125,7 @@ object DiarizationJobRunner {
         whisper: WhisperHelper?,
         hadLabels: Boolean,
         resumeCheckpoint: DiarizationCheckpointCodec.Checkpoint? = null,
+        autoExport: Boolean = false,
     ) {
         val appCtx = ctx.applicationContext
         if (states[timestamp] is State.Running || jobs[timestamp]?.isCompleted == false) return
@@ -162,11 +163,13 @@ object DiarizationJobRunner {
                                 req != null && outcome.speakers < req -> "Найдено голосов: ${outcome.speakers} из $req — остальные слишком похожи"
                                 else -> "Готово: найдено голосов — ${outcome.speakers}"
                             }, long = single || !outcome.hasCentroids || (req != null && outcome.speakers < req))
+                            if (autoExport) AutoExport.saveJson(appCtx, timestamp)
                         }
                         is State.Failed -> {
                             val shown = setState(outcome)
                             // Про отсутствующую модель лист спросит сам; без него (закрыт) напоминаем тостом.
                             if (!(shown && outcome.needsModels)) toast(appCtx, outcome.message, long = outcome.needsModels)
+                            if (autoExport) AutoExport.saveJson(appCtx, timestamp)
                         }
                         is State.Running, is State.Cancelled -> Unit
                     }
@@ -179,6 +182,7 @@ object DiarizationJobRunner {
                 Log.e(TAG, "Diarization failed: ${e.message}", e)
                 val msg = ErrorMessages.humanize(e)
                 setState(State.Failed(timestamp, msg)); toast(appCtx, msg)
+                if (autoExport) AutoExport.saveJson(appCtx, timestamp)
             } finally {
                 // Уведомление нужно, только если результат никто не видел (лист записи закрыт, приложение свёрнуто).
                 if (notify) ProcessingNotifier.notifyReady(appCtx, timestamp, "Разделение по голосам готово")
