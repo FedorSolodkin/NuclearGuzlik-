@@ -692,7 +692,7 @@ class TranscriptionDetailSheet : BottomSheetDialogFragment() {
         // Экспорт JSON одной кнопкой: сразу в «Загрузки» с возможностью поделиться.
         view.findViewById<MaterialButton>(R.id.btnExportJsonQuick).setOnClickListener {
             if (DiarizationJobRunner.stateOf(timestamp) is DiarizationJobRunner.State.Running) {
-                Toast.makeText(requireContext(), "Разделение по голосам ещё идёт — дождитесь окончания", Toast.LENGTH_SHORT).show()
+                Toast.makeText(requireContext(), "Разделение по голосам ещё идёт: JSON сохранится в Загрузки автоматически по окончании", Toast.LENGTH_SHORT).show()
                 return@setOnClickListener
             }
             exporter.exportJson(timestamp, currentTranscript(), parseStoredSegments())

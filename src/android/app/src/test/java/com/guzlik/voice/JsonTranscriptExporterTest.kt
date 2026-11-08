@@ -74,4 +74,57 @@ class JsonTranscriptExporterTest {
         assertEquals(1, result.size())
         assertTrue(result[0].asJsonObject["end_ms"].asLong > 0L)
     }
+
+    private fun best(text: String, segs: List<WhisperHelper.Segment>?, labels: List<String>) =
+        JsonTranscriptExporter.exportBestEffort(text, segs, labels)
+    private fun jsonTurns(o: JsonTranscriptExporter.Outcome) =
+        JsonParser.parseString(o.json).asJsonObject.getAsJsonArray("transcript")
+
+    @Test fun bestEffortUsesStrictModeWhenPossible() {
+        val o = best("Привет!", listOf(segment("Привет", 0, 200)), listOf("А"))
+        assertEquals(JsonTranscriptExporter.Mode.STRICT, o.mode)
+        assertNull(o.reason)
+    }
+
+    @Test fun noSpeakerLabelsStillGiveOneSpeakerWithRealTimes() {
+        val o = best("Привет мир", listOf(segment("Привет мир", 300, 900)), emptyList())
+        assertEquals(JsonTranscriptExporter.Mode.LENIENT, o.mode)
+        val first = jsonTurns(o)[0].asJsonObject
+        assertEquals("speaker_1", first["speaker_id"].asString)
+        assertEquals(300L, first["start_ms"].asLong)
+        assertTrue(first["end_ms"].asLong > first["start_ms"].asLong)
+    }
+
+    @Test fun rewrittenTextWithoutAcousticAnchorsStillExports() {
+        val o = best("[Говорящий А]\nСовсем другие слова.", listOf(segment("Старый текст", 0, 100)), listOf("А"))
+        assertEquals(JsonTranscriptExporter.Mode.LENIENT, o.mode)
+        val first = jsonTurns(o)[0].asJsonObject
+        assertEquals("Совсем другие слова.", first["text"].asString)
+        assertTrue(first["start_ms"].asLong >= 0 && first["end_ms"].asLong > first["start_ms"].asLong)
+    }
+
+    @Test fun negativeWordTimeIsCoercedInsteadOfCancellingTheExport() {
+        val o = best("Да", listOf(segment("Да", -10, 100)), listOf("А"))
+        val first = jsonTurns(o)[0].asJsonObject
+        assertEquals(0L, first["start_ms"].asLong)
+        assertEquals("Да", first["text"].asString)
+    }
+
+    @Test fun duplicateSpeakerNamesDoNotBlockTheExport() {
+        val o = best("[Говорящий А]\nДа.\n[Говорящий Б]\nНет.", listOf(segment("Да.", 0, 300), segment("Нет.", 400, 700)), listOf("А", "А"))
+        assertEquals(2, jsonTurns(o).size())
+    }
+
+    @Test fun missingSegmentsStillGiveATurnWithPositiveDurationAndNeverThrow() {
+        val o = best("[Говорящий А]\nПривет, мир.", null, listOf("А"))
+        assertNotEquals(JsonTranscriptExporter.Mode.STRICT, o.mode)
+        val first = jsonTurns(o)[0].asJsonObject
+        assertEquals("Привет, мир.", first["text"].asString)
+        assertTrue(first["end_ms"].asLong > first["start_ms"].asLong)
+    }
+
+    @Test fun emptyEverythingGivesAnEmptyTranscriptNotAnException() {
+        val o = best("", null, emptyList())
+        assertEquals(0, jsonTurns(o).size())
+    }
 }
